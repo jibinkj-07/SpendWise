@@ -30,6 +30,7 @@ class AuthTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       key: ValueKey(textFieldKey),
+      maxLength: 40,
       controller: controller,
       obscureText: isObscure,
       validator: validator,
@@ -38,6 +39,7 @@ class AuthTextField extends StatelessWidget {
       textInputAction: inputAction,
       keyboardType: inputType,
       decoration: InputDecoration(
+        counter: const SizedBox.shrink(),
         filled: true,
         fillColor: Colors.white,
         hintText: hintText,

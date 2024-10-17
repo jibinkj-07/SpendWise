@@ -30,7 +30,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             await _createAccount(event, emit);
             break;
           case ResetPassword():
-            _resetPassword(event, emit);
+            await _resetPassword(event, emit);
             break;
           case SignOut():
             await _signOut(event, emit);
@@ -55,6 +55,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             authStatus: AuthStatus.idle,
           ),
         );
+      } else {
+        emit(AuthState.error(remoteUser.left));
       }
     } catch (e) {
       log("er: [_initUser][auth_bloc.dart] $e");
@@ -82,7 +84,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           state.copyWith(
             userInfo: result.right,
             error: null,
-            authStatus: AuthStatus.idle,
+            authStatus: AuthStatus.created,
           ),
         );
       }

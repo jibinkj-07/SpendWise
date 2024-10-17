@@ -52,6 +52,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '434782527915',
     projectId: 'my-budget-2600c',
     authDomain: 'my-budget-2600c.firebaseapp.com',
+    databaseURL: 'https://my-budget-2600c-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'my-budget-2600c.appspot.com',
     measurementId: 'G-QGBERLL1N2',
   );
@@ -61,6 +62,7 @@ class DefaultFirebaseOptions {
     appId: '1:434782527915:android:c78b7cff08da15f0dfb2ee',
     messagingSenderId: '434782527915',
     projectId: 'my-budget-2600c',
+    databaseURL: 'https://my-budget-2600c-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'my-budget-2600c.appspot.com',
   );
 
@@ -69,7 +71,9 @@ class DefaultFirebaseOptions {
     appId: '1:434782527915:ios:08c24bd659b77c14dfb2ee',
     messagingSenderId: '434782527915',
     projectId: 'my-budget-2600c',
+    databaseURL: 'https://my-budget-2600c-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'my-budget-2600c.appspot.com',
     iosBundleId: 'com.codedude.myBudget',
   );
+
 }

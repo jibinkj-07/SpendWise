@@ -44,6 +44,13 @@ class NavBar extends StatelessWidget {
           ),
           label: 'Goal',
           selectedIcon: const Icon(Icons.flag_rounded),
+        ),   NavigationDestination(
+          icon: Icon(
+            Icons.person_outline_rounded,
+            color: selectedIndex == 3 ? Colors.black : Colors.black54,
+          ),
+          label: 'Account',
+          selectedIcon: const Icon(Icons.person_rounded),
         ),
       ],
     );

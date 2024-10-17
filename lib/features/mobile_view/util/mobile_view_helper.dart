@@ -7,6 +7,8 @@ sealed class MobileViewHelper {
         return "Dashboard";
       case 2:
         return "Goal";
+      case 3:
+        return "Account";
       default:
         return AppConstants.kAppName;
     }

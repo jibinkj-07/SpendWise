@@ -56,7 +56,7 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
       // Storing new user details into firebase db
       await _firebaseDatabase
           .ref(FirebaseMapper.userNode)
-          .set(user.toFirebaseJson());
+          .update(user.toFirebaseJson());
 
       // returning user data back to function call
       return Right(user);

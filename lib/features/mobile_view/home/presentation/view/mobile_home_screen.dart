@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_budget/features/mobile_view/account/presentation/view/account_view.dart';
 import 'package:my_budget/features/mobile_view/dashboard/presentation/view/dashboard_view.dart';
 import 'package:my_budget/features/mobile_view/goal/presentation/view/goal_view.dart';
 import 'package:my_budget/features/mobile_view/home/presentation/view/expense_view.dart';
@@ -22,6 +23,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
     ExpenseView(),
     DashboardView(),
     GoalView(),
+    AccountView(),
   ];
 
   @override

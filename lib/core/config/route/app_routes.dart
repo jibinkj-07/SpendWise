@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_budget/features/mobile_view/auth/presentation/view/login_screen.dart';
+import 'package:my_budget/features/mobile_view/auth/presentation/view/reset_password_screen.dart';
 import 'package:my_budget/features/mobile_view/auth/presentation/view/sign_up_screen.dart';
 import 'package:my_budget/features/mobile_view/home/presentation/view/mobile_home_screen.dart';
 import '../../../features/root.dart';
@@ -19,6 +20,8 @@ sealed class AppRoutes {
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case RouteMapper.create:
         return MaterialPageRoute(builder: (_) => const SignUpScreen());
+      case RouteMapper.reset:
+        return MaterialPageRoute(builder: (_) => const ResetPasswordScreen());
       case RouteMapper.mobileHomeScreen:
         return MaterialPageRoute(builder: (_) => const MobileHomeScreen());
       default:

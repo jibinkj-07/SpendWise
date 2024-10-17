@@ -1,6 +1,15 @@
 part of 'auth_bloc.dart';
 
-enum AuthStatus { idle,gettingUserInfo, loggingIn, creating,resetting,resetInstructionSent, signingOut }
+enum AuthStatus {
+  idle,
+  gettingUserInfo,
+  loggingIn,
+  creating,
+  created,
+  resetting,
+  resetInstructionSent,
+  signingOut
+}
 
 class AuthState extends Equatable {
   final UserModel? userInfo;
