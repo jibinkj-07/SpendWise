@@ -1,22 +1,23 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:my_budget/features/common/data/model/user_model.dart';
 
 class ExpenseModel {
   final String id;
   final DateTime date;
   final double amount;
+  final String title;
   final String description;
   final List<String> documents;
-  final String addedBy;
-  final String color;
+  final UserModel createdUser;
 
   ExpenseModel({
     required this.id,
     required this.date,
     required this.amount,
+    required this.title,
     required this.description,
     required this.documents,
-    required this.addedBy,
-    required this.color,
+    required this.createdUser,
   });
 
   ExpenseModel copyWith({
@@ -24,21 +25,22 @@ class ExpenseModel {
     DateTime? date,
     double? amount,
     String? description,
-    String? addedBy,
+    UserModel? createdUser,
     List<String>? documents,
-    String? color,
+    String? title,
   }) =>
       ExpenseModel(
         id: id ?? this.id,
         date: date ?? this.date,
         amount: amount ?? this.amount,
         description: description ?? this.description,
-        addedBy: addedBy ?? this.addedBy,
+        createdUser: createdUser ?? this.createdUser,
         documents: documents ?? this.documents,
-        color: color ?? this.color,
+        title: title ?? this.title,
       );
 
-  factory ExpenseModel.fromFirebase(DataSnapshot expenseData) {
+  factory ExpenseModel.fromFirebase(
+      DataSnapshot expenseData, UserModel createdUser) {
     final documents = expenseData.child("documents").exists
         ? expenseData.child("documents").value as List<dynamic>
         : [];
@@ -48,8 +50,8 @@ class ExpenseModel {
       amount: double.parse(expenseData.child("amount").value.toString()),
       description: expenseData.child("description").value.toString(),
       documents: documents.map((e) => e.toString()).toList(),
-      addedBy: expenseData.child("added_by").value.toString(),
-      color: expenseData.child("color").value.toString(),
+      createdUser: createdUser,
+      title: expenseData.child("title").value.toString(),
     );
   }
 
@@ -62,9 +64,8 @@ class ExpenseModel {
               "amount": amount,
               "description": description,
               "documents": documents,
-              "added_by": addedBy,
-              "color": color,
-            }
+              "created_by": createdUser.uid,
+            },
           },
         },
       };

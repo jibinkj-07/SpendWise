@@ -18,6 +18,14 @@ sealed class AppTheme {
         ),
       ),
     ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        textStyle: TextStyle(
+          fontWeight: FontWeight.normal,
+          fontFamily: AppConstants.kFontFamily,
+        ),
+      ),
+    ),
     pageTransitionsTheme: PageTransitionsTheme(
       builders: {
         TargetPlatform.android: CustomPageTransitionBuilder(),
