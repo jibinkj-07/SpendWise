@@ -1,0 +1,43 @@
+name: my_budget
+description: "A finance management app."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.0
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  firebase_core: ^3.6.0
+  intl: ^0.19.0
+  firebase_database: ^11.1.4
+  firebase_auth: ^5.3.1
+  flutter_bloc: ^8.1.6
+  equatable: ^2.0.5
+  image_picker: ^1.1.2
+  either_dart: ^1.0.0
+  get_it: ^8.0.0
+  internet_connection_checker_plus: ^2.5.2
+  firebase_storage: ^12.3.3
+  cached_network_image: ^3.4.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+flutter:
+  uses-material-design: true
+  # assets:
+  #   - images/a_dot_burr.jpeg
+  #   - images/a_dot_ham.jpeg
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/font/Poppins-Regular.ttf
+        - asset: assets/font/Poppins-Medium.ttf
+          weight: 500
+        - asset: assets/font/Poppins-SemiBold.ttf
+          weight: 700
+        - asset: assets/font/Poppins-ExtraLight.ttf
+          weight: 200

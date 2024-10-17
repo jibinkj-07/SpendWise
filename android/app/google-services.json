@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "434782527915",
+    "project_id": "my-budget-2600c",
+    "storage_bucket": "my-budget-2600c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:434782527915:android:c78b7cff08da15f0dfb2ee",
+        "android_client_info": {
+          "package_name": "com.codedude.my_budget"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIm8kpwBJabSieE36btSKgsDIIRi4EV0o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
