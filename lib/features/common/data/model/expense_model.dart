@@ -55,15 +55,15 @@ class ExpenseModel {
     );
   }
 
-  Map<String, dynamic> toFirebaseJson() => {
+  Map<String, dynamic> toFirebaseJson(List<String> urls) => {
         "${date.year}": {
           "${date.month}": {
-            "${date.millisecondsSinceEpoch}": {
+            id: {
               "id": id,
               "date": date.toString(),
               "amount": amount,
               "description": description,
-              "documents": documents,
+              "documents": urls,
               "created_by": createdUser.uid,
             },
           },

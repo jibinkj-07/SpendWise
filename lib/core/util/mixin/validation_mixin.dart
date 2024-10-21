@@ -14,7 +14,7 @@ mixin ValidationMixin {
     if (password.toString().trim().isEmpty) {
       return 'Password is empty';
     } else if (password.toString().trim().length < 6) {
-      return 'Provide a password of length greater than 6';
+      return 'Please enter a strong password';
     }
     return null;
   }

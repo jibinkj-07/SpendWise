@@ -21,6 +21,7 @@ dependencies:
   internet_connection_checker_plus: ^2.5.2
   firebase_storage: ^12.3.3
   cached_network_image: ^3.4.1
+  flutter_svg: ^2.0.10+1
 
 dev_dependencies:
   flutter_test:
@@ -30,6 +31,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/svg/
   fonts:
     - family: Poppins
       fonts:

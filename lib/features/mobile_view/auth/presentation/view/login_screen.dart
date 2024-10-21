@@ -1,11 +1,9 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_budget/core/config/route/route_mapper.dart';
-import 'package:my_budget/core/constants/app_constants.dart';
-import 'package:my_budget/core/util/helper/asset_mapper.dart';
 import 'package:my_budget/core/util/mixin/validation_mixin.dart';
+import 'package:my_budget/core/util/widgets/loading_button.dart';
+import 'package:my_budget/features/mobile_view/auth/presentation/util/auth_helper.dart';
 import 'package:my_budget/features/mobile_view/auth/presentation/widgets/auth_text_field.dart';
 
 import '../bloc/auth_bloc.dart';
@@ -41,72 +39,73 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     return Scaffold(
-      backgroundColor: AppConstants.kAppColor,
-      body: BlocListener<AuthBloc, AuthState>(
-        listener: (ctx, state) {
-          // Updating loading variable
-          _loading.value = state.authStatus == AuthStatus.loggingIn;
+      body: SafeArea(
+        child: BlocListener<AuthBloc, AuthState>(
+          listener: (ctx, state) {
+            // Updating loading variable
+            _loading.value = state.authStatus == AuthStatus.loggingIn;
 
-          // Checking for errors
-          if (state.error != null) {
-            state.error!.showSnackBar(context);
-          }
-          // Handle authenticated states
-          if (state.userInfo != null) {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              RouteMapper.mobileHomeScreen,
-              (route) => false,
-            );
-          }
-        },
-        child: ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.all(8.0),
-          children: [
-            Image.asset(
-              AssetMapper.appIconImage,
-              width: size.width * .25,
-              height: size.width * .25,
+            // Checking for errors
+            if (state.error != null) {
+              state.error!.showSnackBar(context);
+            }
+            // Handle authenticated states
+            if (state.userInfo != null) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                RouteMapper.mobileHomeScreen,
+                (route) => false,
+              );
+            }
+          },
+          child: ListView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10.0,
+              vertical: 20.0,
             ),
-            Center(
-              child: Text(
-                "Welcome to ${AppConstants.kAppName}",
-                style: const TextStyle(
+            children: [
+              /// header
+              AuthHelper.formHeader(size),
+
+              /// body
+              Container(
+                padding: const EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
                   color: Colors.white,
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
+                  borderRadius: BorderRadius.circular(4.0),
+                  border: Border.all(
+                    width: .2,
+                    color: Colors.grey.withOpacity(.5),
+                  ),
                 ),
-              ),
-            ),
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(top: 10.0),
-                width: size.width * .8,
                 child: Form(
                   key: _formKey,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Login to continue",
-                        style: TextStyle(color: Colors.white),
+                      const Center(
+                        child: Text(
+                          "Login to continue",
+                          style: TextStyle(
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                      const SizedBox(height: 10.0),
+                      AuthHelper.formTitle(title: "Email"),
                       AuthTextField(
                         textFieldKey: "email",
-                        hintText: "Email",
                         inputAction: TextInputAction.next,
                         inputType: TextInputType.emailAddress,
                         validator: validateEmail,
                         onSaved: (value) => _email = value.toString().trim(),
                       ),
-                      const SizedBox(height: 10.0),
+                      AuthHelper.formTitle(title: "Password"),
                       ValueListenableBuilder<bool>(
                         valueListenable: _isObscure,
                         builder: (ctx, obscure, Widget? child) {
                           return AuthTextField(
                             textFieldKey: "password",
-                            hintText: "Password",
                             isObscure: obscure,
                             inputAction: TextInputAction.done,
                             suffixIcon: IconButton(
@@ -126,98 +125,48 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
                           );
                         },
                       ),
-                      const SizedBox(height: 20.0),
-                      ValueListenableBuilder(
-                        valueListenable: _loading,
-                        builder: (ctx, loading, child1) {
-                          return AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 400),
-                            transitionBuilder:
-                                (Widget child, Animation<double> animation) {
-                              return ScaleTransition(
-                                  scale: animation, child: child);
-                            },
-                            switchInCurve: Curves.easeIn,
-                            switchOutCurve: Curves.easeOut,
-                            child: loading
-                                ? const SizedBox(
-                                    height: 25.0,
-                                    width: 25.0,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.0,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : child1,
-                          );
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context)
-                                  .pushNamed(RouteMapper.reset),
-                              style: TextButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                textStyle: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontFamily: AppConstants.kFontFamily,
-                                ),
-                              ),
-                              child: const Text("Forgot Password?"),
-                            ),
-                            OutlinedButton(
+                      Container(
+                        margin: const EdgeInsets.only(
+                          left: 20.0,
+                          right: 20.0,
+                          top: 30.0,
+                          bottom: 15.0,
+                        ),
+                        child: ValueListenableBuilder(
+                          valueListenable: _loading,
+                          builder: (ctx, loading, _) {
+                            return LoadingButton(
                               onPressed: _onLogin,
-                              style: OutlinedButton.styleFrom(
-                                side: const BorderSide(color: Colors.white54),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                textStyle: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontFamily: AppConstants.kFontFamily,
-                                ),
-                                foregroundColor: Colors.white,
-                              ),
+                              loading: loading,
+                              loadingLabel: "Logging",
                               child: const Text("Login"),
-                            ),
-                          ],
+                            );
+                          },
                         ),
                       ),
-                      Divider(
-                        thickness: .5,
-                        color: Colors.grey,
-                        indent: 20.0,
-                        endIndent: 20.0,
-                        height: size.height * .1,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            "Don\'t have an account?",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.of(context)
-                                .pushNamed(RouteMapper.create),
-                            style: TextButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              textStyle: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontFamily: AppConstants.kFontFamily,
-                              ),
-                            ),
-                            child: const Text("Create"),
-                          ),
-                        ],
-                      )
                     ],
                   ),
                 ),
               ),
-            ),
-          ],
+
+              ///footer
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  TextButton(
+                    onPressed: () =>
+                        Navigator.of(context).pushNamed(RouteMapper.create),
+                    child: const Text("Register"),
+                  ),
+                  TextButton(
+                    onPressed: () =>
+                        Navigator.of(context).pushNamed(RouteMapper.reset),
+                    child: const Text("Forgot Password?"),
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

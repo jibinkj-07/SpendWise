@@ -10,8 +10,8 @@ sealed class AppTheme {
     fontFamily: AppConstants.kFontFamily,
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        backgroundColor: Colors.blue.withOpacity(.15),
-        foregroundColor: Colors.blue,
+        backgroundColor: AppConstants.kAppColor,
+        foregroundColor: Colors.white,
         textStyle: TextStyle(
           fontWeight: FontWeight.normal,
           fontFamily: AppConstants.kFontFamily,

@@ -13,11 +13,15 @@ class ExpenseState extends Equatable {
     this.expenseList = const [],
     DateTime? selectedDate,
     this.error,
-  }) : selectedDate = DateTime.now();
+  }) : selectedDate = selectedDate ?? DateTime.now();
 
   ExpenseState.initial() : this._();
 
-  ExpenseState.error(Failure message) : this._(error: message);
+  ExpenseState.error(Failure message, {DateTime? existingDate})
+      : this._(
+          error: message,
+          selectedDate: existingDate,
+        );
 
   ExpenseState copyWith({
     ExpenseStatus? expenseStatus,
