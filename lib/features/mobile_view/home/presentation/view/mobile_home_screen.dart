@@ -8,6 +8,7 @@ import 'package:my_budget/features/mobile_view/home/presentation/view/expense_vi
 import 'package:my_budget/features/mobile_view/home/presentation/widget/my_app_bar.dart';
 import 'package:my_budget/features/mobile_view/home/presentation/widget/nav_bar.dart';
 
+import '../../../../common/presentation/bloc/category_bloc.dart';
 import '../../../../common/presentation/bloc/expense_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 
@@ -36,9 +37,15 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
     // Fetching expense data from firebase when user land this page
     final userBloc = context.read<AuthBloc>().state;
     if (userBloc.userInfo != null && userBloc.userInfo!.adminId.isNotEmpty) {
+      // Getting all expense details
       context
           .read<ExpenseBloc>()
           .add(GetAllExpense(adminId: userBloc.userInfo!.adminId));
+
+      // Getting all category details
+      context
+          .read<CategoryBloc>()
+          .add(GetAllCategory(adminId: userBloc.userInfo!.adminId));
     }
     super.initState();
   }

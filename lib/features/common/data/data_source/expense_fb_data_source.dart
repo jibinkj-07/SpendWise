@@ -1,9 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:either_dart/either.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:my_budget/core/config/injection/imports.dart';
 import 'package:my_budget/core/util/helper/firebase_mapper.dart';
 
@@ -102,15 +99,21 @@ class ExpenseFbDataSourceImpl implements ExpenseFbDataSource {
           .ref(FirebaseMapper.expensePath(adminId))
           .child("${date.year}")
           .get();
+      final categoryRootSnapshot = await _firebaseDatabase
+          .ref(FirebaseMapper.categoryPath(adminId))
+          .get();
       if (result.exists) {
         for (final month in result.children) {
-         for(final expense in month.children){
-           final userId = expense.child("created_by").value.toString();
-           final user = await _authFbDataSource.getUserDetail(uid: userId);
-           if (user.isRight) {
-             items.add(ExpenseModel.fromFirebase(expense, user.right));
-           }
-         }
+          for (final expense in month.children) {
+            final userId = expense.child("created_by").value.toString();
+            final user = await _authFbDataSource.getUserDetail(uid: userId);
+            if (user.isRight) {
+              items.add(
+                ExpenseModel.fromFirebase(
+                    expense, categoryRootSnapshot, user.right),
+              );
+            }
+          }
         }
       }
       return Right(items);
