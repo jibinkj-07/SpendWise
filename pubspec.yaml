@@ -22,6 +22,9 @@ dependencies:
   firebase_storage: ^12.3.3
   cached_network_image: ^3.4.1
   flutter_svg: ^2.0.10+1
+  url_launcher: ^6.3.1
+  image: ^4.3.0
+  path_provider: ^2.1.4
 
 dev_dependencies:
   flutter_test:

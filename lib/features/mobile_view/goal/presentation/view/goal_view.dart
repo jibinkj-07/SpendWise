@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../util/widget/no_access.dart';
 
 /// @author : Jibin K John
 /// @date   : 17/10/2024
@@ -10,7 +14,9 @@ const GoalView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return  Center(child: Text("GoalView"));
+    return BlocBuilder<AuthBloc,AuthState>(builder: (ctx,authState){
+      return NoAccess();
+    });
   }
 }
 

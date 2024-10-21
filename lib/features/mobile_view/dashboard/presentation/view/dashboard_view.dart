@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../util/widget/no_access.dart';
 
 /// @author : Jibin K John
 /// @date   : 17/10/2024
@@ -9,6 +13,8 @@ class DashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text("DashboardView"));
+    return BlocBuilder<AuthBloc, AuthState>(builder: (ctx, authState) {
+      return NoAccess();
+    });
   }
 }

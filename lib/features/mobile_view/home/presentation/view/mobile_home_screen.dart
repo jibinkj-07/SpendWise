@@ -69,12 +69,20 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
           ),
           bottomNavigationBar: NavBar(selectedIndex: index, index: _index),
           floatingActionButton: index == 0
-              ? FloatingActionButton(
-                  onPressed: () => Navigator.pushNamed(
-                    context,
-                    RouteMapper.addExpense,
-                  ),
-                  child: const Icon(Icons.add_rounded),
+              ? BlocBuilder<AuthBloc, AuthState>(
+                  builder: (ctx, authState) {
+                    if (authState.userInfo != null &&
+                        authState.userInfo!.adminId.isNotEmpty) {
+                      return FloatingActionButton(
+                        onPressed: () => Navigator.pushNamed(
+                          context,
+                          RouteMapper.addExpense,
+                        ),
+                        child: const Icon(Icons.add_rounded),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
                 )
               : null,
         );

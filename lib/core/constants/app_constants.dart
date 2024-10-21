@@ -5,4 +5,5 @@ sealed class AppConstants {
   static String kFontFamily = "Poppins";
   static Color kAppColor=Colors.blue;
   static String kAppVersion="1.0.0";
+  static String kAppSupportMail="jibinkunnumpurath@gmail.com";
 }

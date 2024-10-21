@@ -1,5 +1,4 @@
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/foundation.dart';
 import 'package:my_budget/features/common/data/model/category_model.dart';
 import 'package:my_budget/features/common/data/model/user_model.dart';
 
@@ -55,7 +54,7 @@ class ExpenseModel {
         : [];
     final categoryId = expenseData.child("category_id").value.toString();
     return ExpenseModel(
-      id: expenseData.child("id").value.toString(),
+      id: expenseData.key.toString(),
       date: DateTime.parse(expenseData.child("date").value.toString()),
       amount: double.parse(expenseData.child("amount").value.toString()),
       description: expenseData.child("description").value.toString(),
@@ -68,18 +67,13 @@ class ExpenseModel {
   }
 
   Map<String, dynamic> toFirebaseJson(List<String> urls) => {
-        "${date.year}": {
-          "${date.month}": {
-            id: {
-              "id": id,
-              "date": date.toString(),
-              "amount": amount,
-              "description": description,
-              "category_id": category.id,
-              "documents": urls,
-              "created_by": createdUser.uid,
-            },
-          },
-        },
+        id: {
+          "date": date.toString(),
+          "amount": amount,
+          "description": description,
+          "category_id": category.id,
+          "documents": urls,
+          "created_by": createdUser.uid,
+        }
       };
 }

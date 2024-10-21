@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:my_budget/core/constants/app_constants.dart';
 
 class OutlinedTextField extends StatelessWidget {
   final String textFieldKey;
   final bool isObscure;
+  final bool numberOnly;
   final bool? readOnly;
   final bool? enabled;
   final Widget? icon;
-  final String hintText;
+  final String? hintText;
   final String? initialValue;
   final int? maxLines;
   final int? minLines;
@@ -26,16 +26,17 @@ class OutlinedTextField extends StatelessWidget {
   const OutlinedTextField({
     super.key,
     required this.textFieldKey,
-    required this.isObscure,
+    this.isObscure = false,
     this.icon,
     this.maxLines,
-    required this.hintText,
+    this.hintText,
+    this.numberOnly = false,
     required this.inputAction,
     this.validator,
     this.onSaved,
     this.suffixIcon,
     this.inputType,
-    required this.textCapitalization,
+    this.textCapitalization = TextCapitalization.none,
     this.onChanged,
     this.controller,
     this.initialValue,
@@ -65,26 +66,23 @@ class OutlinedTextField extends StatelessWidget {
       minLines: minLines,
       initialValue: initialValue,
       maxLength: maxLength,
-      inputFormatters: <TextInputFormatter>[
-        FilteringTextInputFormatter.digitsOnly, // Allows only digits
-      ],
+      inputFormatters: numberOnly
+          ? <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(
+                RegExp(r'^\d*\.?\d*'), // Allow digits and optional decimal
+              ),
+            ]
+          : null,
       decoration: InputDecoration(
         counter: const SizedBox(),
         // hiding counter values under the text field
-        // prefix: icon,
-        prefixText: "s",
+        prefix: icon,
         suffixIcon: suffixIcon,
         hintText: hintText,
-        // labelStyle: const TextStyle(
-        //   color: Colors.grey,
-        //   fontSize: 14.0,
-        // ),
-
         contentPadding: const EdgeInsets.all(15.0),
         hintStyle: const TextStyle(color: Colors.black38),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
-
         ),
       ),
     );

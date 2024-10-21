@@ -1,10 +1,13 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:either_dart/either.dart';
-import 'package:my_budget/core/config/injection/imports.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:my_budget/core/util/helper/firebase_mapper.dart';
-
+import 'package:image/image.dart' as img;
+import 'package:path_provider/path_provider.dart';
 import '../../../../core/util/error/failure.dart';
+import '../../../mobile_view/auth/data/data_source/auth_fb_data_source.dart';
 import '../model/expense_model.dart';
 import '../model/user_model.dart';
 
@@ -58,6 +61,7 @@ class ExpenseFbDataSourceImpl implements ExpenseFbDataSource {
 
       await _firebaseDatabase
           .ref(FirebaseMapper.expensePath(user.adminId))
+          .child("${expenseModel.date.year}/${expenseModel.date.month}")
           .update(
             expenseModel.toFirebaseJson(urls),
           );
@@ -110,7 +114,10 @@ class ExpenseFbDataSourceImpl implements ExpenseFbDataSource {
             if (user.isRight) {
               items.add(
                 ExpenseModel.fromFirebase(
-                    expense, categoryRootSnapshot, user.right),
+                  expense,
+                  categoryRootSnapshot,
+                  user.right,
+                ),
               );
             }
           }
@@ -129,8 +136,22 @@ class ExpenseFbDataSourceImpl implements ExpenseFbDataSource {
   }) async {
     try {
       final reference = _firebaseStorage.ref(path);
-      await reference.putFile(image);
-      return await reference.getDownloadURL();
+      /// Compressing image
+      // Compress the image using the `image` package
+      img.Image? rawImage = img.decodeImage(image.readAsBytesSync());
+      if (rawImage != null) {
+        //  Convert the compressed image back to bytes
+        List<int> compressedBytes =
+            img.encodeJpg(rawImage, quality: 85); // Lossless compression
+
+        // Save the compressed image temporarily before uploading
+        Directory tempDir = await getTemporaryDirectory();
+        String tempPath = '${tempDir.path}/temp_image.jpg';
+        File tempFile = File(tempPath)..writeAsBytesSync(compressedBytes);
+        await reference.putFile(tempFile);
+        return await reference.getDownloadURL();
+      }
+      return "";
     } catch (e) {
       log("er: [_uploadImage][inventory_fb_data_source_impl.dart] $e");
       return "";
