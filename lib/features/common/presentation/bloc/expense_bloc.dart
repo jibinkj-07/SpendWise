@@ -37,7 +37,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
 
   Future<void> _getAllExpense(
       GetAllExpense event, Emitter<ExpenseState> emit) async {
-    emit(ExpenseState.initial().copyWith(expenseStatus: ExpenseStatus.loading));
+    emit(state.copyWith(expenseStatus: ExpenseStatus.loading));
     try {
       final result = await _expenseRepo.getAllExpense(
         adminId: event.adminId,
@@ -142,6 +142,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
         ),
       );
     }
+
   }
 
   @override

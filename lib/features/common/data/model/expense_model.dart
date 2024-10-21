@@ -68,6 +68,7 @@ class ExpenseModel {
 
   Map<String, dynamic> toFirebaseJson(List<String> urls) => {
         id: {
+          "title": title,
           "date": date.toString(),
           "amount": amount,
           "description": description,

@@ -64,7 +64,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
         return Scaffold(
           appBar: MyAppBar(index: index),
           body: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: _views[index],
           ),
           bottomNavigationBar: NavBar(selectedIndex: index, index: _index),
