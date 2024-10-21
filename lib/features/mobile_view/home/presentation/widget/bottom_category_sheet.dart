@@ -46,7 +46,6 @@ class _BottomCategorySheetState extends State<BottomCategorySheet> {
 
   @override
   Widget build(BuildContext context) {
-    log(DateTime.now().toString());
     return DraggableScrollableSheet(
       expand: false,
       initialChildSize: 0.5,

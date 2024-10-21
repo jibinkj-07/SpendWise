@@ -15,7 +15,7 @@ abstract class ExpenseRepo {
 
   Future<Either<Failure, void>> deleteExpense({
     required String adminId,
-    required String expenseId,
+    required ExpenseModel expense,
   });
 
   Future<Either<Failure, List<ExpenseModel>>> getAllExpense(

@@ -44,14 +44,14 @@ class AddExpense extends ExpenseEvent {
 }
 
 class DeleteExpense extends ExpenseEvent {
-  final String expenseId;
+  final ExpenseModel expense;
   final String adminId;
 
   const DeleteExpense({
     required this.adminId,
-    required this.expenseId,
+    required this.expense,
   });
 
   @override
-  List<Object?> get props => [adminId, expenseId];
+  List<Object?> get props => [adminId, expense];
 }

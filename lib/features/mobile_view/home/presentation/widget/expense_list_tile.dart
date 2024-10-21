@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_budget/core/util/helper/app_helper.dart';
 import 'package:my_budget/features/common/data/model/expense_model.dart';
+import 'package:my_budget/features/mobile_view/home/presentation/widget/expense_detail_modal_sheet.dart';
 
 /// @author : Jibin K John
 /// @date   : 21/10/2024
@@ -18,6 +19,14 @@ class ExpenseListTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: ListTile(
+        onTap: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) =>
+                ExpenseDetailModalSheet(expenseModel: expense),
+          );
+        },
         leading: CircleAvatar(
           backgroundColor: bgColor,
           child: Text(
@@ -46,7 +55,7 @@ class ExpenseListTile extends StatelessWidget {
               )
             : null,
         trailing: Text(
-         AppHelper.amountFormatter(expense.amount),
+          AppHelper.amountFormatter(expense.amount),
           style: const TextStyle(
             fontWeight: FontWeight.w500,
           ),

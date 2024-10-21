@@ -10,6 +10,7 @@ class LoadingButton extends StatelessWidget {
   final bool loading;
   final Widget child;
   final String loadingLabel;
+  final bool isDelete;
 
   const LoadingButton({
     super.key,
@@ -17,6 +18,7 @@ class LoadingButton extends StatelessWidget {
     required this.loading,
     required this.child,
     required this.loadingLabel,
+    this.isDelete=false,
   });
 
   @override
@@ -24,7 +26,8 @@ class LoadingButton extends StatelessWidget {
     return FilledButton(
       onPressed: loading ? null : onPressed,
       style: FilledButton.styleFrom(
-        disabledBackgroundColor: AppConstants.kAppColor,
+        backgroundColor: isDelete?Colors.red:null,
+        disabledBackgroundColor:isDelete?Colors.red: AppConstants.kAppColor,
         disabledForegroundColor: Colors.white70,
       ),
       child: AnimatedSwitcher(

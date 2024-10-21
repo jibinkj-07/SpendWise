@@ -20,7 +20,7 @@ abstract class ExpenseFbDataSource {
 
   Future<Either<Failure, void>> deleteExpense({
     required String adminId,
-    required String expenseId,
+    required ExpenseModel expense,
   });
 
   Future<Either<Failure, List<ExpenseModel>>> getAllExpense({
@@ -75,14 +75,14 @@ class ExpenseFbDataSourceImpl implements ExpenseFbDataSource {
   @override
   Future<Either<Failure, void>> deleteExpense({
     required String adminId,
-    required String expenseId,
+    required ExpenseModel expense,
   }) async {
     try {
       // Delete all stored images
-      await _deleteAllImagesInFolder("$adminId/Expense Doc/$expenseId}");
+      await _deleteAllImagesInFolder("$adminId/Expense Doc/${expense.id}");
       await _firebaseDatabase
           .ref(FirebaseMapper.expensePath(adminId))
-          .child(expenseId)
+          .child("${expense.date.year}/${expense.date.month}/${expense.id}")
           .remove();
       return const Right(null);
     } catch (e) {
@@ -136,6 +136,7 @@ class ExpenseFbDataSourceImpl implements ExpenseFbDataSource {
   }) async {
     try {
       final reference = _firebaseStorage.ref(path);
+
       /// Compressing image
       // Compress the image using the `image` package
       img.Image? rawImage = img.decodeImage(image.readAsBytesSync());

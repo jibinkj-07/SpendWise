@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:my_budget/core/util/helper/app_helper.dart';
 import 'package:my_budget/features/common/data/model/expense_model.dart';
 import 'package:my_budget/features/mobile_view/home/presentation/widget/expense_list_tile.dart';
 import 'package:my_budget/features/mobile_view/home/presentation/widget/month_chart_view.dart';
@@ -33,6 +34,8 @@ class ExpenseList extends StatelessWidget {
               for (final dateHeader in sortedMap.entries)
                 Section(
                   title: DateFormat("dd MMMM, EEEE").format(dateHeader.key),
+                  amount:
+                      AppHelper.amountFormatter(_getTotal(dateHeader.value)),
                   items: List.generate(
                     dateHeader.value.length,
                     (index) => ExpenseListTile(
@@ -41,9 +44,7 @@ class ExpenseList extends StatelessWidget {
                   ),
                 ),
               const SliverToBoxAdapter(
-                child: SizedBox(
-                  height: 100.0,
-                ),
+                child: SizedBox(height: 100.0),
               ),
             ],
           )
@@ -76,12 +77,21 @@ class ExpenseList extends StatelessWidget {
     }
     return items;
   }
+
+  double _getTotal(List<ExpenseModel> expenses) {
+    double sum = 0.0;
+    for (final expense in expenses) {
+      sum += expense.amount;
+    }
+    return sum;
+  }
 }
 
 class Section extends MultiSliver {
   Section({
     super.key,
     required String title,
+    required String amount,
     required List<Widget> items,
   }) : super(
           pushPinnedChildren: true,
@@ -92,12 +102,23 @@ class Section extends MultiSliver {
                   color: Colors.blue.withOpacity(.05),
                   padding: const EdgeInsets.symmetric(
                       vertical: 15.0, horizontal: 5.0),
-                  child: Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.0,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                      Text(
+                        amount,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

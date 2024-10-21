@@ -32,12 +32,12 @@ class ExpenseRepoImpl implements ExpenseRepo {
   @override
   Future<Either<Failure, void>> deleteExpense({
     required String adminId,
-    required String expenseId,
+    required ExpenseModel expense,
   }) async {
     if (await InternetConnection().hasInternetAccess) {
       return await _expenseFbDataSource.deleteExpense(
         adminId: adminId,
-        expenseId: expenseId,
+        expense: expense,
       );
     } else {
       return Left(Failure(message: "Check your internet connection"));

@@ -118,11 +118,11 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     try {
       final result = await _expenseRepo.deleteExpense(
         adminId: event.adminId,
-        expenseId: event.expenseId,
+        expense: event.expense,
       );
       if (result.isRight) {
         final updatedList = List<ExpenseModel>.from(state.expenseList)
-          ..removeWhere((item) => item.id == event.expenseId);
+          ..removeWhere((item) => item.id == event.expense.id);
         emit(
           state.copyWith(
             expenseStatus: ExpenseStatus.deleted,
@@ -142,7 +142,6 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
         ),
       );
     }
-
   }
 
   @override
