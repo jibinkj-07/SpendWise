@@ -61,7 +61,7 @@ class _HomeHeaderState extends State<HomeHeader> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 15.0),
+      padding: const EdgeInsets.only(top: 25.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -80,7 +80,7 @@ class _HomeHeaderState extends State<HomeHeader> {
           ),
           BlocBuilder<ExpenseBloc, ExpenseState>(
             builder: (ctx, state) {
-              return FilledButton(
+              return FilledButton.icon(
                 onPressed: () => _showDialog(
                   CupertinoPicker(
                     magnification: 1.22,
@@ -105,7 +105,8 @@ class _HomeHeaderState extends State<HomeHeader> {
                   foregroundColor: Colors.blue,
                   backgroundColor: Colors.blue.withOpacity(.15),
                 ),
-                child: Text(
+                icon: const Icon(Icons.date_range_rounded),
+                label: Text(
                   DateFormat.MMMM().format(state.selectedDate),
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,

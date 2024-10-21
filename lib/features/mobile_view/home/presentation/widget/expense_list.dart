@@ -1,9 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_budget/features/common/data/model/expense_model.dart';
 import 'package:my_budget/features/mobile_view/home/presentation/widget/expense_list_tile.dart';
+import 'package:my_budget/features/mobile_view/home/presentation/widget/month_chart_view.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 /// @author : Jibin K John
@@ -28,6 +27,9 @@ class ExpenseList extends StatelessWidget {
     return sortedMap.isNotEmpty
         ? CustomScrollView(
             slivers: [
+              SliverToBoxAdapter(
+                child: MonthChartView(expenseList: expenseList),
+              ),
               for (final dateHeader in sortedMap.entries)
                 Section(
                   title: DateFormat("dd MMMM, EEEE").format(dateHeader.key),
@@ -38,6 +40,11 @@ class ExpenseList extends StatelessWidget {
                     ),
                   ),
                 ),
+              const SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 100.0,
+                ),
+              ),
             ],
           )
         : const Center(
