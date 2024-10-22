@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_budget/core/config/route/route_mapper.dart';
 import 'package:my_budget/core/constants/app_constants.dart';
 import 'package:my_budget/core/util/helper/app_helper.dart';
 import 'package:my_budget/features/common/data/model/category_model.dart';
@@ -63,7 +64,10 @@ class _BottomCategorySheetState extends State<BottomCategorySheet> {
                       onPressed: () => Navigator.pop(context),
                       child: const Text("Cancel")),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.of(context).pushNamed(RouteMapper.addCategory);
+                    },
                     style: TextButton.styleFrom(
                       foregroundColor: AppConstants.kAppColor,
                     ),
