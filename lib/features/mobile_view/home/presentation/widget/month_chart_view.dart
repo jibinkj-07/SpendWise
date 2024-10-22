@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:my_budget/core/util/helper/app_helper.dart';
 import 'package:my_budget/features/common/data/model/expense_model.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -30,7 +31,6 @@ class MonthChartView extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 0.0),
         plotAreaBorderWidth: 0,
         primaryXAxis: const CategoryAxis(
-          interval: 2,
           title: AxisTitle(
             text: "Date",
             textStyle: TextStyle(
@@ -41,9 +41,10 @@ class MonthChartView extends StatelessWidget {
           labelPlacement: LabelPlacement.onTicks,
           majorGridLines: MajorGridLines(color: Colors.transparent),
         ),
-        primaryYAxis: const NumericAxis(
-          majorGridLines: MajorGridLines(color: Colors.transparent),
-          minorGridLines: MinorGridLines(color: Colors.transparent),
+        primaryYAxis: NumericAxis(
+          majorGridLines: const MajorGridLines(color: Colors.transparent),
+          minorGridLines: const MinorGridLines(color: Colors.transparent),
+          numberFormat: NumberFormat.currency(symbol: '€', decimalDigits: 0),
         ),
         series: <CartesianSeries>[
           SplineAreaSeries<ChartData, String>(

@@ -99,7 +99,7 @@ class Section extends MultiSliver {
             SliverPinnedHeader(
               child: Material(
                 child: Container(
-                  color: Colors.blue.withOpacity(.05),
+                  color: Colors.blue.withOpacity(.1),
                   padding: const EdgeInsets.symmetric(
                       vertical: 15.0, horizontal: 5.0),
                   child: Row(
