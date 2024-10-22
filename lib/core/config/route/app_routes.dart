@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:my_budget/features/mobile_view/account/presentation/view/add_member_screen.dart';
 import 'package:my_budget/features/mobile_view/account/presentation/view/category_add_screen.dart';
+import 'package:my_budget/features/mobile_view/account/presentation/view/category_screen.dart';
+import 'package:my_budget/features/mobile_view/account/presentation/view/manage_access_screen.dart';
 import 'package:my_budget/features/mobile_view/auth/presentation/view/login_screen.dart';
 import 'package:my_budget/features/mobile_view/auth/presentation/view/reset_password_screen.dart';
 import 'package:my_budget/features/mobile_view/auth/presentation/view/sign_up_screen.dart';
@@ -30,6 +33,12 @@ sealed class AppRoutes {
         return MaterialPageRoute(builder: (_) => const MobileHomeScreen());
       case RouteMapper.addCategory:
         return MaterialPageRoute(builder: (_) => const CategoryAddScreen());
+      case RouteMapper.categoryScreen:
+        return MaterialPageRoute(builder: (_) => const CategoryScreen());
+      case RouteMapper.manageAccess:
+        return MaterialPageRoute(builder: (_) => const ManageAccessScreen());
+      case RouteMapper.addMember:
+        return MaterialPageRoute(builder: (_) => const AddMemberScreen());
       default:
         return MaterialPageRoute(builder: (_) => const ErrorRoute());
     }

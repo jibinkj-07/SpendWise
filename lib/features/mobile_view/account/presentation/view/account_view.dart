@@ -117,7 +117,8 @@ class _AccountViewState extends State<AccountView> {
                       else ...[
                         if (isAdmin)
                           ListTile(
-                            onTap: () {},
+                            onTap: () => Navigator.of(context)
+                                .pushNamed(RouteMapper.manageAccess),
                             shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(15.0),
@@ -142,7 +143,7 @@ class _AccountViewState extends State<AccountView> {
                           ),
                         ListTile(
                           onTap: () => Navigator.of(context)
-                              .pushNamed(RouteMapper.addCategory),
+                              .pushNamed(RouteMapper.categoryScreen),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.only(
                               topLeft: isAdmin

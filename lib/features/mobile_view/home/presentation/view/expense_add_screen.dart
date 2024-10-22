@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:my_budget/core/util/helper/app_helper.dart';
 import 'package:my_budget/core/util/widgets/custom_snackbar.dart';
 import 'package:my_budget/core/util/widgets/loading_button.dart';
 import 'package:my_budget/core/util/widgets/outlined_text_field.dart';
@@ -169,42 +170,56 @@ class _ExpenseAddScreenState extends State<ExpenseAddScreen> {
                               AuthHelper.formTitle(title: "Category"),
                               SizedBox(
                                 width: double.infinity,
-                                child: OutlinedButton(
-                                  onPressed: () async {
-                                    final result = await showModalBottomSheet(
-                                      context: context,
-                                      isScrollControlled: true,
-                                      builder: (context) =>
-                                          const BottomCategorySheet(),
-                                    );
-                                    if (result != null) {
-                                      _category.value = result;
-                                    }
-                                  },
-                                  style: OutlinedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    side:
-                                        BorderSide(color: Colors.blue.shade200),
-                                    foregroundColor: Colors.blue,
-                                    padding: const EdgeInsets.all(15.0),
-                                  ),
-                                  child: ValueListenableBuilder(
+                                child: ValueListenableBuilder(
                                     valueListenable: _category,
                                     builder: (ctx, category, _) {
-                                      return Text(
-                                        category == null
-                                            ? "Select"
-                                            : category.title,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 15.0,
+                                      return OutlinedButton(
+                                        onPressed: () async {
+                                          final result =
+                                              await showModalBottomSheet(
+                                            context: context,
+                                            isScrollControlled: true,
+                                            builder: (context) =>
+                                                const BottomCategorySheet(),
+                                          );
+                                          if (result != null) {
+                                            _category.value = result;
+                                          }
+                                        },
+                                        style: OutlinedButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
+                                          side: BorderSide(
+                                              color: category != null
+                                                  ? AppHelper.hexToColor(
+                                                      category.color,
+                                                    )
+                                                  : Colors.blue.shade200),
+                                          foregroundColor: category != null
+                                              ? AppHelper.hexToColor(
+                                                  category.color,
+                                                )
+                                              : Colors.blue,
+                                          padding: const EdgeInsets.all(15.0),
+                                        ),
+                                        child: ValueListenableBuilder(
+                                          valueListenable: _category,
+                                          builder: (ctx, category, _) {
+                                            return Text(
+                                              category == null
+                                                  ? "Select"
+                                                  : category.title,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 15.0,
+                                              ),
+                                            );
+                                          },
                                         ),
                                       );
-                                    },
-                                  ),
-                                ),
+                                    }),
                               ),
                             ],
                           ),
@@ -247,7 +262,8 @@ class _ExpenseAddScreenState extends State<ExpenseAddScreen> {
                                   trailing: IconButton(
                                     onPressed: () =>
                                         _deleteImage(documents[index]),
-                                    icon: const Icon(Icons.delete_outline_rounded),
+                                    icon: const Icon(
+                                        Icons.delete_outline_rounded),
                                   ),
                                 ),
                               );

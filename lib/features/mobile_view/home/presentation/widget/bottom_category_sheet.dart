@@ -2,10 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_budget/core/config/route/route_mapper.dart';
 import 'package:my_budget/core/constants/app_constants.dart';
 import 'package:my_budget/core/util/helper/app_helper.dart';
 import 'package:my_budget/features/common/data/model/category_model.dart';
+import 'package:my_budget/features/mobile_view/account/presentation/view/category_add_screen.dart';
 
 import '../../../../common/presentation/bloc/category_bloc.dart';
 
@@ -27,9 +27,16 @@ class _BottomCategorySheetState extends State<BottomCategorySheet> {
 
   @override
   void initState() {
+    _initCategory();
     super.initState();
+  }
+
+  void _initCategory() {
+    log("called");
     allCategory = List.from(context.read<CategoryBloc>().state.categoryList);
-    filteredItems = allCategory;
+    setState(() {
+      filteredItems = allCategory;
+    });
   }
 
   void _filterItems(String query) {
@@ -61,12 +68,17 @@ class _BottomCategorySheetState extends State<BottomCategorySheet> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text("Cancel")),
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Cancel"),
+                  ),
                   TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.of(context).pushNamed(RouteMapper.addCategory);
+                    onPressed: () async {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              CategoryAddScreen(refreshData: _initCategory),
+                        ),
+                      );
                     },
                     style: TextButton.styleFrom(
                       foregroundColor: AppConstants.kAppColor,
@@ -101,22 +113,41 @@ class _BottomCategorySheetState extends State<BottomCategorySheet> {
                         controller: scrollController,
                         itemCount: filteredItems.length,
                         itemBuilder: (context, index) {
-                          return ListTile(
-                            leading: CircleAvatar(
-                              radius: 10.0,
-                              backgroundColor: AppHelper.hexToColor(
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: ListTile(
+                              leading: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10.0),
+                                width: 10.0,
+                                height: 45.0,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  color: AppHelper.hexToColor(
+                                    filteredItems[index].color,
+                                  ),
+                                ),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                side: const BorderSide(
+                                  color: Colors.black12,
+                                  width: .5,
+                                ),
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              tileColor: AppHelper.hexToColor(
                                 filteredItems[index].color,
+                              ).withOpacity(.1),
+                              title: Text(
+                                filteredItems[index].title,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
+                              onTap: () {
+                                Navigator.pop(context, filteredItems[index]);
+                              },
                             ),
-                            title: Text(
-                              filteredItems[index].title,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            onTap: () {
-                              Navigator.pop(context, filteredItems[index]);
-                            },
                           );
                         },
                       ),

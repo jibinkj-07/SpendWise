@@ -5,12 +5,14 @@ class UserModel {
   final String name;
   final String email;
   final String adminId;
+  final DateTime? addedOn;
 
   UserModel({
     required this.uid,
     required this.name,
     required this.email,
     required this.adminId,
+    this.addedOn,
   });
 
   UserModel copyWith({
@@ -18,12 +20,14 @@ class UserModel {
     String? name,
     String? email,
     String? adminId,
+    DateTime? addedOn,
   }) =>
       UserModel(
         uid: uid ?? this.uid,
         name: name ?? this.name,
         email: email ?? this.email,
         adminId: adminId ?? this.adminId,
+        addedOn: addedOn ?? this.addedOn,
       );
 
   factory UserModel.fromFirebase(DataSnapshot userData, String uid) {

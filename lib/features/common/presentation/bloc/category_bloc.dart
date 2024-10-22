@@ -36,6 +36,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     try {
       final result = await _categoryRepo.getAllCategory(adminId: event.adminId);
       if (result.isRight) {
+        result.right.sort((a, b) => b.createdOn.compareTo(a.createdOn));
         emit(
           state.copyWith(
             categoryStatus: CategoryStatus.idle,
@@ -76,7 +77,9 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         );
         if (result.isRight) {
           final updatedList = List<CategoryModel>.from(state.categoryList)
-            ..add(result.right);
+            ..add(result.right)
+            ..sort((a, b) => b.createdOn.compareTo(a.createdOn));
+
           emit(
             state.copyWith(
               categoryStatus: CategoryStatus.added,
@@ -114,7 +117,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       );
       if (result.isRight) {
         final updatedList = List<CategoryModel>.from(state.categoryList)
-          ..removeWhere((item) => item.id == event.categoryId);
+          ..removeWhere((item) => item.id == event.categoryId)
+          ..sort((a, b) => b.createdOn.compareTo(a.createdOn));
         emit(
           state.copyWith(
             categoryStatus: CategoryStatus.deleted,

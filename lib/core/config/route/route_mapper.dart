@@ -6,4 +6,7 @@ sealed class RouteMapper {
   static const String addExpense = '/add-expense';
   static const String mobileHomeScreen = '/mobile-home-screen';
   static const String addCategory = '/add-category-screen';
+  static const String categoryScreen = '/category-screen';
+  static const String manageAccess = '/manage-access-screen';
+  static const String addMember = '/add-member-screen';
 }

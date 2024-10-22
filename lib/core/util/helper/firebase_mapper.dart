@@ -6,4 +6,5 @@ sealed class FirebaseMapper {
   static String expensePath(String adminId) => "data/$adminId/expense";
 
   static String categoryPath(String adminId) => "data/$adminId/category";
+  static String memberPath(String adminId) => "$userNode/$adminId/members";
 }
