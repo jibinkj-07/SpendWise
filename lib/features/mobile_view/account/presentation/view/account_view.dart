@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_budget/core/config/injection/imports.dart';
 import 'package:my_budget/core/config/route/route_mapper.dart';
 import 'package:my_budget/core/constants/app_constants.dart';
+import 'package:my_budget/core/util/helper/asset_mapper.dart';
+import 'package:my_budget/core/util/widgets/loading_button.dart';
+
+import '../../../../../core/util/helper/app_helper.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
 
 /// @author : Jibin K John
 /// @date   : 17/10/2024
@@ -26,7 +30,10 @@ class _AccountViewState extends State<AccountView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
+    final size = MediaQuery.sizeOf(context);
+
+    bool isAdmin = false;
+    return BlocConsumer<AuthBloc, AuthState>(
       listener: (ctx, state) {
         _loading.value = state.authStatus == AuthStatus.signingOut;
         if (state.error != null) {
@@ -41,45 +48,156 @@ class _AccountViewState extends State<AccountView> {
           );
         }
       },
-      child: ListView(
-        children: [
-          const CircleAvatar(
-            radius: 40.0,
-            child: Icon(
-              Icons.account_circle_outlined,
-              size: 40.0,
-            ),
-          ),
-          const SizedBox(height: 20.0),
-          ValueListenableBuilder(
-              valueListenable: _loading,
-              builder: (ctx, loading, _) {
-                return AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 400),
-                  transitionBuilder:
-                      (Widget child, Animation<double> animation) {
-                    return ScaleTransition(scale: animation, child: child);
-                  },
-                  switchInCurve: Curves.easeIn,
-                  switchOutCurve: Curves.easeOut,
-                  child: loading
-                      ? const Center(
-                          child: SizedBox(
-                            height: 25.0,
-                            width: 25.0,
-                            child: CircularProgressIndicator(strokeWidth: 2.0),
+      builder: (BuildContext context, AuthState state) {
+        isAdmin = state.userInfo!.adminId == state.userInfo!.uid;
+        if (state.userInfo != null) {
+          return ListView(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            children: [
+              Container(
+                width: size.width * .4,
+                height: size.width * .4,
+                clipBehavior: Clip.hardEdge,
+                decoration: const BoxDecoration(shape: BoxShape.circle),
+                child: Image.asset(AssetMapper.profileImage),
+              ),
+              const SizedBox(height: 20.0),
+              Center(
+                child: Text(
+                  state.userInfo!.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 20.0,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Center(
+                child: Text(
+                  state.userInfo!.email,
+                  style: const TextStyle(
+                    fontSize: 15.0,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.black12, width: .5),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                margin: const EdgeInsets.symmetric(vertical: 35.0),
+                child: Material(
+                  color: Colors.transparent,
+                  child: Column(
+                    children: [
+                      if (state.userInfo!.adminId.isEmpty)
+                        ListTile(
+                          onTap: () =>
+                              AppHelper.sendAccessRequestEmail(context),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          leading: const Icon(Icons.mail_rounded),
+                          title: const Text("Request Access"),
+                          subtitle: const Text(
+                            "Send mail to gain access",
+                            style: TextStyle(
+                              fontSize: 13.0,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          trailing: const Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            color: Colors.blue,
+                            size: 20.0,
                           ),
                         )
-                      : FilledButton(
-                        onPressed: () =>
-                            context.read<AuthBloc>().add(SignOut()),
-                        child: const Text("Sign out"),
-                      ),
-                );
-              }),
-          Center(child: Text("Version ${AppConstants.kAppVersion}")),
-        ],
-      ),
+                      else ...[
+                        if (isAdmin)
+                          ListTile(
+                            onTap: () {},
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(15.0),
+                                topRight: Radius.circular(15.0),
+                              ),
+                            ),
+                            leading:
+                                const Icon(Icons.admin_panel_settings_rounded),
+                            title: const Text("Manage Access"),
+                            subtitle: const Text(
+                              "Manage your members access",
+                              style: TextStyle(
+                                fontSize: 13.0,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            trailing: const Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              color: Colors.blue,
+                              size: 20.0,
+                            ),
+                          ),
+                        ListTile(
+                          onTap: () => Navigator.of(context)
+                              .pushNamed(RouteMapper.addCategory),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topLeft: isAdmin
+                                  ? Radius.zero
+                                  : const Radius.circular(15.0),
+                              topRight: isAdmin
+                                  ? Radius.zero
+                                  : const Radius.circular(15.0),
+                              bottomLeft: const Radius.circular(15.0),
+                              bottomRight: const Radius.circular(15.0),
+                            ),
+                          ),
+                          leading: const Icon(Icons.category_rounded),
+                          title: const Text("Category"),
+                          subtitle: const Text(
+                            "Manage your category list",
+                            style: TextStyle(
+                              fontSize: 13.0,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          trailing: const Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            color: Colors.blue,
+                            size: 20.0,
+                          ),
+                        ),
+                      ]
+                    ],
+                  ),
+                ),
+              ),
+              ValueListenableBuilder(
+                valueListenable: _loading,
+                builder: (ctx, loading, _) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                    child: LoadingButton(
+                      onPressed: () => context.read<AuthBloc>().add(SignOut()),
+                      loading: loading,
+                      loadingLabel: "Signing out",
+                      child: const Text("Sign Out"),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 10.0),
+              Center(child: Text("Version ${AppConstants.kAppVersion}")),
+            ],
+          );
+        }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
 }

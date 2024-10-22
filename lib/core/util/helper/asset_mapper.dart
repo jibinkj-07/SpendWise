@@ -9,4 +9,6 @@ sealed class AssetMapper {
   static const String loadingLottie = "assets/lottie/loading.json";
 
   /// ---------------------- IMAGE FILES -------------------------
+
+  static const String profileImage = "assets/images/profile.jpg";
 }

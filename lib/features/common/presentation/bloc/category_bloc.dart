@@ -57,29 +57,50 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   Future<void> _addCategory(
       AddCategory event, Emitter<CategoryState> emit) async {
     emit(state.copyWith(categoryStatus: CategoryStatus.adding));
-    try {
-      final result = await _categoryRepo.addCategory(
-        categoryModel: event.categoryModel,
-        adminId: event.adminId,
+    // Checking if already category match existing category items
+    final index = state.categoryList.indexWhere((item) =>
+        item.title.toLowerCase() == event.categoryModel.title.toLowerCase());
+    if (index > -1) {
+      emit(
+        state.copyWith(
+          error: Failure(message: "Category already exist"),
+          categoryStatus: CategoryStatus.idle,
+        ),
       );
-      if (result.isRight) {
-        final updatedList = List<CategoryModel>.from(state.categoryList)
-          ..add(result.right);
+      return;
+    } else {
+      try {
+        final result = await _categoryRepo.addCategory(
+          categoryModel: event.categoryModel,
+          adminId: event.adminId,
+        );
+        if (result.isRight) {
+          final updatedList = List<CategoryModel>.from(state.categoryList)
+            ..add(result.right);
+          emit(
+            state.copyWith(
+              categoryStatus: CategoryStatus.added,
+              categoryList: updatedList,
+              error: null,
+            ),
+          );
+        } else {
+          emit(
+            state.copyWith(
+              categoryStatus: CategoryStatus.idle,
+              error: result.left,
+            ),
+          );
+        }
+      } catch (e) {
+        log("er[_addCategory][category_bloc.dart] $e");
         emit(
           state.copyWith(
-            categoryStatus: CategoryStatus.added,
-            categoryList: updatedList,
-            error: null,
+            categoryStatus: CategoryStatus.idle,
+            error: Failure(message: "An unexpected error occurred"),
           ),
         );
-      } else {
-        emit(CategoryState.error(result.left));
       }
-    } catch (e) {
-      log("er[_addCategory][category_bloc.dart] $e");
-      emit(
-        CategoryState.error(Failure(message: "An unexpected error occurred")),
-      );
     }
   }
 
@@ -102,12 +123,20 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
           ),
         );
       } else {
-        emit(CategoryState.error(result.left));
+        emit(
+          state.copyWith(
+            categoryStatus: CategoryStatus.idle,
+            error: result.left,
+          ),
+        );
       }
     } catch (e) {
       log("er[_deleteCategory][category_bloc.dart] $e");
       emit(
-        CategoryState.error(Failure(message: "An unexpected error occurred")),
+        state.copyWith(
+          categoryStatus: CategoryStatus.idle,
+          error: Failure(message: "An unexpected error occurred"),
+        ),
       );
     }
   }
