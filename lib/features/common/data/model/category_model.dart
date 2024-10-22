@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_database/firebase_database.dart';
 
 class CategoryModel {
@@ -27,6 +29,14 @@ class CategoryModel {
       );
 
   factory CategoryModel.fromFirebase(DataSnapshot categoryData) {
+    if (categoryData.value == null) {
+      return CategoryModel(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: "Deleted Category",
+        createdOn: DateTime.now(),
+        color: "000000",
+      );
+    }
     return CategoryModel(
         id: categoryData.key.toString(),
         title: categoryData.child("title").value.toString(),

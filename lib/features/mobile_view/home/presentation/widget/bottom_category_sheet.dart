@@ -8,6 +8,7 @@ import 'package:my_budget/features/common/data/model/category_model.dart';
 import 'package:my_budget/features/mobile_view/account/presentation/view/category_add_screen.dart';
 
 import '../../../../common/presentation/bloc/category_bloc.dart';
+import '../../../../common/widget/category_tile.dart';
 
 /// @author : Jibin K John
 /// @date   : 21/10/2024
@@ -115,29 +116,11 @@ class _BottomCategorySheetState extends State<BottomCategorySheet> {
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: ListTile(
-                              leading: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10.0),
-                                width: 10.0,
-                                height: 45.0,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  color: AppHelper.hexToColor(
-                                    filteredItems[index].color,
-                                  ),
-                                ),
-                              ),
-                              shape: RoundedRectangleBorder(
-                                side: const BorderSide(
-                                  color: Colors.black12,
-                                  width: .5,
-                                ),
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
-                              tileColor: AppHelper.hexToColor(
+                            child: CategoryTile(
+                              height: 45.0,
+                              color: AppHelper.hexToColor(
                                 filteredItems[index].color,
-                              ).withOpacity(.1),
+                              ),
                               title: Text(
                                 filteredItems[index].title,
                                 style: const TextStyle(

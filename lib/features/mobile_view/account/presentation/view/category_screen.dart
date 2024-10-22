@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../../core/config/route/route_mapper.dart';
 import '../../../../../core/util/helper/app_helper.dart';
 import '../../../../common/presentation/bloc/category_bloc.dart';
+import '../../../../common/widget/category_tile.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 
 /// @author : Jibin K John
@@ -36,20 +37,9 @@ class CategoryScreen extends StatelessWidget {
                   itemBuilder: (ctx, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 5.0),
-                      child: ListTile(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        tileColor: Colors.blue.withOpacity(.08),
-                        leading: Container(
-                          width: 8.0,
-                          height: 100.0,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
-                            color: AppHelper.hexToColor(
-                              state.categoryList[index].color,
-                            ),
-                          ),
+                      child: CategoryTile(
+                        color: AppHelper.hexToColor(
+                          state.categoryList[index].color,
                         ),
                         title: Text(
                           state.categoryList[index].title,

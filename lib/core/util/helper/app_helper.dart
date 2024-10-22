@@ -6,9 +6,11 @@ import '../../constants/app_constants.dart';
 import '../widgets/custom_snackbar.dart';
 
 sealed class AppHelper {
-  static String amountFormatter(double amount) => NumberFormat.currency(
+  static String amountFormatter(double amount, [int? decimalDigit]) =>
+      NumberFormat.currency(
         locale: 'en_IE',
         symbol: '€ ',
+        decimalDigits: decimalDigit,
       ).format(amount);
 
   // Function to convert hex string to Color
