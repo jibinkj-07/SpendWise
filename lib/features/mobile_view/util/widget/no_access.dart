@@ -12,7 +12,9 @@ import '../../../../core/util/helper/app_helper.dart';
 /// @time   : 12:56:41
 
 class NoAccess extends StatelessWidget {
-  const NoAccess({super.key});
+  final bool isEmpty;
+
+  const NoAccess({super.key, this.isEmpty = false});
 
   @override
   Widget build(BuildContext context) {
@@ -24,18 +26,21 @@ class NoAccess extends StatelessWidget {
         children: [
           SvgPicture.asset(
             AssetMapper.noDataSvg,
-            width: size.width * .5,
+            width: isEmpty ? size.width * .3 : size.width * .5,
           ),
           const SizedBox(height: 20.0),
-          const Text("Contact admin to get access"),
-          const SizedBox(height: 10.0),
-          FilledButton(
-            onPressed: () => AppHelper.sendAccessRequestEmail(context),
-            child: const Text("Request Access"),
-          )
+          if (isEmpty)
+            const Text("No data found")
+          else ...[
+            const Text("Contact admin to get access"),
+            const SizedBox(height: 10.0),
+            FilledButton(
+              onPressed: () => AppHelper.sendAccessRequestEmail(context),
+              child: const Text("Request Access"),
+            )
+          ]
         ],
       ),
     );
   }
-
 }

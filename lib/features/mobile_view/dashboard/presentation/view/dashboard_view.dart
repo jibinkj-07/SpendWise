@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_budget/features/mobile_view/dashboard/presentation/widget/category_charts.dart';
+import 'package:my_budget/features/mobile_view/dashboard/presentation/widget/category_stacked_chart.dart';
 import 'package:my_budget/features/mobile_view/dashboard/presentation/widget/dashboard_header.dart';
 import 'package:my_budget/features/mobile_view/dashboard/presentation/widget/month_bar_chart.dart';
-import 'package:my_budget/features/mobile_view/dashboard/presentation/widget/most_expense_category.dart';
+import 'package:my_budget/features/mobile_view/dashboard/presentation/widget/top_expenses.dart';
 import '../../../../common/data/model/expense_model.dart';
 import '../../../../common/presentation/bloc/expense_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -21,7 +23,11 @@ class DashboardView extends StatefulWidget {
 }
 
 class _DashboardViewState extends State<DashboardView> {
-  final ValueNotifier<int> _selectedYear = ValueNotifier(DateTime.now().year);
+  // _viewOption hold selected date and monthView bool option
+  final ValueNotifier<MapEntry<DateTime, bool>> _viewOption = ValueNotifier(
+    MapEntry(DateTime.now(), false),
+  );
+
   final ValueNotifier<List<ExpenseModel>> _expenseList = ValueNotifier([]);
 
   @override
@@ -31,7 +37,7 @@ class _DashboardViewState extends State<DashboardView> {
         .read<ExpenseBloc>()
         .state
         .expenseList
-        .where((item) => item.date.year == _selectedYear.value)
+        .where((item) => item.date.year == _viewOption.value.key.year)
         .toList();
   }
 
@@ -39,7 +45,7 @@ class _DashboardViewState extends State<DashboardView> {
   void dispose() {
     super.dispose();
     _expenseList.dispose();
-    _selectedYear.dispose();
+    _viewOption.dispose();
   }
 
   @override
@@ -51,18 +57,33 @@ class _DashboardViewState extends State<DashboardView> {
           return Column(
             children: [
               DashboardHeader(
-                selectedYear: _selectedYear,
+                viewOption: _viewOption,
                 expenseList: _expenseList,
               ),
               Expanded(
-                child: ListView(
-                  children: [
-                    MostExpenseCategory(expenseList: _expenseList),
-                    MonthBarChart(
-                      selectedYear: _selectedYear,
-                      expenseList: _expenseList,
-                    ),
-                  ],
+                child: ValueListenableBuilder(
+                  valueListenable: _expenseList,
+                  builder: (ctx, expenses, _) {
+                    return expenses.isNotEmpty
+                        ? ListView(
+                            children: [
+                              TopExpenses(
+                                expenseList: expenses,
+                                viewOption: _viewOption,
+                              ),
+                              MonthBarChart(
+                                viewOption: _viewOption,
+                                expenseList: expenses,
+                              ),
+                              CategoryCharts(expenseList: expenses),
+                              CategoryStackedLineChart(
+                                expenseList: expenses,
+                                viewOption: _viewOption,
+                              ),
+                            ],
+                          )
+                        : const NoAccess(isEmpty: true);
+                  },
                 ),
               ),
             ],

@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_budget/core/util/helper/app_helper.dart';
 import 'package:my_budget/features/common/data/model/expense_model.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -38,13 +35,14 @@ class MonthChartView extends StatelessWidget {
               color: Colors.grey,
             ),
           ),
-          labelPlacement: LabelPlacement.onTicks,
+          majorTickLines: MajorTickLines(width: 0.0),
           majorGridLines: MajorGridLines(color: Colors.transparent),
         ),
         primaryYAxis: NumericAxis(
           majorGridLines: const MajorGridLines(color: Colors.transparent),
           minorGridLines: const MinorGridLines(color: Colors.transparent),
           numberFormat: NumberFormat.currency(symbol: '€', decimalDigits: 0),
+          majorTickLines: const MajorTickLines(width: 0.0),
         ),
         series: <CartesianSeries>[
           SplineAreaSeries<ChartData, String>(
@@ -53,6 +51,7 @@ class MonthChartView extends StatelessWidget {
             yValueMapper: (ChartData data, _) => data.expense,
             borderColor: Colors.blue,
             borderWidth: 3.0,
+            splineType: SplineType.cardinal,
             gradient: LinearGradient(
               colors: [
                 Colors.blue,

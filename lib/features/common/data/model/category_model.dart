@@ -28,14 +28,16 @@ class CategoryModel {
         createdOn: createdOn ?? this.createdOn,
       );
 
-  factory CategoryModel.fromFirebase(DataSnapshot categoryData) {
-    if (categoryData.value == null) {
-      return CategoryModel(
+  factory CategoryModel.deleted() => CategoryModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: "Deleted Category",
         createdOn: DateTime.now(),
         color: "000000",
       );
+
+  factory CategoryModel.fromFirebase(DataSnapshot categoryData) {
+    if (categoryData.value == null) {
+      return CategoryModel.deleted();
     }
     return CategoryModel(
         id: categoryData.key.toString(),
