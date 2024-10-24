@@ -1,11 +1,4 @@
-import '../../../features/common/data/data_source/category_fb_data_source.dart';
-import '../../../features/common/data/data_source/expense_fb_data_source.dart';
-import '../../../features/common/data/repo/category_repo_impl.dart';
-import '../../../features/common/data/repo/expense_repo_impl.dart';
-import '../../../features/common/domain/repo/category_repo.dart';
-import '../../../features/common/domain/repo/expense_repo.dart';
-import '../../../features/common/presentation/bloc/category_bloc.dart';
-import '../../../features/common/presentation/bloc/expense_bloc.dart';
+
 import './imports.dart';
 
 final sl = GetIt.instance;
@@ -28,14 +21,18 @@ Future<void> initDependencies() async {
       () => ExpenseFbDataSourceImpl(sl(), sl(), sl()));
   sl.registerLazySingleton<CategoryFbDataSource>(
       () => CategoryFbDataSourceImpl(sl()));
+  sl.registerLazySingleton<GoalFbDataSource>(
+      () => GoalFbDataSourceImpl(sl(),sl()));
 
   // **************************************** Repos ****************************************
   sl.registerLazySingleton<AuthRepo>(() => AuthRepoImpl(sl()));
   sl.registerLazySingleton<ExpenseRepo>(() => ExpenseRepoImpl(sl()));
   sl.registerLazySingleton<CategoryRepo>(() => CategoryRepoImpl(sl()));
+  sl.registerLazySingleton<GoalRepo>(() => GoalRepoImpl(sl()));
 
   // **************************************** Bloc ****************************************
   sl.registerSingleton<AuthBloc>(AuthBloc(sl(), sl()));
   sl.registerSingleton<ExpenseBloc>(ExpenseBloc(sl()));
   sl.registerSingleton<CategoryBloc>(CategoryBloc(sl()));
+  sl.registerSingleton<GoalBloc>(GoalBloc(sl()));
 }

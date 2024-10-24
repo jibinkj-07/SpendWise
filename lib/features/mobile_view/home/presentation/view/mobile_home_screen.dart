@@ -11,6 +11,7 @@ import 'package:my_budget/features/mobile_view/home/presentation/widget/nav_bar.
 import '../../../../common/presentation/bloc/category_bloc.dart';
 import '../../../../common/presentation/bloc/expense_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../goal/presentation/bloc/goal_bloc.dart';
 
 /// @author : Jibin K John
 /// @date   : 17/10/2024
@@ -46,6 +47,11 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
       context
           .read<CategoryBloc>()
           .add(GetAllCategory(adminId: userBloc.userInfo!.adminId));
+
+      // Getting all goal details
+      context
+          .read<GoalBloc>()
+          .add(GetGoal(adminId: userBloc.userInfo!.adminId));
     }
     super.initState();
   }

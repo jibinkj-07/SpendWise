@@ -3,6 +3,7 @@ import 'package:provider/single_child_widget.dart';
 import '../../../features/common/presentation/bloc/category_bloc.dart';
 import '../../../features/common/presentation/bloc/expense_bloc.dart';
 import '../../../features/mobile_view/auth/presentation/bloc/auth_bloc.dart';
+import '../../../features/mobile_view/goal/presentation/bloc/goal_bloc.dart';
 import '../injection/injection_container.dart';
 
 sealed class BlocProviders {
@@ -10,5 +11,6 @@ sealed class BlocProviders {
         BlocProvider<AuthBloc>(create: (_) => sl<AuthBloc>()),
         BlocProvider<ExpenseBloc>(create: (_) => sl<ExpenseBloc>()),
         BlocProvider<CategoryBloc>(create: (_) => sl<CategoryBloc>()),
+        BlocProvider<GoalBloc>(create: (_) => sl<GoalBloc>()),
       ];
 }

@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:either_dart/either.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:my_budget/core/util/error/failure.dart';
-import 'package:my_budget/features/common/data/model/user_model.dart';
 
 import '../../domain/repo/category_repo.dart';
 import '../data_source/category_fb_data_source.dart';
