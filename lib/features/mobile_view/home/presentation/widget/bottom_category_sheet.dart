@@ -65,44 +65,51 @@ class _BottomCategorySheetState extends State<BottomCategorySheet> {
           padding: const EdgeInsets.all(15.0),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text("Cancel"),
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              CategoryAddScreen(refreshData: _initCategory),
+              Material(
+                color: Colors.transparent,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("Cancel"),
                         ),
-                      );
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppConstants.kAppColor,
+                        TextButton(
+                          onPressed: () async {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => CategoryAddScreen(
+                                    refreshData: _initCategory),
+                              ),
+                            );
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppConstants.kAppColor,
+                          ),
+                          child: const Text(
+                            "Add",
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ],
                     ),
-                    child: const Text(
-                      "Add",
-                      style: TextStyle(fontWeight: FontWeight.w500),
+                    TextField(
+                      controller: searchController,
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        labelText: 'Search',
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
+                      onChanged: _filterItems,
                     ),
-                  ),
-                ],
-              ),
-              TextField(
-                controller: searchController,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  labelText: 'Search',
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
+                  ],
                 ),
-                onChanged: _filterItems,
               ),
               const SizedBox(height: 10),
               Expanded(
