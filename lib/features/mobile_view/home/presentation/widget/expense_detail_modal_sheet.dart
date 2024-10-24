@@ -64,145 +64,167 @@ class _ExpenseDetailModalSheetState extends State<ExpenseDetailModalSheet> {
                     onPressed: () => Navigator.pop(context),
                     child: const Text("Cancel"),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.expenseModel.title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20.0,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 8.0,
-                                backgroundColor: AppHelper.hexToColor(
-                                  widget.expenseModel.category.color,
-                                ),
-                              ),
-                              const SizedBox(width: 5.0),
-                              Text(widget.expenseModel.category.title)
-                            ],
-                          )
-                        ],
-                      ),
-                      Text(
-                        AppHelper.amountFormatter(widget.expenseModel.amount),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.0,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8.0),
-                  Text(widget.expenseModel.description),
-                  const SizedBox(height: 8.0),
-                  Container(
-                    padding: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Column(
                       children: [
-                        Text(widget.expenseModel.createdUser.name),
-                        Text(
-                          DateFormat.MMMEd().add_jm().format(
-                                DateTime.fromMillisecondsSinceEpoch(
-                                  int.parse(widget.expenseModel.id),
-                                ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              flex: 2,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.expenseModel.title,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20.0,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        margin:
+                                            const EdgeInsets.only(right: 10.0),
+                                        width: 5.0,
+                                        height: 30.0,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                          color: AppHelper.hexToColor(
+                                            widget.expenseModel.category.color,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(widget.expenseModel.category.title)
+                                    ],
+                                  )
+                                ],
                               ),
+                            ),
+                            Flexible(
+                              flex: 1,
+                              child: Text(
+                                AppHelper.amountFormatter(
+                                    widget.expenseModel.amount),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20.0,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
+                        const SizedBox(height: 8.0),
+                        Text(widget.expenseModel.description),
+                        const SizedBox(height: 8.0),
+                        Container(
+                          padding: const EdgeInsets.all(10.0),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade50,
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(widget.expenseModel.createdUser.name),
+                              Text(
+                                DateFormat.MMMEd().add_jm().format(
+                                      DateTime.fromMillisecondsSinceEpoch(
+                                        int.parse(widget.expenseModel.id),
+                                      ),
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        GridView.builder(
+                          padding: const EdgeInsets.all(10.0),
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          // controller: scrollController,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            mainAxisSpacing: 10.0,
+                            crossAxisSpacing: 10.0,
+                          ),
+                          itemBuilder: (ctx, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => ImagePreview(
+                                      name: widget.expenseModel.title,
+                                      url: widget.expenseModel.documents[index],
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: CachedNetworkImage(
+                                imageUrl: widget.expenseModel.documents[index],
+                                fit: BoxFit.fill,
+                              ),
+                            );
+                          },
+                          itemCount: widget.expenseModel.documents.length,
+                        ),
+                        ValueListenableBuilder(
+                            valueListenable: _loading,
+                            builder: (ctx, loading, _) {
+                              return LoadingButton(
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (ctx) {
+                                        return AlertDialog(
+                                          title: const Text("Delete"),
+                                          content: const Text(
+                                              "Are you sure want to delete this expense?"),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(ctx),
+                                              child: const Text("Cancel"),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                log("Deleting ${widget.expenseModel.id}");
+                                                Navigator.pop(ctx);
+                                                context.read<ExpenseBloc>().add(
+                                                      DeleteExpense(
+                                                        adminId: context
+                                                            .read<AuthBloc>()
+                                                            .state
+                                                            .userInfo!
+                                                            .adminId,
+                                                        expense:
+                                                            widget.expenseModel,
+                                                      ),
+                                                    );
+                                              },
+                                              style: TextButton.styleFrom(
+                                                foregroundColor: Colors.red,
+                                              ),
+                                              child: const Text("Delete"),
+                                            )
+                                          ],
+                                        );
+                                      });
+                                },
+                                loading: loading,
+                                isDelete: true,
+                                loadingLabel: "Deleting",
+                                child: const Text("Delete"),
+                              );
+                            }),
                       ],
                     ),
                   ),
-                  GridView.builder(
-                    padding: const EdgeInsets.all(10.0),
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    // controller: scrollController,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 10.0,
-                      crossAxisSpacing: 10.0,
-                    ),
-                    itemBuilder: (ctx, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => ImagePreview(
-                                name: widget.expenseModel.title,
-                                url: widget.expenseModel.documents[index],
-                              ),
-                            ),
-                          );
-                        },
-                        child: CachedNetworkImage(
-                          imageUrl: widget.expenseModel.documents[index],
-                          fit: BoxFit.fill,
-                        ),
-                      );
-                    },
-                    itemCount: widget.expenseModel.documents.length,
-                  ),
-                  ValueListenableBuilder(
-                      valueListenable: _loading,
-                      builder: (ctx, loading, _) {
-                        return LoadingButton(
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (ctx) {
-                                  return AlertDialog(
-                                    title: const Text("Delete"),
-                                    content: const Text(
-                                        "Are you sure want to delete this expense?"),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(ctx),
-                                        child: const Text("Cancel"),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          log("Deleting ${widget.expenseModel.id}");
-                                          Navigator.pop(ctx);
-                                          context.read<ExpenseBloc>().add(
-                                                DeleteExpense(
-                                                  adminId: context
-                                                      .read<AuthBloc>()
-                                                      .state
-                                                      .userInfo!
-                                                      .adminId,
-                                                  expense: widget.expenseModel,
-                                                ),
-                                              );
-                                        },
-                                        style: TextButton.styleFrom(
-                                          foregroundColor: Colors.red,
-                                        ),
-                                        child: const Text("Delete"),
-                                      )
-                                    ],
-                                  );
-                                });
-                          },
-                          loading: loading,
-                          isDelete: true,
-                          loadingLabel: "Deleting",
-                          child: const Text("Delete"),
-                        );
-                      }),
                 ],
               ),
             ),

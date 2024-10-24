@@ -29,6 +29,7 @@ dependencies:
   sliver_tools: ^0.2.12
   syncfusion_flutter_charts: ^27.1.53
   flutter_colorpicker: ^1.1.0
+  syncfusion_flutter_gauges: ^27.1.56
 
 dev_dependencies:
   flutter_test:

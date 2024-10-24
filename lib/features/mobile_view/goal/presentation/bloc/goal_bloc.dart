@@ -101,6 +101,13 @@ class GoalBloc extends Bloc<GoalEvent, GoalState> {
             status: GoalStatus.idle));
         return;
       }
+      if ((state.goals[goalIndex].totalTransactionSum() + event.model.amount) >
+          state.goals[goalIndex].budget) {
+        emit(state.copyWith(
+            error: Failure(message: "Amount is exceeded budget value"),
+            status: GoalStatus.idle));
+        return;
+      }
 
       final result = await _goalRepo.addGoalTransaction(
         model: event.model,
@@ -178,6 +185,7 @@ class GoalBloc extends Bloc<GoalEvent, GoalState> {
   List<GoalModel> _updateGoalTransactions(int goalIndex, dynamic transaction,
       {required bool add}) {
     final goal = state.goals[goalIndex];
+
     final updatedTransactions =
         List<GoalTransactionModel>.from(goal.transactions);
 

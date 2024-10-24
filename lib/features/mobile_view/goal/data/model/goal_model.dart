@@ -1,5 +1,3 @@
-import 'package:firebase_database/firebase_database.dart';
-import 'package:my_budget/features/common/data/model/user_model.dart';
 import 'package:my_budget/features/mobile_view/goal/data/model/goal_transaction_model.dart';
 
 class GoalModel {
@@ -31,6 +29,11 @@ class GoalModel {
         budget: budget ?? this.budget,
         title: title ?? this.title,
         transactions: transactions ?? this.transactions,
+      );
+
+  double totalTransactionSum() => transactions.fold(
+        0,
+        (prev, element) => prev + element.amount,
       );
 
   Map<String, dynamic> toFirebaseJson() => {

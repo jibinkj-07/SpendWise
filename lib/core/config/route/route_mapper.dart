@@ -9,4 +9,5 @@ sealed class RouteMapper {
   static const String categoryScreen = '/category-screen';
   static const String manageAccess = '/manage-access-screen';
   static const String addMember = '/add-member-screen';
+  static const String createGoal = '/crate-goal-screen';
 }

@@ -13,8 +13,13 @@ import '../../../../core/util/helper/app_helper.dart';
 
 class NoAccess extends StatelessWidget {
   final bool isEmpty;
+  final String message;
 
-  const NoAccess({super.key, this.isEmpty = false});
+  const NoAccess({
+    super.key,
+    this.isEmpty = false,
+    this.message = "",
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +35,7 @@ class NoAccess extends StatelessWidget {
           ),
           const SizedBox(height: 20.0),
           if (isEmpty)
-            const Text("No data found")
+            Text(message.isEmpty ? "No data found" : message)
           else ...[
             const Text("Contact admin to get access"),
             const SizedBox(height: 10.0),

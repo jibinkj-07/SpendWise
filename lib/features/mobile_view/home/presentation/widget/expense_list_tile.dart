@@ -45,15 +45,13 @@ class ExpenseListTile extends StatelessWidget {
           ),
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: expense.description.isNotEmpty
-            ? Text(
-                expense.description,
-                style: const TextStyle(
-                  fontSize: 13.0,
-                ),
-                overflow: TextOverflow.ellipsis,
-              )
-            : null,
+        subtitle: Text(
+          expense.category.title,
+          style: const TextStyle(
+            fontSize: 11.0,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
         trailing: Text(
           AppHelper.amountFormatter(expense.amount),
           style: const TextStyle(

@@ -90,7 +90,22 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
                     return const SizedBox.shrink();
                   },
                 )
-              : null,
+              : index == 2
+                  ? BlocBuilder<GoalBloc, GoalState>(
+                      builder: (ctx, state) {
+                        if (state.goals.isEmpty) {
+                          return FloatingActionButton.extended(
+                            onPressed: () => Navigator.pushNamed(
+                              context,
+                              RouteMapper.createGoal,
+                            ),
+                            label: const Text("Set Goal"),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    )
+                  : null,
         );
       },
     );
