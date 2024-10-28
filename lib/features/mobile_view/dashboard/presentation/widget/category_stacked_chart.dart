@@ -34,18 +34,26 @@ class CategoryStackedLineChart extends StatelessWidget {
             );
 
             return Container(
+              height: MediaQuery.sizeOf(context).height * .3,
               margin:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
-              padding: const EdgeInsets.all(4.0),
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
               decoration: BoxDecoration(
                 color: Colors.white,
-                border: Border.all(color: Colors.black12, width: 1),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10.0,
+                    spreadRadius: 0,
+                    offset: Offset(0, 5),
+                  ),
+                ],
                 borderRadius: BorderRadius.circular(15.0),
               ),
               child: SfCartesianChart(
                 plotAreaBorderWidth: 0,
                 title: const ChartTitle(
-                  text: 'Category Trends Over a Year',
+                  text: 'Category Trends',
                   textStyle: TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize: 13.0,
@@ -60,21 +68,7 @@ class CategoryStackedLineChart extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                primaryYAxis: NumericAxis(
-                  majorGridLines:
-                      const MajorGridLines(color: Colors.transparent),
-                  minorGridLines:
-                      const MinorGridLines(color: Colors.transparent),
-                  majorTickLines: const MajorTickLines(width: 0.0),
-                  numberFormat: NumberFormat.currency(
-                    symbol: '€',
-                    decimalDigits: 0,
-                  ),
-                  labelStyle: const TextStyle(
-                    fontSize: 10.0,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                primaryYAxis: const NumericAxis(isVisible: false),
                 series: <CartesianSeries>[
                   for (final data in chartData)
                     SplineSeries<ChartData, String>(

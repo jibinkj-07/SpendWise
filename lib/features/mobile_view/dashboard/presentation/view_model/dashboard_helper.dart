@@ -10,6 +10,42 @@ import '../../../../common/data/model/category_model.dart';
 import '../../../../common/presentation/bloc/category_bloc.dart';
 
 sealed class DashboardHelper {
+  static List<ChartData> getMonthWiseChartData(List<ExpenseModel> expenses) {
+    List<ChartData> items = [];
+    Map<DateTime, double> monthData = {};
+    for (final item in expenses) {
+      if (monthData.containsKey(item.date)) {
+        monthData[item.date] = monthData[item.date]! + item.amount;
+      } else {
+        monthData[item.date] = item.amount;
+      }
+    }
+    items = monthData.entries.map((entry) {
+      return ChartData(DateFormat.MMMEd().format(entry.key), entry.value);
+    }).toList();
+    return items;
+  }
+
+  static List<ChartData> getUserWiseChartData(List<ExpenseModel> expenses) {
+    List<ChartData> items = [];
+    Map<String, double> userData = {};
+    for (final item in expenses) {
+      if (userData.containsKey(item.createdUser.uid)) {
+        userData[item.createdUser.uid] =
+            userData[item.createdUser.uid]! + item.amount;
+      } else {
+        userData[item.createdUser.uid] = item.amount;
+      }
+    }
+    items = userData.entries.map((entry) {
+      final item =
+          expenses.firstWhere((item) => item.createdUser.uid == entry.key);
+
+      return ChartData(item.createdUser.name, entry.value);
+    }).toList();
+    return items;
+  }
+
   static List<ChartData> getYearWiseFinanceData(
       {required List<ExpenseModel> list}) {
     // Create a map to store monthly totals
@@ -128,16 +164,33 @@ sealed class DashboardHelper {
     );
   }
 
-  static MapEntry<String, double> getTopExpensiveMonth(
+  static MapEntry<String, double> getTopExpensiveItem(
       List<ExpenseModel> expenses) {
-    final yearData = getYearWiseFinanceData(list: expenses);
-    String month = "";
+    double sum = 0.0;
+    String name = "";
+    for (final item in expenses) {
+      if (item.amount > sum) {
+        name = item.title;
+        sum = item.amount;
+      }
+    }
+    return MapEntry(name, sum);
+  }
+
+  static MapEntry<String, double> getTopExpensiveMonthOrDay(
+    List<ExpenseModel> expenses,
+    bool isMonthView,
+  ) {
+    final yearData = isMonthView
+        ? getMonthWiseChartData(expenses)
+        : getYearWiseFinanceData(list: expenses);
+    String monthOrDay = "";
     double maxExpense = 0;
 
     for (final item in yearData) {
       if (item.amount > maxExpense) {
         maxExpense = item.amount;
-        month = item.xValue;
+        monthOrDay = item.xValue;
       }
     }
     Map<String, String> months = {
@@ -156,7 +209,7 @@ sealed class DashboardHelper {
     };
 
     return MapEntry(
-      months[month.toLowerCase()] ?? "Unknown",
+      isMonthView ? monthOrDay : months[monthOrDay.toLowerCase()] ?? "Unknown",
       maxExpense,
     );
   }

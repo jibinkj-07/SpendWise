@@ -50,11 +50,15 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
     return ValueListenableBuilder(
       valueListenable: _index,
       builder: (ctx, index, _) {
-        return Scaffold(
-          appBar: MyAppBar(index: index),
-          body: _views[index],
-          bottomNavigationBar: NavBar(selectedIndex: index, index: _index),
-          floatingActionButton: FloatingButton(index: index),
+        return PopScope(
+          canPop: index == 0,
+          onPopInvokedWithResult: (_, __) => _index.value = 0,
+          child: Scaffold(
+            appBar: MyAppBar(index: index),
+            body: _views[index],
+            bottomNavigationBar: NavBar(selectedIndex: index, index: _index),
+            floatingActionButton: FloatingButton(index: index),
+          ),
         );
       },
     );

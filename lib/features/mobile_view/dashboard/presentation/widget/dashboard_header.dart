@@ -74,7 +74,7 @@ class _DashboardHeaderState extends State<DashboardHeader> {
                   return Text(
                     AppHelper.amountFormatter(sum),
                     style: const TextStyle(
-                      fontSize: 28.0,
+                      fontSize: 30.0,
                       fontWeight: FontWeight.w900,
                     ),
                   );
@@ -102,7 +102,6 @@ class _DashboardHeaderState extends State<DashboardHeader> {
                     },
                   ),
                 ),
-                context,
               );
             },
             style: FilledButton.styleFrom(
@@ -129,16 +128,17 @@ class _DashboardHeaderState extends State<DashboardHeader> {
     );
   }
 
-  void _showDialog(Widget child, BuildContext context) {
+  void _showDialog(Widget child) {
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => Container(
-        height: MediaQuery.sizeOf(context).height * .35,
-        padding: const EdgeInsets.all(8.0),
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
+        height: MediaQuery.sizeOf(context).height * .4,
+        padding: const EdgeInsets.all(15.0),
+        margin: const EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.0),
+          color: Colors.white,
         ),
-        color: CupertinoColors.systemBackground.resolveFrom(context),
         child: SafeArea(
           top: false,
           child: ValueListenableBuilder(
@@ -148,46 +148,50 @@ class _DashboardHeaderState extends State<DashboardHeader> {
                 children: [
                   Expanded(child: isMonth ? _buildMonthPicker() : child),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      OutlinedButton(
-                        onPressed: () => _isMonth.value = !_isMonth.value,
-                        child: Text(isMonth ? "Year" : "Month"),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => _isMonth.value = !_isMonth.value,
+                          child: Text(isMonth ? "Year" : "Month"),
+                        ),
                       ),
-                      FilledButton(
-                        onPressed: () {
-                          widget.viewOption.value = MapEntry(
-                            _selectedDate,
-                            _isMonth.value,
-                          );
-                          if (_isMonth.value) {
-                            widget.expenseList.value = context
-                                .read<ExpenseBloc>()
-                                .state
-                                .expenseList
-                                .where(
-                                  (item) => (item.date.year ==
-                                          _selectedDate.year &&
-                                      item.date.month == _selectedDate.month),
-                                )
-                                .toList();
-                          } else {
-                            widget.expenseList.value = context
-                                .read<ExpenseBloc>()
-                                .state
-                                .expenseList
-                                .where(
-                                  (item) =>
-                                      item.date.year == _selectedDate.year,
-                                )
-                                .toList();
-                          }
-                          Navigator.pop(context);
-                        },
-                        child: const Text("Done"),
+                      const SizedBox(width: 10.0),
+                      Expanded(
+                        child: FilledButton(
+                          onPressed: () {
+                            widget.viewOption.value = MapEntry(
+                              _selectedDate,
+                              _isMonth.value,
+                            );
+                            if (_isMonth.value) {
+                              widget.expenseList.value = context
+                                  .read<ExpenseBloc>()
+                                  .state
+                                  .expenseList
+                                  .where(
+                                    (item) => (item.date.year ==
+                                            _selectedDate.year &&
+                                        item.date.month == _selectedDate.month),
+                                  )
+                                  .toList();
+                            } else {
+                              widget.expenseList.value = context
+                                  .read<ExpenseBloc>()
+                                  .state
+                                  .expenseList
+                                  .where(
+                                    (item) =>
+                                        item.date.year == _selectedDate.year,
+                                  )
+                                  .toList();
+                            }
+                            Navigator.pop(context);
+                          },
+                          child: const Text("Done"),
+                        ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               );
             },

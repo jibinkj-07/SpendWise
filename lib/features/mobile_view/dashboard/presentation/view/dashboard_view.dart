@@ -6,6 +6,7 @@ import 'package:my_budget/features/mobile_view/dashboard/presentation/widget/cat
 import 'package:my_budget/features/mobile_view/dashboard/presentation/widget/dashboard_header.dart';
 import 'package:my_budget/features/mobile_view/dashboard/presentation/widget/month_bar_chart.dart';
 import 'package:my_budget/features/mobile_view/dashboard/presentation/widget/top_expenses.dart';
+import 'package:my_budget/features/mobile_view/dashboard/presentation/widget/user_chart.dart';
 import '../../../../common/data/model/expense_model.dart';
 import '../../../../common/presentation/bloc/expense_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -71,6 +72,7 @@ class _DashboardViewState extends State<DashboardView> {
                                 expenseList: expenses,
                                 viewOption: _viewOption,
                               ),
+
                               MonthBarChart(
                                 viewOption: _viewOption,
                                 expenseList: expenses,
@@ -80,6 +82,7 @@ class _DashboardViewState extends State<DashboardView> {
                                 expenseList: expenses,
                                 viewOption: _viewOption,
                               ),
+                              UserChart(expenseList: expenses),
                             ],
                           )
                         : const NoAccess(isEmpty: true);
