@@ -31,6 +31,9 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
         case UpdateDate():
           await _updateDate(event, emit);
           break;
+        case UpdateFilter():
+          await _updateFilter(event, emit);
+          break;
       }
     });
   }
@@ -47,7 +50,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
         emit(
           state.copyWith(
             expenseStatus: ExpenseStatus.idle,
-            expenseList: result.right,
+            expenseList: _sortList(result.right, state.expenseFilter),
             error: null,
           ),
         );
@@ -94,7 +97,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
         emit(
           state.copyWith(
             expenseStatus: ExpenseStatus.added,
-            expenseList: updatedList,
+            expenseList: _sortList(updatedList, state.expenseFilter),
             error: null,
           ),
         );
@@ -103,12 +106,9 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       }
     } catch (e) {
       log("er[_addExpense][expense_bloc.dart] $e");
-      emit(
-        ExpenseState.error(
-          Failure(message: "An unexpected error occurred"),
-          existingDate: state.selectedDate,
-        ),
-      );
+      emit(state.copyWith(
+        error: Failure(message: "An unexpected error occurred"),
+      ));
     }
   }
 
@@ -126,7 +126,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
         emit(
           state.copyWith(
             expenseStatus: ExpenseStatus.deleted,
-            expenseList: updatedList,
+            expenseList: _sortList(updatedList, state.expenseFilter),
             error: null,
           ),
         );
@@ -135,12 +135,53 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       }
     } catch (e) {
       log("er[_deleteExpense][expense_bloc.dart] $e");
+      emit(state.copyWith(
+        error: Failure(message: "An unexpected error occurred"),
+      ));
+    }
+  }
+
+  Future<void> _updateFilter(
+      UpdateFilter event, Emitter<ExpenseState> emit) async {
+    try {
       emit(
-        ExpenseState.error(
-          Failure(message: "An unexpected error occurred"),
-          existingDate: state.selectedDate,
+        state.copyWith(
+          expenseList: _sortList(state.expenseList, event.expenseFilter),
+          expenseFilter: event.expenseFilter,
         ),
       );
+    } catch (e) {
+      log("er[_updateFilter][expense_bloc.dart] $e");
+      emit(
+        state.copyWith(
+          error: Failure(message: "An unexpected error occurred"),
+        ),
+      );
+    }
+  }
+
+  List<ExpenseModel> _sortList(List<ExpenseModel> list, ExpenseFilter filter) {
+    switch (filter) {
+      case ExpenseFilter.ascending:
+        {
+          list.sort((a, b) => a.date.compareTo(b.date));
+          return List.from(list);
+        }
+      case ExpenseFilter.descending:
+        {
+          list.sort((a, b) => b.date.compareTo(a.date));
+          return List.from(list);
+        }
+      case ExpenseFilter.most:
+        {
+          list.sort((a, b) => b.amount.compareTo(a.amount));
+          return List.from(list);
+        }
+      case ExpenseFilter.least:
+        {
+          list.sort((a, b) => a.amount.compareTo(b.amount));
+          return List.from(list);
+        }
     }
   }
 

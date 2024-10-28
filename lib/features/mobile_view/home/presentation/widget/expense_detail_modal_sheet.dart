@@ -62,7 +62,7 @@ class _ExpenseDetailModalSheetState extends State<ExpenseDetailModalSheet> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text("Cancel"),
+                    child: const Text("Close"),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(5.0),
@@ -119,9 +119,15 @@ class _ExpenseDetailModalSheetState extends State<ExpenseDetailModalSheet> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8.0),
-                        Text(widget.expenseModel.description),
-                        const SizedBox(height: 8.0),
+                        const SizedBox(height: 15.0),
+                        SizedBox(
+                          width: double.infinity,
+                          child: Text(
+                            widget.expenseModel.description,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        const SizedBox(height: 15.0),
                         Container(
                           padding: const EdgeInsets.all(10.0),
                           decoration: BoxDecoration(

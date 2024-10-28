@@ -5,6 +5,7 @@ import 'package:my_budget/core/util/widgets/loading_button.dart';
 import 'package:my_budget/core/util/widgets/outlined_text_field.dart';
 import 'package:my_budget/features/common/data/model/category_model.dart';
 import 'package:my_budget/features/mobile_view/auth/presentation/util/auth_helper.dart';
+import '../../../../../core/util/widgets/form_text_field.dart';
 import '../../../../common/presentation/bloc/category_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 
@@ -61,57 +62,63 @@ class _CategoryAddScreenState extends State<CategoryAddScreen> {
         },
         child: Form(
           key: _formKey,
-          child: Padding(
+          child: ListView(
             padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AuthHelper.formTitle(title: "Category Name"),
-                OutlinedTextField(
-                  textFieldKey: "name",
-                  inputAction: TextInputAction.done,
-                  maxLength: 50,
-                  textCapitalization: TextCapitalization.words,
-                  maxLines: 1,
-                  validator: (value) {
-                    if (value.toString().trim().isEmpty) {
-                      return "Category name is empty";
-                    }
-                    return null;
-                  },
-                  onSaved: (value) => _category = value.toString().trim(),
-                ),
-                AuthHelper.formTitle(title: "Category Color"),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ValueListenableBuilder(
-                      valueListenable: _selectedColor,
-                      builder: (ctx, color, _) {
-                        return CircleAvatar(
-                          backgroundColor: color,
-                          radius: 20.0,
-                        );
-                      },
+            children: [
+              OutlinedTextField(
+                textFieldKey: "name",
+                maxLength: 50,
+                maxLines: 1,
+                hintText: "Category name",
+                inputAction: TextInputAction.done,
+                textCapitalization: TextCapitalization.words,
+                validator: (value) {
+                  if (value.toString().trim().isEmpty) {
+                    return "Name is empty";
+                  }
+                  return null;
+                },
+                onSaved: (value) => _category = value.toString().trim(),
+              ),
+              const SizedBox(height: 20.0),
+              ValueListenableBuilder(
+                valueListenable: _selectedColor,
+                builder: (ctx, color, _) {
+                  bool isDark = color.computeLuminance() < 0.5;
+                  return FilledButton.icon(
+                    onPressed: () => _showColorPickerDialog(context),
+                    icon: Icon(
+                      Icons.category_outlined,
+                      color: isDark ? Colors.white70 : Colors.black87,
                     ),
-                    OutlinedButton(
-                      onPressed: () async {
-                        _showColorPickerDialog(context);
-                      },
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                    style: FilledButton.styleFrom(backgroundColor: color),
+                    label: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ValueListenableBuilder(
+                          valueListenable: _selectedColor,
+                          builder: (ctx, color, _) {
+                            return Text(
+                              "Color",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: isDark ? Colors.white : Colors.black,
+                              ),
+                            );
+                          },
                         ),
-                        side: BorderSide(color: Colors.blue.shade200),
-                        foregroundColor: Colors.blue,
-                        padding: const EdgeInsets.all(15.0),
-                      ),
-                      child: const Text("Pick Color"),
+                        Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: isDark ? Colors.white70 : Colors.black87,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                const SizedBox(height: 25.0),
-                ValueListenableBuilder(
+                  );
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: ValueListenableBuilder(
                   valueListenable: _loading,
                   builder: (ctx, loading, _) {
                     return LoadingButton(
@@ -122,8 +129,8 @@ class _CategoryAddScreenState extends State<CategoryAddScreen> {
                     );
                   },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

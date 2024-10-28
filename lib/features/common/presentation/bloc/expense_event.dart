@@ -55,3 +55,14 @@ class DeleteExpense extends ExpenseEvent {
   @override
   List<Object?> get props => [adminId, expense];
 }
+
+class UpdateFilter extends ExpenseEvent {
+  final ExpenseFilter expenseFilter;
+
+  const UpdateFilter({
+    required this.expenseFilter,
+  });
+
+  @override
+  List<Object?> get props => [expenseFilter];
+}

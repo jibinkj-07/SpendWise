@@ -13,6 +13,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       title: Text(MobileViewHelper.getAppBarTitle(index)),
     );

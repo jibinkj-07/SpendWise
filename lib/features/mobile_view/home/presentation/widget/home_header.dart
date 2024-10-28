@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -60,94 +58,127 @@ class _HomeHeaderState extends State<HomeHeader> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 25.0),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 10.0,
+            spreadRadius: 0,
+            offset: Offset(0, 5),
+          ),
+        ],
+        borderRadius: BorderRadius.circular(15.0),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Total Expense"),
+              const Text("Expense"),
+              const SizedBox(height: 10.0),
               Text(
                 AppHelper.amountFormatter(_getTotal()),
                 style: const TextStyle(
-                  fontSize: 28.0,
+                  fontSize: 30.0,
                   fontWeight: FontWeight.w900,
                 ),
               ),
             ],
           ),
-          BlocBuilder<ExpenseBloc, ExpenseState>(
-            builder: (ctx, state) {
-              return FilledButton.icon(
-                onPressed: () => _showDialog(
-                  CupertinoPicker(
-                    magnification: 1.22,
-                    squeeze: 1.2,
-                    useMagnifier: true,
-                    itemExtent: _kItemExtent,
-                    scrollController: FixedExtentScrollController(
-                      initialItem: _monthNames.indexOf(_selectedMonth.value),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Month"),
+              const SizedBox(height: 10.0),
+              BlocBuilder<ExpenseBloc, ExpenseState>(
+                builder: (ctx, state) {
+                  return FilledButton.icon(
+                    onPressed: () => _showDialog(CupertinoPicker(
+                      magnification: 1.22,
+                      squeeze: 1.2,
+                      useMagnifier: true,
+                      itemExtent: _kItemExtent,
+                      scrollController: FixedExtentScrollController(
+                        initialItem: _monthNames.indexOf(_selectedMonth.value),
+                      ),
+                      onSelectedItemChanged: (int selectedItem) =>
+                          _selectedMonth.value =
+                              _monthNames.elementAt(selectedItem),
+                      children: List<Widget>.generate(
+                        _monthNames.length,
+                        (int index) {
+                          return Center(child: Text(_monthNames[index]));
+                        },
+                      ),
+                    )),
+                    style: FilledButton.styleFrom(
+                      foregroundColor: Colors.blue,
+                      backgroundColor: Colors.blue.withOpacity(.15),
                     ),
-                    onSelectedItemChanged: (int selectedItem) => _selectedMonth
-                        .value = _monthNames.elementAt(selectedItem),
-                    children: List<Widget>.generate(
-                      _monthNames.length,
-                      (int index) {
-                        return Center(child: Text(_monthNames[index]));
-                      },
+                    icon: const Icon(Icons.date_range_rounded),
+                    label: Text(
+                      DateFormat.MMMM().format(state.selectedDate),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                  context,
-                ),
-                style: FilledButton.styleFrom(
-                  foregroundColor: Colors.blue,
-                  backgroundColor: Colors.blue.withOpacity(.15),
-                ),
-                icon: const Icon(Icons.date_range_rounded),
-                label: Text(
-                  DateFormat.MMMM().format(state.selectedDate),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15.0,
-                  ),
-                ),
-              );
-            },
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  void _showDialog(Widget child, BuildContext context) {
+  void _showDialog(Widget child) {
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => Container(
-        height: MediaQuery.sizeOf(context).height * .35,
-        padding: const EdgeInsets.all(8.0),
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
+        height: MediaQuery.sizeOf(context).height * .4,
+        padding: const EdgeInsets.all(15.0),
+        margin: const EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.0),
+          color: Colors.white,
         ),
-        color: CupertinoColors.systemBackground.resolveFrom(context),
         child: SafeArea(
           top: false,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Expanded(child: child),
-              FilledButton(
-                onPressed: () {
-                  final userBloc = context.read<AuthBloc>().state;
-                  context.read<ExpenseBloc>().add(UpdateDate(
-                      date: DateTime(
-                        widget.selectedDate.year,
-                        _monthNames.indexOf(_selectedMonth.value) + 1,
-                      ),
-                      adminId: userBloc.userInfo?.adminId ?? ""));
-                  Navigator.pop(context);
-                },
-                child: const Text("Done"),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("Cancel"),
+                    ),
+                  ),
+                  const SizedBox(width: 10.0),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () {
+                        final userBloc = context.read<AuthBloc>().state;
+                        context.read<ExpenseBloc>().add(UpdateDate(
+                            date: DateTime(
+                              widget.selectedDate.year,
+                              _monthNames.indexOf(_selectedMonth.value) + 1,
+                            ),
+                            adminId: userBloc.userInfo?.adminId ?? ""));
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Done"),
+                    ),
+                  ),
+                ],
               )
             ],
           ),

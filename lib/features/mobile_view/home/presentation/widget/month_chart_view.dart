@@ -16,13 +16,20 @@ class MonthChartView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: MediaQuery.sizeOf(context).height * .35,
-      margin: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 5.0),
-      padding: const EdgeInsets.only(top: 20.0, right: 5.0, bottom: 10.0),
+      height: MediaQuery.sizeOf(context).height * .28,
+      margin: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: Colors.black12, width: 1),
-        borderRadius: BorderRadius.circular(8.0),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 10.0,
+            spreadRadius: 0,
+            offset: Offset(0, 5),
+          ),
+        ],
+        borderRadius: BorderRadius.circular(15.0),
       ),
       child: SfCartesianChart(
         margin: const EdgeInsets.symmetric(horizontal: 0.0),
@@ -35,14 +42,13 @@ class MonthChartView extends StatelessWidget {
               color: Colors.grey,
             ),
           ),
+          labelStyle: TextStyle(fontSize: 10.0, fontWeight: FontWeight.w500),
           majorTickLines: MajorTickLines(width: 0.0),
           majorGridLines: MajorGridLines(color: Colors.transparent),
         ),
-        primaryYAxis: NumericAxis(
-          majorGridLines: const MajorGridLines(color: Colors.transparent),
-          minorGridLines: const MinorGridLines(color: Colors.transparent),
-          numberFormat: NumberFormat.currency(symbol: '€', decimalDigits: 0),
-          majorTickLines: const MajorTickLines(width: 0.0),
+        primaryYAxis: const NumericAxis(
+          isVisible: false,
+          plotOffsetStart: 5,
         ),
         series: <CartesianSeries>[
           SplineAreaSeries<ChartData, String>(
@@ -50,7 +56,7 @@ class MonthChartView extends StatelessWidget {
             xValueMapper: (ChartData data, _) => data.day,
             yValueMapper: (ChartData data, _) => data.expense,
             borderColor: Colors.blue,
-            borderWidth: 3.0,
+            borderWidth: 2.0,
             splineType: SplineType.cardinal,
             gradient: LinearGradient(
               colors: [

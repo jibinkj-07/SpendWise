@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:my_budget/core/util/helper/app_helper.dart';
 import 'package:my_budget/features/common/data/model/expense_model.dart';
@@ -6,36 +8,97 @@ import 'package:my_budget/features/mobile_view/home/presentation/widget/expense_
 import 'package:my_budget/features/mobile_view/home/presentation/widget/month_chart_view.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
+import '../../../../common/presentation/bloc/expense_bloc.dart';
+
 /// @author : Jibin K John
 /// @date   : 21/10/2024
 /// @time   : 19:05:42
 
-class ExpenseList extends StatelessWidget {
+class ExpenseList extends StatefulWidget {
   final List<ExpenseModel> expenseList;
+  final ExpenseFilter currentFilter;
 
   const ExpenseList({
     super.key,
     required this.expenseList,
+    required this.currentFilter,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final groupedItems = _groupExpenseByDate(expenseList);
-    var sortedMap = Map.fromEntries(
-      groupedItems.entries.toList()..sort((a, b) => b.key.compareTo(a.key)),
-    );
+  State<ExpenseList> createState() => _ExpenseListState();
+}
 
-    return sortedMap.isNotEmpty
+class _ExpenseListState extends State<ExpenseList> {
+  final List<ExpenseFilter> _filters = ExpenseFilter.values;
+  late ValueNotifier<ExpenseFilter> _currentFilter;
+
+  @override
+  void initState() {
+    _currentFilter = ValueNotifier(widget.currentFilter);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final groupedItems = _groupExpenseByDate(widget.expenseList);
+
+    return groupedItems.isNotEmpty
         ? CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
-                child: MonthChartView(expenseList: expenseList),
+                child: MonthChartView(expenseList: widget.expenseList),
               ),
-              for (final dateHeader in sortedMap.entries)
+              SliverToBoxAdapter(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 20.0, bottom: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Transactions",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed: () => _showDialog(
+                          CupertinoPicker(
+                            magnification: 1.22,
+                            squeeze: 1.2,
+                            useMagnifier: true,
+                            itemExtent: 32.0,
+                            scrollController: FixedExtentScrollController(
+                              initialItem:
+                                  _filters.indexOf(widget.currentFilter),
+                            ),
+                            onSelectedItemChanged: (int selectedItem) =>
+                                _currentFilter.value =
+                                    _filters.elementAt(selectedItem),
+                            children: List<Widget>.generate(
+                              _filters.length,
+                              (int index) {
+                                return Center(
+                                  child: Text(
+                                      "${_filters[index].name.substring(0, 1).toUpperCase()}${_filters[index].name.substring(1)}"),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        icon: const Icon(Icons.filter_list_rounded),
+                        label: Text(
+                            "${widget.currentFilter.name.substring(0, 1).toUpperCase()}${widget.currentFilter.name.substring(1)}"),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              for (final dateHeader in groupedItems.entries)
                 Section(
                   title: DateFormat("dd MMMM, EEEE").format(dateHeader.key),
-                  amount:
-                      AppHelper.amountFormatter(_getTotal(dateHeader.value)),
+                  amount: AppHelper.amountFormatter(
+                    _getTotal(dateHeader.value),
+                  ),
                   items: List.generate(
                     dateHeader.value.length,
                     (index) => ExpenseListTile(
@@ -43,9 +106,7 @@ class ExpenseList extends StatelessWidget {
                     ),
                   ),
                 ),
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 100.0),
-              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 100.0)),
             ],
           )
         : const Center(
@@ -85,6 +146,51 @@ class ExpenseList extends StatelessWidget {
     }
     return sum;
   }
+
+  void _showDialog(Widget child) {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) => Container(
+        height: MediaQuery.sizeOf(context).height * .4,
+        padding: const EdgeInsets.all(15.0),
+        margin: const EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.0),
+          color: Colors.white,
+        ),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Expanded(child: child),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("Cancel"),
+                    ),
+                  ),
+                  const SizedBox(width: 10.0),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () {
+                        context.read<ExpenseBloc>().add(
+                            UpdateFilter(expenseFilter: _currentFilter.value));
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Done"),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class Section extends MultiSliver {
@@ -104,7 +210,7 @@ class Section extends MultiSliver {
                     border: const Border(
                       bottom: BorderSide(
                         color: Colors.black26,
-                        width: .5,
+                        width: .2,
                       ),
                     ),
                   ),
@@ -119,7 +225,7 @@ class Section extends MultiSliver {
                         title,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 16.0,
+                          fontSize: 15.0,
                         ),
                       ),
                       Text(

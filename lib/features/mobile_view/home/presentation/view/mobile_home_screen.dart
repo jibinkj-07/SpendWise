@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_budget/core/config/route/route_mapper.dart';
 import 'package:my_budget/features/mobile_view/account/presentation/view/account_view.dart';
 import 'package:my_budget/features/mobile_view/dashboard/presentation/view/dashboard_view.dart';
 import 'package:my_budget/features/mobile_view/goal/presentation/view/goal_view.dart';
@@ -12,6 +11,7 @@ import '../../../../common/presentation/bloc/category_bloc.dart';
 import '../../../../common/presentation/bloc/expense_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../goal/presentation/bloc/goal_bloc.dart';
+import '../widget/floating_button.dart';
 
 /// @author : Jibin K John
 /// @date   : 17/10/2024
@@ -35,6 +35,32 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
 
   @override
   void initState() {
+    _initAppStates();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _index.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: _index,
+      builder: (ctx, index, _) {
+        return Scaffold(
+          appBar: MyAppBar(index: index),
+          body: _views[index],
+          bottomNavigationBar: NavBar(selectedIndex: index, index: _index),
+          floatingActionButton: FloatingButton(index: index),
+        );
+      },
+    );
+  }
+
+  void _initAppStates() {
     // Fetching expense data from firebase when user land this page
     final userBloc = context.read<AuthBloc>().state;
     if (userBloc.userInfo != null && userBloc.userInfo!.adminId.isNotEmpty) {
@@ -53,61 +79,5 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
           .read<GoalBloc>()
           .add(GetGoal(adminId: userBloc.userInfo!.adminId));
     }
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _index.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: _index,
-      builder: (ctx, index, _) {
-        return Scaffold(
-          appBar: MyAppBar(index: index),
-          body: Padding(
-            padding: EdgeInsets.symmetric(horizontal: index == 1 ? 0.0 : 8.0),
-            child: _views[index],
-          ),
-          bottomNavigationBar: NavBar(selectedIndex: index, index: _index),
-          floatingActionButton: (index == 0 || index == 2)
-              ? BlocBuilder<AuthBloc, AuthState>(
-                  builder: (ctx, authState) {
-                    if (authState.userInfo != null &&
-                        authState.userInfo!.adminId.isNotEmpty) {
-                      return index == 0
-                          ? FloatingActionButton(
-                              onPressed: () => Navigator.pushNamed(
-                                context,
-                                RouteMapper.addExpense,
-                              ),
-                              child: const Icon(Icons.add_rounded),
-                            )
-                          : BlocBuilder<GoalBloc, GoalState>(
-                              builder: (ctx, state) {
-                                if (state.goals.isEmpty) {
-                                  return FloatingActionButton.extended(
-                                    onPressed: () => Navigator.pushNamed(
-                                      context,
-                                      RouteMapper.createGoal,
-                                    ),
-                                    label: const Text("Set Goal"),
-                                  );
-                                }
-                                return const SizedBox.shrink();
-                              },
-                            );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                )
-              : null,
-        );
-      },
-    );
   }
 }

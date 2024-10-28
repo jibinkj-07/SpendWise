@@ -17,9 +17,10 @@ class CustomBottomSheet {
       builder: (ctx) {
         return Container(
           width: MediaQuery.sizeOf(context).width,
+          margin: const EdgeInsets.all(10.0),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20.0)),
+            borderRadius: BorderRadius.circular(20.0),
           ),
           child: Material(
             color: Colors.transparent,
@@ -51,7 +52,8 @@ class CustomBottomSheet {
                     Navigator.of(ctx).pop();
                     onTakePhoto();
                   },
-                  leading: Icon(Icons.camera_alt_rounded, color: Theme.of(context).primaryColor),
+                  leading: Icon(Icons.camera_alt_rounded,
+                      color: Theme.of(context).primaryColor),
                   trailing: const Icon(
                     Icons.arrow_forward_ios_rounded,
                     size: 15.0,
@@ -64,7 +66,13 @@ class CustomBottomSheet {
                     Navigator.of(ctx).pop();
                     onChoosePhoto();
                   },
-                  leading: Icon(Icons.photo_library_rounded, color: Theme.of(context).primaryColor),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(20.0),
+                    ),
+                  ),
+                  leading: Icon(Icons.photo_library_rounded,
+                      color: Theme.of(context).primaryColor),
                   trailing: const Icon(
                     Icons.arrow_forward_ios_rounded,
                     size: 15.0,
