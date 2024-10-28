@@ -32,7 +32,7 @@ class CategoryCharts extends StatelessWidget {
         .toList();
     // Sort the list based on the amount
     chartData.sort((a, b) => a.amount.compareTo(b.amount));
-    double chartHeight = MediaQuery.sizeOf(context).height*.07 * chartData.length;
+    double chartHeight = MediaQuery.sizeOf(context).height*.08 * chartData.length;
     return SizedBox(
       height: chartHeight,
       child: SfCartesianChart(

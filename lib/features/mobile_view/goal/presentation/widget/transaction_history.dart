@@ -56,75 +56,81 @@ class TransactionHistory extends StatelessWidget {
               ),
             ],
           ),
-          for (final transaction in model.transactions)
-            ListTile(
-              leading: CircleAvatar(
-                backgroundColor: GoalHelper.getColorForLetter(
-                  transaction.addedBy.name.substring(0, 1),
-                ),
-                child: Text(
-                  transaction.addedBy.name.substring(0, 1),
-                  style: TextStyle(
-                    color: GoalHelper.isDarkColor(
-                      GoalHelper.getColorForLetter(
-                          transaction.addedBy.name.substring(0, 1)),
-                    )
-                        ? Colors.white
-                        : Colors.black,
+          if (model.transactions.isEmpty)
+            const Padding(
+              padding: EdgeInsets.only(top: 50.0),
+              child: Text("No Transaction details"),
+            )
+          else
+            for (final transaction in model.transactions)
+              ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: GoalHelper.getColorForLetter(
+                    transaction.addedBy.name.substring(0, 1),
+                  ),
+                  child: Text(
+                    transaction.addedBy.name.substring(0, 1),
+                    style: TextStyle(
+                      color: GoalHelper.isDarkColor(
+                        GoalHelper.getColorForLetter(
+                            transaction.addedBy.name.substring(0, 1)),
+                      )
+                          ? Colors.white
+                          : Colors.black,
+                    ),
                   ),
                 ),
-              ),
-              title: Text(
-                AppHelper.amountFormatter(transaction.amount),
-                style: const TextStyle(
-                  fontWeight: FontWeight.w500,
+                title: Text(
+                  AppHelper.amountFormatter(transaction.amount),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-              subtitle: Text(
-                "${transaction.addedBy.name} |"
-                " ${DateFormat("dd-M-y").add_jm().format(transaction.createdOn)}",
-                style: const TextStyle(
-                  fontSize: 13.0,
-                  fontWeight: FontWeight.w500,
+                subtitle: Text(
+                  "${transaction.addedBy.name} |"
+                  " ${DateFormat("dd-M-y").add_jm().format(transaction.createdOn)}",
+                  style: const TextStyle(
+                    fontSize: 13.0,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-              trailing: IconButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (ctx) {
-                        return AlertDialog(
-                          title: const Text("Delete"),
-                          content: const Text(
-                              "Are you sure want to delete this transaction?"),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx),
-                              child: const Text("Cancel"),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(ctx);
-                                context.read<GoalBloc>().add(
-                                      DeleteGoalTransaction(
-                                        adminId: user.adminId,
-                                        goalId: model.id,
-                                        transactionId: transaction.id,
-                                      ),
-                                    );
-                              },
-                              style: TextButton.styleFrom(
-                                foregroundColor: Colors.red,
+                trailing: IconButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) {
+                          return AlertDialog(
+                            title: const Text("Delete"),
+                            content: const Text(
+                                "Are you sure want to delete this transaction?"),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx),
+                                child: const Text("Cancel"),
                               ),
-                              child: const Text("Delete"),
-                            )
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  icon: const Icon(Icons.delete_outline_rounded)),
-            ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(ctx);
+                                  context.read<GoalBloc>().add(
+                                        DeleteGoalTransaction(
+                                          adminId: user.adminId,
+                                          goalId: model.id,
+                                          transactionId: transaction.id,
+                                        ),
+                                      );
+                                },
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Colors.red,
+                                ),
+                                child: const Text("Delete"),
+                              )
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    icon: const Icon(Icons.delete_outline_rounded)),
+              ),
         ],
       ),
     );

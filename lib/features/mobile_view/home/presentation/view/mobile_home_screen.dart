@@ -74,38 +74,38 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
             child: _views[index],
           ),
           bottomNavigationBar: NavBar(selectedIndex: index, index: _index),
-          floatingActionButton: index == 0
+          floatingActionButton: (index == 0 || index == 2)
               ? BlocBuilder<AuthBloc, AuthState>(
                   builder: (ctx, authState) {
                     if (authState.userInfo != null &&
                         authState.userInfo!.adminId.isNotEmpty) {
-                      return FloatingActionButton(
-                        onPressed: () => Navigator.pushNamed(
-                          context,
-                          RouteMapper.addExpense,
-                        ),
-                        child: const Icon(Icons.add_rounded),
-                      );
+                      return index == 0
+                          ? FloatingActionButton(
+                              onPressed: () => Navigator.pushNamed(
+                                context,
+                                RouteMapper.addExpense,
+                              ),
+                              child: const Icon(Icons.add_rounded),
+                            )
+                          : BlocBuilder<GoalBloc, GoalState>(
+                              builder: (ctx, state) {
+                                if (state.goals.isEmpty) {
+                                  return FloatingActionButton.extended(
+                                    onPressed: () => Navigator.pushNamed(
+                                      context,
+                                      RouteMapper.createGoal,
+                                    ),
+                                    label: const Text("Set Goal"),
+                                  );
+                                }
+                                return const SizedBox.shrink();
+                              },
+                            );
                     }
                     return const SizedBox.shrink();
                   },
                 )
-              : index == 2
-                  ? BlocBuilder<GoalBloc, GoalState>(
-                      builder: (ctx, state) {
-                        if (state.goals.isEmpty) {
-                          return FloatingActionButton.extended(
-                            onPressed: () => Navigator.pushNamed(
-                              context,
-                              RouteMapper.createGoal,
-                            ),
-                            label: const Text("Set Goal"),
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      },
-                    )
-                  : null,
+              : null,
         );
       },
     );
