@@ -17,9 +17,10 @@ class ImagePreview extends StatelessWidget {
     final size = MediaQuery.sizeOf(context);
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor:  Colors.black,
+      // backgroundColor:  Colors.black,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor:  Colors.black.withOpacity(.5),
+        backgroundColor: Colors.black.withOpacity(.5),
         title: Text(
           name,
           style: const TextStyle(color: Colors.white),
@@ -46,9 +47,15 @@ class ImagePreview extends StatelessWidget {
                   url,
                   downloadProgress,
                 ) =>
-                    CircularProgressIndicator(
-                  color: AppConstants.kAppColor,
-                  value: downloadProgress.progress,
+                    Center(
+                  child: SizedBox(
+                    height: 80.0,
+                    width: 80.0,
+                    child: CircularProgressIndicator(
+                      color: AppConstants.kAppColor,
+                      value: downloadProgress.progress,
+                    ),
+                  ),
                 ),
                 errorWidget: (
                   context,

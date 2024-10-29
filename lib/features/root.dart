@@ -16,6 +16,22 @@ class Root extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (MediaQuery.sizeOf(context).width > 600) {
+      return Scaffold(
+        body: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(15.0),
+          child: const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                  "Sorry Desktop version of this app is not available right now."),
+              Text("Resize your browser to use Mobile version")
+            ],
+          ),
+        ),
+      );
+    }
     return BlocBuilder<AuthBloc, AuthState>(builder: (ctx, state) {
       if (state.authStatus == AuthStatus.gettingUserInfo) {
         return const LoadingScreen();

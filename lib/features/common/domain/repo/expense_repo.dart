@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:either_dart/either.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/util/error/failure.dart';
 import '../../data/model/expense_model.dart';
@@ -10,7 +9,7 @@ abstract class ExpenseRepo {
   Future<Either<Failure, ExpenseModel>> addExpense({
     required ExpenseModel expenseModel,
     required UserModel user,
-    required List<File> documents,
+    required List<XFile> documents,
   });
 
   Future<Either<Failure, void>> deleteExpense({

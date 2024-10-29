@@ -1,21 +1,18 @@
 import 'dart:io';
-
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:my_budget/core/util/helper/app_helper.dart';
 import 'package:my_budget/core/util/widgets/custom_snackbar.dart';
 import 'package:my_budget/core/util/widgets/form_text_field.dart';
 import 'package:my_budget/core/util/widgets/loading_button.dart';
-import 'package:my_budget/core/util/widgets/outlined_text_field.dart';
 import 'package:my_budget/features/common/data/model/category_model.dart';
 import 'package:my_budget/features/common/data/model/expense_model.dart';
 import 'package:my_budget/features/common/presentation/bloc/expense_bloc.dart';
-import 'package:my_budget/features/mobile_view/auth/presentation/util/auth_helper.dart';
 import 'package:my_budget/features/mobile_view/home/presentation/widget/bottom_category_sheet.dart';
-
+import 'package:my_budget/features/mobile_view/home/presentation/widget/document_view.dart';
 import '../../../../../core/util/widgets/custom_bottom_sheet.dart';
 import '../../../../common/presentation/bloc/category_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -39,7 +36,7 @@ class _ExpenseAddScreenState extends State<ExpenseAddScreen> {
 
   final ValueNotifier<DateTime> _date = ValueNotifier(DateTime.now());
   final ValueNotifier<CategoryModel?> _category = ValueNotifier(null);
-  final ValueNotifier<List<File>> _documents = ValueNotifier([]);
+  final ValueNotifier<List<XFile>> _documents = ValueNotifier([]);
   final ValueNotifier<bool> _loading = ValueNotifier(false);
 
   @override
@@ -275,11 +272,8 @@ class _ExpenseAddScreenState extends State<ExpenseAddScreen> {
                             return Column(
                               children: [
                                 Expanded(
-                                  child: Image.file(
-                                    width: 100.0,
-                                    height: 100.0,
-                                    documents[index],
-                                    fit: BoxFit.cover,
+                                  child: DocumentView(
+                                    image: documents[index],
                                   ),
                                 ),
                                 TextButton(
@@ -385,10 +379,10 @@ class _ExpenseAddScreenState extends State<ExpenseAddScreen> {
   }
 
   void _addImage(XFile image) {
-    _documents.value = [..._documents.value, File(image.path)];
+    _documents.value = [..._documents.value, image];
   }
 
-  void _deleteImage(File image) {
+  void _deleteImage(XFile image) {
     _documents.value = _documents.value.where((item) => item != image).toList();
   }
 }

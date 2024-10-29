@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:either_dart/either.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:my_budget/core/util/helper/firebase_mapper.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
@@ -15,7 +16,7 @@ abstract class ExpenseFbDataSource {
   Future<Either<Failure, ExpenseModel>> addExpense({
     required ExpenseModel expenseModel,
     required UserModel user,
-    required List<File> documents,
+    required List<XFile> documents,
   });
 
   Future<Either<Failure, void>> deleteExpense({
@@ -44,7 +45,7 @@ class ExpenseFbDataSourceImpl implements ExpenseFbDataSource {
   Future<Either<Failure, ExpenseModel>> addExpense({
     required ExpenseModel expenseModel,
     required UserModel user,
-    required List<File> documents,
+    required List<XFile> documents,
   }) async {
     List<String> urls = [];
     try {
@@ -132,26 +133,27 @@ class ExpenseFbDataSourceImpl implements ExpenseFbDataSource {
 
   Future<String> _uploadImage({
     required String path,
-    required File image,
+    required XFile image,
   }) async {
     try {
       final reference = _firebaseStorage.ref(path);
 
       /// Compressing image
-      // Compress the image using the `image` package
-      img.Image? rawImage = img.decodeImage(image.readAsBytesSync());
-      if (rawImage != null) {
-        //  Convert the compressed image back to bytes
-        List<int> compressedBytes =
-            img.encodeJpg(rawImage, quality: 85); // Lossless compression
-
-        // Save the compressed image temporarily before uploading
-        Directory tempDir = await getTemporaryDirectory();
-        String tempPath = '${tempDir.path}/temp_image.jpg';
-        File tempFile = File(tempPath)..writeAsBytesSync(compressedBytes);
-        await reference.putFile(tempFile);
-        return await reference.getDownloadURL();
-      }
+      // // Compress the image using the `image` package
+      // img.Image? rawImage = img.decodeImage(await image.readAsBytes());
+      // if (rawImage != null) {
+      //   //  Convert the compressed image back to bytes
+      //   List<int> compressedBytes =
+      //       img.encodeJpg(rawImage, quality: 85); // Lossless compression
+      //
+      //   // Save the compressed image temporarily before uploading
+      //   Directory tempDir = await getTemporaryDirectory();
+      //   String tempPath = '${tempDir.path}/temp_image.jpg';
+      //   File tempFile = File(tempPath)..writeAsBytesSync(compressedBytes);
+      final metadata = SettableMetadata(contentType: 'image/jpeg');
+      await reference.putData(await image.readAsBytes(), metadata);
+      return await reference.getDownloadURL();
+      // }
       return "";
     } catch (e) {
       log("er: [_uploadImage][inventory_fb_data_source_impl.dart] $e");

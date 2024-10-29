@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:my_budget/core/util/error/failure.dart';
 import 'package:my_budget/features/common/domain/repo/expense_repo.dart';
 

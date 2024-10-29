@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'package:either_dart/either.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:my_budget/core/util/error/failure.dart';
 import 'package:my_budget/features/common/data/data_source/expense_fb_data_source.dart';
@@ -16,7 +16,7 @@ class ExpenseRepoImpl implements ExpenseRepo {
   Future<Either<Failure, ExpenseModel>> addExpense({
     required ExpenseModel expenseModel,
     required UserModel user,
-    required List<File> documents,
+    required List<XFile> documents,
   }) async {
     if (await InternetConnection().hasInternetAccess) {
       return await _expenseFbDataSource.addExpense(

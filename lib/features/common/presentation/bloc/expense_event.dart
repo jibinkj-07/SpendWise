@@ -31,7 +31,7 @@ class UpdateDate extends ExpenseEvent {
 class AddExpense extends ExpenseEvent {
   final ExpenseModel expenseModel;
   final UserModel user;
-  final List<File> documents;
+  final List<XFile> documents;
 
   const AddExpense({
     required this.expenseModel,
