@@ -171,7 +171,29 @@ class _AccountViewState extends State<AccountView> {
                             size: 20.0,
                           ),
                         ),
-                      ]
+                      ],
+                      if (state.userInfo!.email == AppConstants.kAppSupportMail)
+                        ListTile(
+                          onTap: () => Navigator.of(context)
+                              .pushNamed(RouteMapper.userAccess),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          leading: const Icon(Icons.security_rounded),
+                          title: const Text("User Access"),
+                          subtitle: const Text(
+                            "Manage SpendWise access for users",
+                            style: TextStyle(
+                              fontSize: 13.0,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          trailing: const Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            color: Colors.blue,
+                            size: 20.0,
+                          ),
+                        )
                     ],
                   ),
                 ),

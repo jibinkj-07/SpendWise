@@ -73,6 +73,72 @@ sealed class AccountViewModel {
     }
   }
 
+  static Future<Either<Failure, void>> grantAccess(
+      {required String memberEmail}) async {
+    String memberId = "";
+    if (await InternetConnection().hasInternetAccess) {
+      try {
+        final data =
+            await FirebaseDatabase.instance.ref(FirebaseMapper.userNode).get();
+        for (final user in data.children) {
+          if (user.child("email").value.toString() == memberEmail) {
+            memberId = user.key.toString();
+          }
+        }
+
+        if (memberId.isEmpty) {
+          return Left(Failure(message: "No user found with provided email"));
+        } else {
+          await FirebaseDatabase.instance
+              .ref(FirebaseMapper.userPath(memberId))
+              .update(
+            {"admin_id": memberId},
+          );
+
+          return const Right(null);
+        }
+      } catch (e) {
+        log("er[account_view_model.dart][grantAccess] $e");
+        return Left(Failure(message: "Something went wrong"));
+      }
+    } else {
+      return Left(Failure(message: "Check your internet connection"));
+    }
+  }
+
+  static Future<Either<Failure, void>> revokeAccess(
+      {required String memberEmail}) async {
+    String memberId = "";
+    if (await InternetConnection().hasInternetAccess) {
+      try {
+        final data =
+            await FirebaseDatabase.instance.ref(FirebaseMapper.userNode).get();
+        for (final user in data.children) {
+          if (user.child("email").value.toString() == memberEmail) {
+            memberId = user.key.toString();
+          }
+        }
+
+        if (memberId.isEmpty) {
+          return Left(Failure(message: "No user found with provided email"));
+        } else {
+          await FirebaseDatabase.instance
+              .ref(FirebaseMapper.userPath(memberId))
+              .update(
+            {"admin_id": ""},
+          );
+
+          return const Right(null);
+        }
+      } catch (e) {
+        log("er[account_view_model.dart][revokeAccess] $e");
+        return Left(Failure(message: "Something went wrong"));
+      }
+    } else {
+      return Left(Failure(message: "Check your internet connection"));
+    }
+  }
+
   static Future<Either<Failure, void>> deleteMember({
     required String memberId,
     required String adminId,

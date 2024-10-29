@@ -10,6 +10,7 @@ import 'package:my_budget/features/mobile_view/goal/presentation/view/create_goa
 import 'package:my_budget/features/mobile_view/goal/presentation/view/create_transaction_screen.dart';
 import 'package:my_budget/features/mobile_view/home/presentation/view/expense_add_screen.dart';
 import 'package:my_budget/features/mobile_view/home/presentation/view/mobile_home_screen.dart';
+import '../../../features/mobile_view/account/presentation/view/user_access.dart';
 import '../../../features/root.dart';
 import 'error_route.dart';
 import 'route_mapper.dart';
@@ -39,6 +40,8 @@ sealed class AppRoutes {
         return MaterialPageRoute(builder: (_) => const CategoryScreen());
       case RouteMapper.manageAccess:
         return MaterialPageRoute(builder: (_) => const ManageAccessScreen());
+      case RouteMapper.userAccess:
+        return MaterialPageRoute(builder: (_) => const UserAccess());
       case RouteMapper.addMember:
         return MaterialPageRoute(builder: (_) => const AddMemberScreen());
       case RouteMapper.createGoal:
