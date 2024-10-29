@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:my_budget/core/util/helper/app_helper.dart';
 import 'package:my_budget/core/util/widgets/loading_button.dart';
 import 'package:my_budget/features/common/data/model/expense_model.dart';
+import '../../../../common/data/model/category_model.dart';
 import '../../../../common/presentation/bloc/expense_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../view/image_preview.dart';
@@ -17,8 +18,13 @@ import '../view/image_preview.dart';
 
 class ExpenseDetailModalSheet extends StatefulWidget {
   final ExpenseModel expenseModel;
+  final CategoryModel category;
 
-  const ExpenseDetailModalSheet({super.key, required this.expenseModel});
+  const ExpenseDetailModalSheet({
+    super.key,
+    required this.expenseModel,
+    required this.category,
+  });
 
   @override
   State<ExpenseDetailModalSheet> createState() =>
@@ -95,11 +101,11 @@ class _ExpenseDetailModalSheetState extends State<ExpenseDetailModalSheet> {
                                           borderRadius:
                                               BorderRadius.circular(20.0),
                                           color: AppHelper.hexToColor(
-                                            widget.expenseModel.category.color,
+                                            widget.category.color,
                                           ),
                                         ),
                                       ),
-                                      Text(widget.expenseModel.category.title)
+                                      Text(widget.category.title)
                                     ],
                                   )
                                 ],

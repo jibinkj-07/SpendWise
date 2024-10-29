@@ -29,19 +29,12 @@ class FloatingButton extends StatelessWidget {
                         ),
                         child: const Icon(Icons.add_rounded),
                       )
-                    : BlocBuilder<GoalBloc, GoalState>(
-                        builder: (ctx, state) {
-                          if (state.goals.isEmpty) {
-                            return FloatingActionButton.extended(
-                              onPressed: () => Navigator.pushNamed(
-                                context,
-                                RouteMapper.createGoal,
-                              ),
-                              label: const Text("Set Goal"),
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
+                    : FloatingActionButton.extended(
+                        onPressed: () => Navigator.pushNamed(
+                          context,
+                          RouteMapper.createGoal,
+                        ),
+                        label: const Text("Set Goal"),
                       );
               }
               return const SizedBox.shrink();

@@ -51,4 +51,19 @@ class CategoryRepoImpl implements CategoryRepo {
       return Left(Failure(message: "Check your internet connection"));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> updateCategory({
+    required String adminId,
+    required CategoryModel categoryModel,
+  }) async {
+    if (await InternetConnection().hasInternetAccess) {
+      return await _expenseFbDataSource.updateCategory(
+        categoryModel: categoryModel,
+        adminId: adminId,
+      );
+    } else {
+      return Left(Failure(message: "Check your internet connection"));
+    }
+  }
 }

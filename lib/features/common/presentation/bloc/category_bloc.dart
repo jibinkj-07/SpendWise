@@ -25,6 +25,9 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         case DeleteCategory():
           await _deleteCategory(event, emit);
           break;
+        case UpdateCategory():
+          await _updateCategory(event, emit);
+          break;
       }
     });
   }
@@ -104,6 +107,54 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
           ),
         );
       }
+    }
+  }
+
+  Future<void> _updateCategory(
+    UpdateCategory event,
+    Emitter<CategoryState> emit,
+  ) async {
+    emit(state.copyWith(categoryStatus: CategoryStatus.adding));
+    log("called");
+    try {
+      final result = await _categoryRepo.updateCategory(
+        categoryModel: event.categoryModel,
+        adminId: event.adminId,
+      );
+      log("result is $result");
+      if (result.isRight) {
+        final index = state.categoryList
+            .indexWhere((item) => item.id == event.categoryModel.id);
+        log("index is $index");
+        if (index > -1) {
+          final updatedList = List<CategoryModel>.from(state.categoryList);
+          updatedList[index] = event.categoryModel;
+          updatedList.sort((a, b) => b.createdOn.compareTo(a.createdOn));
+
+          emit(
+            state.copyWith(
+              categoryStatus: CategoryStatus.added,
+              categoryList: updatedList,
+              error: null,
+            ),
+          );
+        }
+      } else {
+        emit(
+          state.copyWith(
+            categoryStatus: CategoryStatus.idle,
+            error: result.left,
+          ),
+        );
+      }
+    } catch (e) {
+      log("er[_updateCategory][category_bloc.dart] $e");
+      emit(
+        state.copyWith(
+          categoryStatus: CategoryStatus.idle,
+          error: Failure(message: "An unexpected error occurred"),
+        ),
+      );
     }
   }
 

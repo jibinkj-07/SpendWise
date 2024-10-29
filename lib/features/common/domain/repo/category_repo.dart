@@ -9,6 +9,11 @@ abstract class CategoryRepo {
     required String adminId,
   });
 
+  Future<Either<Failure, void>> updateCategory({
+    required String adminId,
+    required CategoryModel categoryModel,
+  });
+
   Future<Either<Failure, void>> deleteCategory({
     required String adminId,
     required String categoryId,

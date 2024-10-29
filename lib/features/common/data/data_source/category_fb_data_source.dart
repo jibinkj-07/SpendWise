@@ -11,6 +11,11 @@ abstract class CategoryFbDataSource {
     required String adminId,
   });
 
+  Future<Either<Failure, void>> updateCategory({
+    required String adminId,
+    required CategoryModel categoryModel,
+  });
+
   Future<Either<Failure, void>> deleteCategory({
     required String adminId,
     required String categoryId,
@@ -75,6 +80,22 @@ class CategoryFbDataSourceImpl implements CategoryFbDataSource {
       return Right(items);
     } catch (e) {
       log("er[getAllCategory][category_fb_data_source.dart] $e");
+      return Left(Failure(message: "Something went wrong"));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateCategory({
+    required String adminId,
+    required CategoryModel categoryModel,
+  }) async {
+    try {
+      await _firebaseDatabase.ref(FirebaseMapper.categoryPath(adminId)).update(
+            categoryModel.toFirebaseJson(),
+          );
+      return const Right(null);
+    } catch (e) {
+      log("er[updateCategory][category_fb_data_source.dart] $e");
       return Left(Failure(message: "Something went wrong"));
     }
   }

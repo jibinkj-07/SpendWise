@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:my_budget/features/mobile_view/account/presentation/view/category_add_screen.dart';
 
 import '../../../../../core/config/route/route_mapper.dart';
 import '../../../../../core/util/helper/app_helper.dart';
@@ -38,6 +39,14 @@ class CategoryScreen extends StatelessWidget {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 5.0),
                       child: CategoryTile(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => CategoryAddScreen(
+                                  category: state.categoryList[index]),
+                            ),
+                          );
+                        },
                         color: AppHelper.hexToColor(
                           state.categoryList[index].color,
                         ),

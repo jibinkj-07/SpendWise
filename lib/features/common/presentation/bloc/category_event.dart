@@ -26,6 +26,19 @@ class AddCategory extends CategoryEvent {
   List<Object?> get props => [categoryModel, adminId];
 }
 
+class UpdateCategory extends CategoryEvent {
+  final CategoryModel categoryModel;
+  final String adminId;
+
+  const UpdateCategory({
+    required this.categoryModel,
+    required this.adminId,
+  });
+
+  @override
+  List<Object?> get props => [categoryModel, adminId];
+}
+
 class DeleteCategory extends CategoryEvent {
   final String categoryId;
   final String adminId;

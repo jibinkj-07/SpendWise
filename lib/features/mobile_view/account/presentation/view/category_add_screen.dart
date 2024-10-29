@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:my_budget/core/util/helper/app_helper.dart';
 import 'package:my_budget/core/util/widgets/loading_button.dart';
 import 'package:my_budget/core/util/widgets/outlined_text_field.dart';
 import 'package:my_budget/features/common/data/model/category_model.dart';
-import 'package:my_budget/features/mobile_view/auth/presentation/util/auth_helper.dart';
-import '../../../../../core/util/widgets/form_text_field.dart';
 import '../../../../common/presentation/bloc/category_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 
@@ -15,8 +14,13 @@ import '../../../auth/presentation/bloc/auth_bloc.dart';
 
 class CategoryAddScreen extends StatefulWidget {
   final VoidCallback? refreshData;
+  final CategoryModel? category;
 
-  const CategoryAddScreen({super.key, this.refreshData});
+  const CategoryAddScreen({
+    super.key,
+    this.refreshData,
+    this.category,
+  });
 
   @override
   State<CategoryAddScreen> createState() => _CategoryAddScreenState();
@@ -27,6 +31,15 @@ class _CategoryAddScreenState extends State<CategoryAddScreen> {
   final ValueNotifier<bool> _loading = ValueNotifier(false);
   final ValueNotifier<Color> _selectedColor = ValueNotifier(Colors.purple);
   String _category = "";
+
+  @override
+  void initState() {
+    if (widget.category != null) {
+      _category = widget.category!.title;
+      _selectedColor.value = AppHelper.hexToColor(widget.category!.color);
+    }
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -44,13 +57,17 @@ class _CategoryAddScreenState extends State<CategoryAddScreen> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text("Add Category"),
+        title:
+            Text(widget.category == null ? "Add Category" : "Update Category"),
         centerTitle: true,
       ),
       body: BlocListener<CategoryBloc, CategoryState>(
         listener: (BuildContext context, CategoryState state) {
           _loading.value = state.categoryStatus == CategoryStatus.adding;
           if (state.categoryStatus == CategoryStatus.added) {
+            /// This function is passing when category is created
+            /// from expense add screen. So it will refresh the category list
+            /// in bottom modal sheet listview
             if (widget.refreshData != null) {
               widget.refreshData!();
             }
@@ -66,6 +83,7 @@ class _CategoryAddScreenState extends State<CategoryAddScreen> {
             padding: const EdgeInsets.all(20.0),
             children: [
               OutlinedTextField(
+                initialValue: widget.category?.title,
                 textFieldKey: "name",
                 maxLength: 50,
                 maxLines: 1,
@@ -124,8 +142,9 @@ class _CategoryAddScreenState extends State<CategoryAddScreen> {
                     return LoadingButton(
                       onPressed: _onAdd,
                       loading: loading,
-                      loadingLabel: "Adding",
-                      child: const Text("Add"),
+                      loadingLabel:
+                          widget.category == null ? "Adding" : "Updating",
+                      child: Text(widget.category == null ? "Add" : "Update"),
                     );
                   },
                 ),
@@ -144,16 +163,21 @@ class _CategoryAddScreenState extends State<CategoryAddScreen> {
       final authBloc = context.read<AuthBloc>().state.userInfo;
       final date = DateTime.now();
       final model = CategoryModel(
-        id: date.millisecondsSinceEpoch.toString(),
+        id: widget.category?.id ?? date.millisecondsSinceEpoch.toString(),
         title: _category,
-        createdOn: date,
+        createdOn: widget.category?.createdOn ?? date,
         color: _selectedColor.value.value.toRadixString(16).substring(2),
       );
       context.read<CategoryBloc>().add(
-            AddCategory(
-              categoryModel: model,
-              adminId: authBloc!.adminId,
-            ),
+            widget.category == null
+                ? AddCategory(
+                    categoryModel: model,
+                    adminId: authBloc!.adminId,
+                  )
+                : UpdateCategory(
+                    categoryModel: model,
+                    adminId: authBloc!.adminId,
+                  ),
           );
     }
   }
@@ -163,15 +187,12 @@ class _CategoryAddScreenState extends State<CategoryAddScreen> {
     showDialog(
       context: context,
       builder: (context) {
-        Color color = Colors.blue;
+        Color color = _selectedColor.value;
         return AlertDialog(
           title: const Text('Pick a color'),
           content: SingleChildScrollView(
-            child: ColorPicker(
+            child: MaterialPicker(
               pickerColor: color,
-              paletteType: PaletteType.hueWheel,
-              enableAlpha: false,
-              hexInputBar: false,
               onColorChanged: (Color clr) => color = clr,
             ),
           ),
