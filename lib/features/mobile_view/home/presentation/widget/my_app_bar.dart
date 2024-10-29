@@ -7,8 +7,13 @@ import 'package:my_budget/features/mobile_view/util/mobile_view_helper.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   final int index;
+  final VoidCallback onRefresh;
 
-  const MyAppBar({super.key, required this.index});
+  const MyAppBar({
+    super.key,
+    required this.index,
+    required this.onRefresh,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +21,15 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       surfaceTintColor: Colors.transparent,
       backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       title: Text(MobileViewHelper.getAppBarTitle(index)),
+      centerTitle: false,
+      actions: index == 0
+          ? [
+              IconButton(
+                onPressed: onRefresh,
+                icon: const Icon(Icons.refresh_rounded),
+              ),
+            ]
+          : null,
     );
   }
 

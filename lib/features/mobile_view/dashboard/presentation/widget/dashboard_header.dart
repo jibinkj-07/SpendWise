@@ -98,7 +98,13 @@ class _DashboardHeaderState extends State<DashboardHeader> {
                   children: List<Widget>.generate(
                     _years.length,
                     (int index) {
-                      return Center(child: Text(_years[index].toString()));
+                      return SizedBox(
+                        width: double.infinity,
+                        child: Text(
+                          _years[index].toString(),
+                          textAlign: TextAlign.center,
+                        ),
+                      );
                     },
                   ),
                 ),

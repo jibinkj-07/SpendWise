@@ -26,12 +26,6 @@ class _MembersListState extends State<MembersList> {
   final ValueNotifier<bool> _loading = ValueNotifier(true);
 
   @override
-  void initState() {
-    _initMembers();
-    super.initState();
-  }
-
-  @override
   void dispose() {
     _allMembers.dispose();
     _loading.dispose();
@@ -40,6 +34,7 @@ class _MembersListState extends State<MembersList> {
 
   @override
   Widget build(BuildContext context) {
+    _initMembers();
     return ValueListenableBuilder(
       valueListenable: _loading,
       builder: (ctx, loading, child) {

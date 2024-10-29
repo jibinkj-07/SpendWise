@@ -38,6 +38,7 @@ class GoalView extends StatelessWidget {
               /// Getting default goal as first element in the list
               final goal = state.goals.first;
               return ListView(
+                padding: const EdgeInsets.all(15.0),
                 children: [
                   GoalChart(model: goal),
                   TransactionHistory(model: goal, user: authState.userInfo!),

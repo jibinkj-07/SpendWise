@@ -8,6 +8,7 @@ import 'package:my_budget/features/common/data/model/expense_model.dart';
 import '../../../../../core/util/helper/app_helper.dart';
 import '../../../../common/data/model/category_model.dart';
 import '../../../../common/presentation/bloc/category_bloc.dart';
+import '../../../goal/presentation/helper/goal_helper.dart';
 
 sealed class DashboardHelper {
   static List<ChartData> getMonthWiseChartData(List<ExpenseModel> expenses) {
@@ -41,7 +42,13 @@ sealed class DashboardHelper {
       final item =
           expenses.firstWhere((item) => item.createdUser.uid == entry.key);
 
-      return ChartData(item.createdUser.name, entry.value);
+      return ChartData(
+        item.createdUser.name,
+        entry.value,
+        GoalHelper.getColorForLetter(
+          item.createdUser.name.substring(0, 1),
+        ),
+      );
     }).toList();
     return items;
   }

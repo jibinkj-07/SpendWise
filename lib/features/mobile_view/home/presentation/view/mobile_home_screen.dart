@@ -54,7 +54,10 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
           canPop: index == 0,
           onPopInvokedWithResult: (_, __) => _index.value = 0,
           child: Scaffold(
-            appBar: MyAppBar(index: index),
+            appBar: MyAppBar(
+              index: index,
+              onRefresh: _initAppStates,
+            ),
             body: _views[index],
             bottomNavigationBar: NavBar(selectedIndex: index, index: _index),
             floatingActionButton: FloatingButton(index: index),

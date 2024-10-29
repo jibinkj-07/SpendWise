@@ -6,10 +6,7 @@ import 'package:my_budget/core/util/helper/firebase_mapper.dart';
 import 'package:my_budget/core/util/mixin/validation_mixin.dart';
 import 'package:my_budget/features/mobile_view/account/presentation/widget/members_list.dart';
 
-import '../../../../../core/util/widgets/loading_button.dart';
-import '../../../../../core/util/widgets/outlined_text_field.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../auth/presentation/util/auth_helper.dart';
 
 /// @author : Jibin K John
 /// @date   : 22/10/2024
@@ -24,9 +21,8 @@ class ManageAccessScreen extends StatefulWidget {
 
 class _ManageAccessScreenState extends State<ManageAccessScreen>
     with ValidationMixin {
-  final _formKey = GlobalKey<FormState>();
   final ValueNotifier<bool> _loading = ValueNotifier(false);
-  String _email = "";
+
 
   @override
   void dispose() {

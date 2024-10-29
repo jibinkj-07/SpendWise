@@ -217,7 +217,6 @@ class _ExpenseAddScreenState extends State<ExpenseAddScreen> {
                 textFieldKey: "amount",
                 maxLength: 10,
                 inputAction: TextInputAction.next,
-                inputType: TextInputType.number,
                 numberOnly: true,
                 validator: (value) {
                   if (value.toString().trim().isEmpty) {
