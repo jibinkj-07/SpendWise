@@ -1,4 +1,4 @@
-package com.codedude.my_budget
+package com.codedude.spend_wise
 
 import io.flutter.embedding.android.FlutterActivity
 
