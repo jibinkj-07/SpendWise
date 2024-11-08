@@ -9,6 +9,21 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  flutter_bloc: # state management tool
+  equatable: # data comparison helper
+  get_it: # dependency injection tool
+  either_dart: # error handling helper
+  hive_flutter: # local database
+  path_provider: # directory service helper
+  internet_connection_checker_plus: #internet connection checker helper
+  flutter_svg: # svg loader
+  firebase_auth:
+  firebase_database:
+  firebase_storage:
+  firebase_core:
+  image_picker: # image picker helper
+  cached_network_image: # for network image loader
+  intl: # for date formatting
 
 dev_dependencies:
   flutter_test:
@@ -18,8 +33,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
-#    - assets/svg/
-#    - assets/lottie/
+    - assets/svg/
   fonts:
     - family: Poppins
       fonts:
