@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:spend_wise/core/config/route/app_routes.dart';
 import 'package:spend_wise/core/util/helper/asset_mapper.dart';
 import 'package:spend_wise/core/util/mixin/validation_mixin.dart';
+import 'package:spend_wise/core/util/widget/custom_snackbar.dart';
 import 'package:spend_wise/core/util/widget/outlined_text_field.dart';
 import 'package:spend_wise/features/auth/presentation/widget/auth_bg.dart';
 
@@ -75,7 +76,9 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
             SizedBox(
               width: double.infinity,
               child: FilledButton(
-                onPressed: () {},
+                onPressed: () {
+                  CustomSnackBar.showInfoSnackBar(context, "unable to delete this becausen");
+                },
                 child: Text("Login"),
               ),
             ),

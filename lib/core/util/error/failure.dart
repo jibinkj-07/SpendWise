@@ -9,4 +9,7 @@ class Failure {
 
   void showSnackBar(BuildContext context) =>
       CustomSnackBar.showErrorSnackBar(context, message);
+
+  factory Failure.network() =>
+      Failure(message: "Check your network connection");
 }

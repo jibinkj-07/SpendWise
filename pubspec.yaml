@@ -18,7 +18,8 @@ dependencies:
   internet_connection_checker_plus: #internet connection checker helper
   flutter_svg: # svg loader
   firebase_auth:
-  firebase_database:
+  google_sign_in:
+  cloud_firestore:
   firebase_storage:
   firebase_core:
   image_picker: # image picker helper
