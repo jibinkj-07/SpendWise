@@ -3,9 +3,10 @@ class UserModel {
   final String firstName;
   final String lastName;
   final String email;
+
+  final List<String> joinedExpenses;
+  final List<String> pendingExpenses;
   final DateTime createOn;
-  final List<String> joinedFamilies;
-  final List<String> invitedFamilies;
 
   UserModel({
     required this.uid,
@@ -13,8 +14,8 @@ class UserModel {
     required this.lastName,
     required this.email,
     required this.createOn,
-    required this.joinedFamilies,
-    required this.invitedFamilies,
+    required this.joinedExpenses,
+    required this.pendingExpenses,
   });
 
   factory UserModel.fromFirebase(
@@ -29,8 +30,8 @@ class UserModel {
       createOn: DateTime.fromMillisecondsSinceEpoch(
         int.parse(userData["created_on"].toString()),
       ),
-      joinedFamilies: List<String>.from(userData['joined_families'] ?? []),
-      invitedFamilies: List<String>.from(userData['invited_families'] ?? []),
+      joinedExpenses: List<String>.from(userData['joined_expenses'] ?? []),
+      pendingExpenses: List<String>.from(userData['pending_expenses'] ?? []),
     );
   }
 
@@ -38,8 +39,8 @@ class UserModel {
         "first_name": firstName,
         "last_name": lastName,
         "email": email,
-        "joined_families": joinedFamilies,
-        "invited_families": invitedFamilies,
+        "joined_expenses": joinedExpenses,
+        "pending_expenses": pendingExpenses,
         "created_on": createOn.millisecondsSinceEpoch.toString(),
       };
 }

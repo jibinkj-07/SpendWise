@@ -34,88 +34,84 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Form(
-        key: _formKey,
-        child: AuthBg(
-          title: "Log into your Account",
+    return AuthBg(
+      formKey: _formKey,
+      title: "Log into your Account",
+      children: [
+        OutlinedTextField(
+          textFieldKey: "email",
+          hintText: "Email",
+          inputAction: TextInputAction.next,
+          inputType: TextInputType.emailAddress,
+          validator: validateEmail,
+          onSaved: (data) => _email = data.toString().trim(),
+        ),
+        const SizedBox(height: 10.0),
+        ValueListenableBuilder(
+            valueListenable: _isVisible,
+            builder: (ctx, isVisible, _) {
+              return OutlinedTextField(
+                textFieldKey: "password",
+                hintText: "Password",
+                isObscure: !isVisible,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    isVisible
+                        ? Icons.visibility_off_rounded
+                        : Icons.visibility_rounded,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () {
+                    _isVisible.value = !_isVisible.value;
+                  },
+                ),
+                inputAction: TextInputAction.done,
+                validator: validatePassword,
+                onSaved: (data) => _password = data.toString().trim(),
+              );
+            }),
+        const SizedBox(height: 20.0),
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton(
+            onPressed: () {
+              CustomSnackBar.showInfoSnackBar(context, "unable to delete this becausen");
+            },
+            child: Text("Login"),
+          ),
+        ),
+        TextButton(
+          onPressed: () =>
+              Navigator.of(context).pushNamed(RouteName.passwordReset),
+          child: Text("Forgot Password?"),
+        ),
+        Divider(
+          thickness: .5,
+          color: Colors.grey,
+        ),
+        Center(
+          child: OutlinedButton.icon(
+            onPressed: () {},
+            icon: SvgPicture.asset(
+              AssetMapper.googleSVG,
+              height: 20.0,
+              width: 20.0,
+            ),
+            label: Text("Continue with Google"),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            OutlinedTextField(
-              textFieldKey: "email",
-              hintText: "Email",
-              inputAction: TextInputAction.next,
-              inputType: TextInputType.emailAddress,
-              validator: validateEmail,
-              onSaved: (data) => _email = data.toString().trim(),
-            ),
-            const SizedBox(height: 10.0),
-            ValueListenableBuilder(
-                valueListenable: _isVisible,
-                builder: (ctx, isVisible, _) {
-                  return OutlinedTextField(
-                    textFieldKey: "password",
-                    hintText: "Password",
-                    isObscure: !isVisible,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        isVisible
-                            ? Icons.visibility_off_rounded
-                            : Icons.visibility_rounded,
-                        color: Colors.grey,
-                      ),
-                      onPressed: () {
-                        _isVisible.value = !_isVisible.value;
-                      },
-                    ),
-                    inputAction: TextInputAction.done,
-                    validator: validatePassword,
-                    onSaved: (data) => _password = data.toString().trim(),
-                  );
-                }),
-            const SizedBox(height: 20.0),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: () {
-                  CustomSnackBar.showInfoSnackBar(context, "unable to delete this becausen");
-                },
-                child: Text("Login"),
-              ),
-            ),
+            Text("Don\'t have an account?"),
             TextButton(
               onPressed: () =>
-                  Navigator.of(context).pushNamed(RouteName.passwordReset),
-              child: Text("Forgot Password?"),
-            ),
-            Divider(
-              thickness: .5,
-              color: Colors.grey,
-            ),
-            Center(
-              child: OutlinedButton.icon(
-                onPressed: () {},
-                icon: SvgPicture.asset(
-                  AssetMapper.googleSVG,
-                  height: 20.0,
-                  width: 20.0,
-                ),
-                label: Text("Continue with Google"),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Don\'t have an account?"),
-                TextButton(
-                  onPressed: () =>
-                      Navigator.of(context).pushNamed(RouteName.createAccount),
-                  child: Text("Create"),
-                ),
-              ],
+                  Navigator.of(context).pushNamed(RouteName.createAccount),
+              child: Text("Create"),
             ),
           ],
         ),
-      ),
+      ],
     );
   }
 }

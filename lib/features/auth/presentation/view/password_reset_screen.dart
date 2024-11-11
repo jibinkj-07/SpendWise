@@ -29,35 +29,37 @@ class _PasswordResetScreenState extends State<PasswordResetScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Form(
-        key: _formKey,
-        child: AuthBg(
-          title: "Reset your Password",
-          children: [
-            Text(
-                "A password reset email will be sent to the address you entered below."
-                " Please follow the instructions in the email.\n\nIf you don’t see it in your inbox,"
-                " check your spam folder.\n"),
-            OutlinedTextField(
-              textFieldKey: "email",
-              hintText: "Email",
-              inputAction: TextInputAction.done,
-              inputType: TextInputType.emailAddress,
-              validator: validateEmail,
-              onSaved: (data) => _email = data.toString().trim(),
-            ),
-            const SizedBox(height: 20.0),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: () {},
-                child: Text("Reset"),
-              ),
-            ),
-          ],
+    return AuthBg(
+      formKey: _formKey,
+      title: "Reset your Password",
+      children: [
+        Text(
+            "A password reset email will be sent to the address you entered below."
+            " Please follow the instructions in the email.\n\nIf you don’t see it in your inbox,"
+            " check your spam folder.\n"),
+        OutlinedTextField(
+          textFieldKey: "email",
+          hintText: "Email",
+          inputAction: TextInputAction.done,
+          inputType: TextInputType.emailAddress,
+          validator: validateEmail,
+          onSaved: (data) => _email = data.toString().trim(),
         ),
-      ),
+        const SizedBox(height: 20.0),
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton(
+            onPressed: () {},
+            child: Text("Reset"),
+          ),
+        ),
+        Center(
+          child: TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Back"),
+          ),
+        )
+      ],
     );
   }
 }

@@ -74,8 +74,8 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
         lastName: lastName,
         email: email,
         createOn: createdOn,
-        joinedFamilies: [],
-        invitedFamilies: [],
+        joinedExpenses: [],
+        pendingExpenses: [],
       );
 
       await userCredential.user?.updateDisplayName("$firstName $lastName");
