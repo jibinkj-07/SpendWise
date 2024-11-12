@@ -26,6 +26,8 @@ abstract class AuthFbDataSource {
   });
 
   Future<Either<Failure, void>> resetPassword({required String email});
+
+  Future<Either<Failure, void>> signOut();
 }
 
 class AuthFbDataSourceImpl implements AuthFbDataSource {
@@ -53,6 +55,14 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
     return Right(UserModel.fromFirebase(fbSnapshot.data()!, id));
   }
 
+  Future<void> _updateUserImage(String? userId, String? url) async {
+    if (url == null) return;
+    await _firebaseFirestore
+        .collection(FirebasePath.userNode)
+        .doc(userId ?? _unknown)
+        .set({"profile_url": url}, SetOptions(merge: true));
+  }
+
   @override
   Future<Either<Failure, UserModel>> createUser({
     required String firstName,
@@ -62,7 +72,7 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
   }) async {
     try {
       final UserCredential userCredential =
-          await _firebaseAuth.signInWithEmailAndPassword(
+          await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -73,6 +83,7 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
         firstName: firstName,
         lastName: lastName,
         email: email,
+        profileUrl: "",
         createOn: createdOn,
         joinedExpenses: [],
         pendingExpenses: [],
@@ -102,7 +113,7 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
     try {
       final UserCredential userCredential = await _firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password);
-      return _getUserModel(userCredential.user?.uid);
+      return await _getUserModel(userCredential.user?.uid);
     } on FirebaseAuthException catch (e) {
       log("er: [auth_fb_data_source.dart][loginUser] $e");
       return Left(Failure(message: e.message ?? "Login error."));
@@ -130,9 +141,33 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
         );
+
         userCredential = await _firebaseAuth.signInWithCredential(credential);
       }
-      return _getUserModel(userCredential.user?.uid);
+
+      final userId = userCredential.user?.uid;
+      final existingUser = await _getUserModel(userId);
+
+      if (existingUser.isRight) {
+        await _updateUserImage(userId, userCredential.user?.photoURL);
+        return existingUser;
+      }
+      final user = UserModel(
+        uid: userId ?? _unknown,
+        firstName: userCredential.user?.displayName ?? "User",
+        lastName: "",
+        email: userCredential.user?.email ?? "user@gmail.com",
+        profileUrl: userCredential.user?.photoURL ?? "",
+        createOn: userCredential.user?.metadata.creationTime ?? DateTime.now(),
+        joinedExpenses: [],
+        pendingExpenses: [],
+      );
+
+      await _firebaseFirestore
+          .collection(FirebasePath.userNode)
+          .doc(user.uid)
+          .set(user.toJson());
+      return Right(user);
     } catch (e) {
       log("er: [auth_fb_data_source.dart][loginUserWithGoogle] $e");
       return Left(Failure(message: "Unable to login with Google."));
@@ -157,6 +192,17 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
       return await _getUserModel(userId);
     } catch (e) {
       log("er: [auth_fb_data_source.dart][initUser] $e");
+      return Left(Failure(message: "Something went wrong."));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> signOut() async {
+    try {
+      await _firebaseAuth.signOut();
+      return const Right(null);
+    } catch (e) {
+      log("er: [auth_fb_data_source.dart][signOut] $e");
       return Left(Failure(message: "Something went wrong."));
     }
   }

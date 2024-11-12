@@ -49,3 +49,8 @@ class ResetPassword extends AuthEvent {
   @override
   List<Object?> get props => [email];
 }
+
+class SignOut extends AuthEvent {
+  @override
+  List<Object?> get props => [];
+}

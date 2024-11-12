@@ -5,6 +5,7 @@ import '../model/user_model.dart';
 
 abstract class AuthRepo {
   Future<Either<Failure, UserModel>> initUser();
+
   Future<Either<Failure, UserModel>> loginUser({
     required String email,
     required String password,
@@ -20,4 +21,6 @@ abstract class AuthRepo {
   });
 
   Future<Either<Failure, void>> resetPassword({required String email});
+
+  Future<Either<Failure, void>> signOut();
 }

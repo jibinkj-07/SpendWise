@@ -9,6 +9,8 @@ enum AuthStatus {
   created,
   resetting,
   reset,
+  signingOut,
+  signedOut,
 }
 
 class AuthState extends Equatable {

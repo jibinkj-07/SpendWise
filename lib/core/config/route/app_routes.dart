@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spend_wise/features/auth/presentation/view/create_account_screen.dart';
 import 'package:spend_wise/features/auth/presentation/view/password_reset_screen.dart';
+import 'package:spend_wise/features/home/presentation/view/home_screen.dart';
 import '../../../features/auth/presentation/view/login_screen.dart';
 import '../../../root.dart';
 import 'error_route.dart';
@@ -11,6 +12,7 @@ sealed class RouteName {
   static const String login = "login-screen";
   static const String createAccount = "create-account-screen";
   static const String passwordReset = "password-reset-screen";
+  static const String home = "home";
 }
 
 /// class for declaring app page navigation screens
@@ -30,6 +32,8 @@ sealed class AppRoutes {
         return MaterialPageRoute(builder: (_) => const CreateAccountScreen());
       case RouteName.passwordReset:
         return MaterialPageRoute(builder: (_) => const PasswordResetScreen());
+      case RouteName.home:
+        return MaterialPageRoute(builder: (_) => const HomeScreen());
       default:
         return MaterialPageRoute(builder: (_) => const ErrorRoute());
     }

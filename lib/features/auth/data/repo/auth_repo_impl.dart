@@ -70,4 +70,13 @@ class AuthRepoImpl implements AuthRepo {
       return Left(Failure.network());
     }
   }
+
+  @override
+  Future<Either<Failure, void>> signOut() async {
+    if (await InternetConnection().hasInternetAccess) {
+      return await _authFbDataSource.signOut();
+    } else {
+      return Left(Failure.network());
+    }
+  }
 }
