@@ -1,12 +1,17 @@
+
+import 'package:firebase_database/firebase_database.dart';
+
+import 'expense_participation.dart';
+
 class UserModel {
   final String uid;
   final String firstName;
   final String lastName;
   final String email;
   final String profileUrl;
-  final List<String> joinedExpenses;
-  final List<String> pendingExpenses;
-  final DateTime createOn;
+  final List<ExpenseParticipation> joinedExpenses;
+  final List<ExpenseParticipation> invitedExpenses;
+  final DateTime createdOn;
 
   UserModel({
     required this.uid,
@@ -14,26 +19,31 @@ class UserModel {
     required this.lastName,
     required this.email,
     required this.profileUrl,
-    required this.createOn,
+    required this.createdOn,
     required this.joinedExpenses,
-    required this.pendingExpenses,
+    required this.invitedExpenses,
   });
 
-  factory UserModel.fromFirebase(
-    Map<String, dynamic> userData,
-    String uid,
-  ) {
+  factory UserModel.fromFirebase(DataSnapshot userData) {
+    List<ExpenseParticipation> joinedExpenses = [];
+    List<ExpenseParticipation> invitedExpenses = [];
+    for (final joined in userData.child("joined_expenses").children) {
+      joinedExpenses.add(ExpenseParticipation.fromFirebase(joined, true));
+    }
+    for (final invited in userData.child("invited_expenses").children) {
+      joinedExpenses.add(ExpenseParticipation.fromFirebase(invited, false));
+    }
     return UserModel(
-      uid: uid,
-      firstName: userData["first_name"].toString(),
-      lastName: userData["last_name"].toString(),
-      email: userData["email"].toString(),
-      profileUrl: userData["profile_url"].toString(),
-      createOn: DateTime.fromMillisecondsSinceEpoch(
-        int.parse(userData["created_on"].toString()),
+      uid: userData.key.toString(),
+      firstName: userData.child("first_name").value.toString(),
+      lastName: userData.child("last_name").value.toString(),
+      email: userData.child("email").value.toString(),
+      profileUrl: userData.child("profile_url").value.toString(),
+      createdOn: DateTime.fromMillisecondsSinceEpoch(
+        int.parse(userData.child("created_on").value.toString()),
       ),
-      joinedExpenses: List<String>.from(userData['joined_expenses'] ?? []),
-      pendingExpenses: List<String>.from(userData['pending_expenses'] ?? []),
+      joinedExpenses: joinedExpenses,
+      invitedExpenses: invitedExpenses,
     );
   }
 
@@ -42,8 +52,10 @@ class UserModel {
         "last_name": lastName,
         "email": email,
         "profile_url": profileUrl,
-        "joined_expenses": joinedExpenses,
-        "pending_expenses": pendingExpenses,
-        "created_on": createOn.millisecondsSinceEpoch.toString(),
+        "joined_expenses":
+            joinedExpenses.map((item) => item.toJson(true)).toList(),
+        "invited_expenses":
+            invitedExpenses.map((item) => item.toJson(false)).toList().toList(),
+        "created_on": createdOn.millisecondsSinceEpoch.toString(),
       };
 }

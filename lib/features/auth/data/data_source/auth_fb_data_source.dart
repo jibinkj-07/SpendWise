@@ -1,6 +1,6 @@
 import 'dart:developer';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:spend_wise/core/util/error/failure.dart';
@@ -32,12 +32,12 @@ abstract class AuthFbDataSource {
 
 class AuthFbDataSourceImpl implements AuthFbDataSource {
   final FirebaseAuth _firebaseAuth;
-  final FirebaseFirestore _firebaseFirestore;
+  final FirebaseDatabase _firebaseDatabase;
   final GoogleSignIn _googleSignIn;
 
   AuthFbDataSourceImpl(
     this._firebaseAuth,
-    this._firebaseFirestore,
+    this._firebaseDatabase,
     this._googleSignIn,
   );
 
@@ -45,22 +45,20 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
 
   Future<Either<Failure, UserModel>> _getUserModel(String? userId) async {
     final id = userId ?? _unknown;
-    final fbSnapshot = await _firebaseFirestore
-        .collection(FirebasePath.userNode)
-        .doc(id)
-        .get();
-    if (fbSnapshot.data() == null) {
+    final fbSnapshot =
+        await _firebaseDatabase.ref(FirebasePath.userNode).child(id).get();
+    if (!fbSnapshot.exists) {
       return Left(Failure(message: "No data found for this user."));
     }
-    return Right(UserModel.fromFirebase(fbSnapshot.data()!, id));
+    return Right(UserModel.fromFirebase(fbSnapshot));
   }
 
   Future<void> _updateUserImage(String? userId, String? url) async {
     if (url == null) return;
-    await _firebaseFirestore
-        .collection(FirebasePath.userNode)
-        .doc(userId ?? _unknown)
-        .set({"profile_url": url}, SetOptions(merge: true));
+    await _firebaseDatabase
+        .ref(FirebasePath.userNode)
+        .child(userId ?? _unknown)
+        .update({"profile_url": url});
   }
 
   @override
@@ -84,15 +82,15 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
         lastName: lastName,
         email: email,
         profileUrl: "",
-        createOn: createdOn,
+        createdOn: createdOn,
         joinedExpenses: [],
-        pendingExpenses: [],
+        invitedExpenses: [],
       );
 
       await userCredential.user?.updateDisplayName("$firstName $lastName");
-      await _firebaseFirestore
-          .collection(FirebasePath.userNode)
-          .doc(user.uid)
+      await _firebaseDatabase
+          .ref(FirebasePath.userNode)
+          .child(user.uid)
           .set(user.toJson());
 
       return Right(user);
@@ -158,14 +156,14 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
         lastName: "",
         email: userCredential.user?.email ?? "user@gmail.com",
         profileUrl: userCredential.user?.photoURL ?? "",
-        createOn: userCredential.user?.metadata.creationTime ?? DateTime.now(),
+        createdOn: userCredential.user?.metadata.creationTime ?? DateTime.now(),
         joinedExpenses: [],
-        pendingExpenses: [],
+        invitedExpenses: [],
       );
 
-      await _firebaseFirestore
-          .collection(FirebasePath.userNode)
-          .doc(user.uid)
+      await _firebaseDatabase
+          .ref(FirebasePath.userNode)
+          .child(user.uid)
           .set(user.toJson());
       return Right(user);
     } catch (e) {
