@@ -44,8 +44,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen>
 
         /// Navigate to home screen for success creation
         if (state.authStatus == AuthStatus.created) {
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil(RouteName.home, (_) => false);
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            RouteName.decision,
+            (_) => false,
+          );
         }
 
         /// Show error if any occurs

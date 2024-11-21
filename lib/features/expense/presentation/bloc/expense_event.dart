@@ -25,57 +25,49 @@ class SubscribeExpenseData extends ExpenseEvent {
 }
 
 class InsertCategory extends ExpenseEvent {
-  final String expenseId;
   final CategoryModel category;
 
   const InsertCategory({
-    required this.expenseId,
-    required this.category,
+    required this.category
   });
 
   @override
-  List<Object?> get props => [expenseId, category];
+  List<Object?> get props => [category];
 }
 
 class DeleteCategory extends ExpenseEvent {
-  final String expenseId;
   final String categoryId;
 
   const DeleteCategory({
-    required this.expenseId,
-    required this.categoryId,
+    required this.categoryId
   });
 
   @override
-  List<Object?> get props => [expenseId, categoryId];
+  List<Object?> get props => [ categoryId];
 }
 
 class InsertTransaction extends ExpenseEvent {
-  final String expenseId;
   final TransactionModel transaction;
   final XFile? doc;
 
   const InsertTransaction({
-    required this.expenseId,
     required this.transaction,
     this.doc,
   });
 
   @override
-  List<Object?> get props => [expenseId, transaction, doc];
+  List<Object?> get props => [transaction, doc];
 }
 
 class DeleteTransaction extends ExpenseEvent {
-  final String expenseId;
   final String transactionId;
 
   const DeleteTransaction({
-    required this.expenseId,
-    required this.transactionId,
+    required this.transactionId
   });
 
   @override
-  List<Object?> get props => [expenseId, transactionId];
+  List<Object?> get props => [ transactionId];
 }
 
 class InsertExpense extends ExpenseEvent {

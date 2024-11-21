@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spend_wise/core/util/widget/custom_loading.dart';
+import 'package:spend_wise/features/home/presentation/view/create_expense_screen.dart';
+import 'package:spend_wise/features/home/presentation/view/decision_screen.dart';
 import 'package:spend_wise/features/home/presentation/view/home_screen.dart';
 
 import 'features/auth/presentation/bloc/auth_bloc.dart';
@@ -24,6 +26,9 @@ class Root extends StatelessWidget {
 
         /// Navigate to home screen [User already logged]
         if (state.currentUser != null) {
+          if (state.currentUser!.joinedExpenses.isEmpty) {
+            return DecisionScreen();
+          }
           return HomeScreen();
         }
 

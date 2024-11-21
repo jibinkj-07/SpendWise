@@ -1,8 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 sealed class AppHelper {
   /// Map for category icons
-  static Map<String, IconData> categoryIconMap = {
+  static final Map<String, IconData> _icons = {
     "restaurant": Icons.restaurant,
     "fastfood": Icons.fastfood,
     "local_dining": Icons.local_dining,
@@ -52,6 +54,11 @@ sealed class AppHelper {
     "stacked_line_chart": Icons.stacked_line_chart,
     "bar_chart": Icons.bar_chart,
   };
+
+  static Map<String, IconData> get categoryIconMap => _icons;
+
+  static IconData getIconFromString(String iconName) =>
+      _icons[iconName] ?? Icons.account_balance_rounded;
 
   /// Function to convert hex string to Color
   static Color stringToColor(String hex) {

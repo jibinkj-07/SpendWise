@@ -37,7 +37,7 @@ class CategoryModel {
       );
 
   factory CategoryModel.deleted() => CategoryModel(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        id: "deleted",
         createdOn: DateTime.now(),
         color: Colors.black,
         name: 'Deleted Category',
@@ -62,7 +62,7 @@ class CategoryModel {
   Map<String, dynamic> toJson() => {
         "name": name,
         "icon": icon,
-        "color": color,
+        "color": AppHelper.colorToString(color),
         "created_by": createdBy,
         "created_on": createdOn.millisecondsSinceEpoch.toString(),
       };

@@ -1,10 +1,11 @@
-
-
 import './imports.dart';
 
 final sl = GetIt.instance;
 
 Future<void> initDependencies() async {
+  // **************************************** Class ****************************************
+  sl.registerLazySingleton<AccountHelper>(() => AccountHelper(sl()));
+
   // **************************************** Externals ****************************************
   final auth = FirebaseAuth.instance;
   final googleAuth = GoogleSignIn();
@@ -35,5 +36,10 @@ Future<void> initDependencies() async {
 
   // **************************************** Bloc ****************************************
   sl.registerSingleton<AuthBloc>(AuthBloc(sl()));
-  sl.registerSingleton<ExpenseBloc>(ExpenseBloc(sl(), sl()));
+  sl.registerSingleton<ExpenseBloc>(ExpenseBloc(
+    sl(),
+    sl(),
+    sl(),
+    sl(),
+  ));
 }

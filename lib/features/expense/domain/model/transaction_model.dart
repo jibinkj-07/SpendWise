@@ -49,16 +49,16 @@ class TransactionModel {
   factory TransactionModel.fromFirebase(DataSnapshot transData) {
     return TransactionModel(
       id: transData.key.toString(),
-      title: transData.child("title").toString(),
-      amount: double.parse(transData.child("amount").toString()),
+      title: transData.child("title").value.toString(),
+      amount: double.parse(transData.child("amount").value.toString()),
       date: DateTime.fromMillisecondsSinceEpoch(
-        int.parse(transData.child("date").toString()),
+        int.parse(transData.child("date").value.toString()),
       ),
-      description: transData.child("description").toString(),
-      docUrl: transData.child("doc_url").toString(),
-      categoryId: transData.child("category_id").toString(),
-      accountType: transData.child("account_type").toString(),
-      createdUserId: transData.child("created_userid").toString(),
+      description: transData.child("description").value.toString(),
+      docUrl: transData.child("doc_url").value.toString(),
+      categoryId: transData.child("category_id").value.toString(),
+      accountType: transData.child("account_type").value.toString(),
+      createdUserId: transData.child("created_userid").value.toString(),
     );
   }
 

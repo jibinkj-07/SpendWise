@@ -9,4 +9,5 @@ sealed class AssetMapper {
 
   /// ---------------------- SVG FILES -------------------------
   static const String googleSVG = "assets/svg/google.svg";
+  static const String coinsSVG = "assets/svg/coins.svg";
 }

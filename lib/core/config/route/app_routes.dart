@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:spend_wise/features/auth/presentation/view/create_account_screen.dart';
 import 'package:spend_wise/features/auth/presentation/view/password_reset_screen.dart';
+import 'package:spend_wise/features/home/presentation/view/category_entry_screen.dart';
+import 'package:spend_wise/features/home/presentation/view/create_expense_screen.dart';
+import 'package:spend_wise/features/home/presentation/view/decision_screen.dart';
 import 'package:spend_wise/features/home/presentation/view/home_screen.dart';
+import '../../../features/account/presentation/view/invite_members_screen.dart';
 import '../../../features/auth/presentation/view/login_screen.dart';
 import '../../../root.dart';
 import 'error_route.dart';
@@ -13,6 +17,10 @@ sealed class RouteName {
   static const String createAccount = "create-account-screen";
   static const String passwordReset = "password-reset-screen";
   static const String home = "home";
+  static const String decision = "decision-screen";
+  static const String createExpense = "create-expense-screen";
+  static const String createCategory = "create-category-screen";
+  static const String inviteMembers = "invite-members-screen";
 }
 
 /// class for declaring app page navigation screens
@@ -34,6 +42,14 @@ sealed class AppRoutes {
         return MaterialPageRoute(builder: (_) => const PasswordResetScreen());
       case RouteName.home:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
+      case RouteName.decision:
+        return MaterialPageRoute(builder: (_) => const DecisionScreen());
+      case RouteName.createExpense:
+        return MaterialPageRoute(builder: (_) => const CreateExpenseScreen());
+      case RouteName.createCategory:
+        return MaterialPageRoute(builder: (_) => const CategoryEntryScreen());
+      case RouteName.inviteMembers:
+        return MaterialPageRoute(builder: (_) => const InviteMembersScreen());
       default:
         return MaterialPageRoute(builder: (_) => const ErrorRoute());
     }

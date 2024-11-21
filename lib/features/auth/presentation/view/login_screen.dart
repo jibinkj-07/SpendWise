@@ -4,12 +4,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:spend_wise/core/config/route/app_routes.dart';
 import 'package:spend_wise/core/util/helper/asset_mapper.dart';
 import 'package:spend_wise/core/util/mixin/validation_mixin.dart';
-import 'package:spend_wise/core/util/widget/custom_snackbar.dart';
 import 'package:spend_wise/core/util/widget/loading_filled_button.dart';
 import 'package:spend_wise/core/util/widget/outlined_text_field.dart';
 import 'package:spend_wise/features/auth/presentation/widget/auth_bg.dart';
-
-import '../../../../core/util/widget/custom_loading.dart';
 import '../bloc/auth_bloc.dart';
 
 /// @author : Jibin K John
@@ -43,9 +40,14 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
       listener: (context, state) {
         _loading.value = state.authStatus == AuthStatus.logging;
 
-        /// Navigate to home screen for success login
         if (state.authStatus == AuthStatus.loggedIn) {
-          Navigator.of(context).pushReplacementNamed(RouteName.home);
+          if (state.currentUser!.joinedExpenses.isEmpty) {
+            /// Navigate to decision screen if user doesn't have expenses
+            Navigator.of(context).pushReplacementNamed(RouteName.decision);
+          } else {
+            /// Navigate to home screen for success login
+            Navigator.of(context).pushReplacementNamed(RouteName.home);
+          }
         }
 
         /// Show error if any occurs

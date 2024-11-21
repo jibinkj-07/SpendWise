@@ -87,10 +87,43 @@ class ExpenseFbDataSourceImpl implements ExpenseFbDataSource {
   Future<Either<Failure, bool>> insertExpense({
     required ExpenseModel expense,
   }) async {
+    final date = DateTime.now();
     try {
       await _firebaseDatabase
           .ref(FirebasePath.expensePath(expense.id))
           .set(expense.toJson());
+
+      // Add categories
+      for (final category in expense.categories) {
+        await _firebaseDatabase
+            .ref(FirebasePath.categoryPath(expense.id, category.id))
+            .set(category.toJson());
+      }
+
+      // Add Transactions
+      for (final trans in expense.transactions) {
+        await _firebaseDatabase
+            .ref(FirebasePath.transactionPath(expense.id, trans.id))
+            .set(trans.toJson());
+      }
+
+      // Add Invited users into expense node
+      for (final user in expense.invitedUsers) {
+        await _firebaseDatabase
+            .ref(
+                "${FirebasePath.expensePath(expense.id)}/invited_users/${user.uid}")
+            .set({"invited_on": date.millisecondsSinceEpoch.toString()});
+
+        await _firebaseDatabase
+            .ref(
+                "${FirebasePath.userNode}/${user.uid}/invited_expenses/${expense.id}")
+            .set({"invited_on": date.millisecondsSinceEpoch.toString()});
+      }
+      // Add expense to joined list of user
+      await _firebaseDatabase
+          .ref(
+              "${FirebasePath.userNode}/${expense.adminId}/joined_expenses/${expense.id}")
+          .set({"joined_on": date.millisecondsSinceEpoch.toString()});
       return const Right(true);
     } catch (e) {
       log("er: [expense_fb_data_source_impl.dart][insertExpense] $e");

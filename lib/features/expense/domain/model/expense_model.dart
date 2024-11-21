@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 
+import '../../../account/domain/model/user.dart';
 import 'category_model.dart';
 import 'transaction_model.dart';
 
@@ -8,8 +9,8 @@ class ExpenseModel {
   final String name;
   final String adminId;
   final DateTime createdOn;
-  final List<String> members;
-  final List<String> invitedUsers;
+  final List<User> members;
+  final List<User> invitedUsers;
   final List<CategoryModel> categories;
   final List<TransactionModel> transactions;
 
@@ -29,8 +30,8 @@ class ExpenseModel {
     String? name,
     String? adminId,
     DateTime? createdOn,
-    List<String>? members,
-    List<String>? invitedUsers,
+    List<User>? members,
+    List<User>? invitedUsers,
     List<CategoryModel>? categories,
     List<TransactionModel>? transactions,
   }) =>
@@ -45,16 +46,13 @@ class ExpenseModel {
         transactions: transactions ?? this.transactions,
       );
 
-  factory ExpenseModel.fromFirebase(DataSnapshot expenseData) {
+  factory ExpenseModel.fromFirebase(
+    DataSnapshot expenseData,
+    List<User> members,
+    List<User> invited,
+  ) {
     List<CategoryModel> categories = [];
     List<TransactionModel> transactions = [];
-    final members = expenseData.child("members").exists
-        ? expenseData.child("members").value as List<dynamic>
-        : [];
-    final users = expenseData.child("invited_users").exists
-        ? expenseData.child("invited_users").value as List<dynamic>
-        : [];
-
     for (final cat in expenseData.child("categories").children) {
       categories.add(CategoryModel.fromFirebase(cat));
     }
@@ -64,13 +62,13 @@ class ExpenseModel {
 
     return ExpenseModel(
       id: expenseData.key.toString(),
-      name: expenseData.child("name").toString(),
-      adminId: expenseData.child("admin_id").toString(),
+      name: expenseData.child("name").value.toString(),
+      adminId: expenseData.child("admin_id").value.toString(),
       createdOn: DateTime.fromMillisecondsSinceEpoch(
-        int.parse(expenseData.child("created_on").toString()),
+        int.parse(expenseData.child("created_on").value.toString()),
       ),
-      members: members.map((e) => e.toString()).toList(),
-      invitedUsers: users.map((e) => e.toString()).toList(),
+      members: members,
+      invitedUsers: invited,
       categories: categories,
       transactions: transactions,
     );
@@ -80,9 +78,5 @@ class ExpenseModel {
         "name": name,
         "admin_id": adminId,
         "created_on": createdOn.millisecondsSinceEpoch.toString(),
-        "members": members,
-        "invited_users": invitedUsers,
-        "categories": categories.map((item) => item.toJson()).toList(),
-        "transactions": transactions.map((item) => item.toJson()).toList(),
       };
 }

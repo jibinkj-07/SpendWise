@@ -1,15 +1,16 @@
-import 'dart:developer';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../core/util/helper/firebase_path.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../expense/presentation/bloc/expense_bloc.dart';
 
 /// @author : Jibin K John
 /// @date   : 14/11/2024
 /// @time   : 14:29:51
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String? expenseId;
+
+  const HomeScreen({super.key, this.expenseId});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -18,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
-    _sub();
+    _initExpenseListener();
     super.initState();
   }
 
@@ -29,33 +30,35 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text("HomeScreen"),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          FilledButton(
-            onPressed: () {},
-            child: Text("Put"),
-          ),
-          FilledButton(
-            onPressed: () async {
-              // final user=context.read<AuthBloc>().state.currentUser;
-            },
-            child: Text("Get"),
-          ),
-        ],
+      body: BlocBuilder<ExpenseBloc, ExpenseState>(
+        builder: (ctx, state) {
+          return Column(
+            children: [
+              Text("Status ${state.expenseStatus}"),
+              Text(state.currentExpense!.name),
+              Column(
+                children: List.generate(state.currentExpense!.categories.length,
+                    (index) {
+                  return ListTile(
+                    title: Text(
+                      (state.currentExpense!.categories[index].name),
+                    ),
+                  );
+                }),
+              )
+            ],
+          );
+        },
       ),
     );
   }
 
-  void _sub() {
-    FirebaseDatabase.instance
-        .ref(FirebasePath.expensePath("expenseId"))
-        .onValue
-        .listen(
-      (DatabaseEvent event) {
-        if (event.snapshot.exists) {
-          log("data is ${event.snapshot.value.runtimeType}");
-        }
-      },
-    );
+  void _initExpenseListener() {
+    final user = context.read<AuthBloc>().state.currentUser!;
+    context.read<ExpenseBloc>().add(
+          SubscribeExpenseData(
+            expenseId: widget.expenseId ?? user.joinedExpenses.last.expenseId,
+          ),
+        );
   }
 }

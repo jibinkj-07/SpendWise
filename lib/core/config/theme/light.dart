@@ -31,6 +31,19 @@ sealed class Light {
         side: BorderSide(color: AppConfig.primaryColor),
       ),
     ),
+    listTileTheme: ListTileThemeData(
+      iconColor: Colors.black54,
+      titleTextStyle: TextStyle(
+        fontWeight: FontWeight.w500,
+        fontFamily: AppConfig.fontFamily,
+        color: Colors.black,
+      ),
+      subtitleTextStyle: TextStyle(
+        fontSize: 12.0,
+        fontFamily: AppConfig.fontFamily,
+        color: Colors.black87,
+      ),
+    ),
     pageTransitionsTheme: PageTransitionsTheme(
       builders: {
         TargetPlatform.android: CustomPageTransitionBuilder(),

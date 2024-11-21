@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../helper/asset_mapper.dart';
 
 class ZoomAnimationImage extends StatefulWidget {
-  const ZoomAnimationImage({super.key});
+  final Widget? child;
+
+  const ZoomAnimationImage({super.key, this.child});
 
   @override
   State<ZoomAnimationImage> createState() => _ZoomAnimationImageState();
@@ -41,15 +43,16 @@ class _ZoomAnimationImageState extends State<ZoomAnimationImage>
 
   @override
   Widget build(BuildContext context) {
-    final size=MediaQuery.sizeOf(context);
+    final size = MediaQuery.sizeOf(context);
     return Center(
       child: ScaleTransition(
         scale: _animation,
-        child: Image.asset(
-          AssetMapper.appIconImage,
-          height: size.height*.08,
-          width:  size.height*.08,
-        ),
+        child: widget.child ??
+            Image.asset(
+              AssetMapper.appIconImage,
+              height: size.height * .08,
+              width: size.height * .08,
+            ),
       ),
     );
   }
