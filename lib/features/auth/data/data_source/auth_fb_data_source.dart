@@ -82,9 +82,8 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
         lastName: lastName,
         email: email,
         profileUrl: "",
+        currentExpenseId: "",
         createdOn: createdOn,
-        joinedExpenses: [],
-        invitedExpenses: [],
       );
 
       await userCredential.user?.updateDisplayName("$firstName $lastName");
@@ -156,9 +155,8 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
         lastName: "",
         email: userCredential.user?.email ?? "user@gmail.com",
         profileUrl: userCredential.user?.photoURL ?? "",
+        currentExpenseId: "",
         createdOn: userCredential.user?.metadata.creationTime ?? DateTime.now(),
-        joinedExpenses: [],
-        invitedExpenses: [],
       );
 
       await _firebaseDatabase

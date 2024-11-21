@@ -15,6 +15,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepo _authRepo;
 
   AuthBloc(this._authRepo) : super(const AuthState.initial()) {
+    // Update user
+    on<UpdateUser>((event, emit) async {
+      emit(
+        state.copyWith(
+          currentUser: state.currentUser!
+              .copyWith(currentExpenseId: event.currentExpenseId),
+        ),
+      );
+    });
+
     // Initializing user
     on<InitUser>((event, emit) async {
       emit(state.copyWith(authStatus: AuthStatus.loading));

@@ -51,14 +51,11 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
                 if (user.isRight) {
                   members.add(
                     user.right.copyWith(
-                      date: DateTime.fromMillisecondsSinceEpoch(
-                        int.parse(
-                          event.snapshot
-                              .child("members/${member.key}/joined_on")
-                              .value
-                              .toString(),
-                        ),
-                      ),
+                      date: DateTime.fromMillisecondsSinceEpoch(int.parse(event
+                          .snapshot
+                          .child("members/${member.key}/joined_on")
+                          .value
+                          .toString())),
                       userStatus: UserStatus.accepted,
                     ),
                   );
@@ -72,14 +69,11 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
                 if (user.isRight) {
                   members.add(
                     user.right.copyWith(
-                      date: DateTime.fromMillisecondsSinceEpoch(
-                        int.parse(
-                          event.snapshot
-                              .child("invited_users/${member.key}/invited_on")
-                              .value
-                              .toString(),
-                        ),
-                      ),
+                      date: DateTime.fromMillisecondsSinceEpoch(int.parse(event
+                          .snapshot
+                          .child("invited_users/${member.key}/invited_on")
+                          .value
+                          .toString())),
                       userStatus: UserStatus.pending,
                     ),
                   );
@@ -103,16 +97,18 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
         );
       } catch (e) {
         log("er [expense_bloc.dart][subscribeExpenseData] $e");
-        emit(
-          ExpenseState.error(
-            Failure(message: "Unable to fetch data. Try again"),
-          ),
-        );
       }
     }
 
-    on<SubscribeExpenseData>((event, emit) {
-      subscribeExpenseData(event.expenseId, emit);
+    on<SubscribeExpenseData>((event, emit) async {
+      final result = await _firebaseDatabase
+          .ref(FirebasePath.expensePath(event.expenseId))
+          .get();
+      if (result.exists) {
+        subscribeExpenseData(event.expenseId, emit);
+      } else {
+        emit(ExpenseState.error(Failure(message: "Data does not exist")));
+      }
     });
 
     on<UpdateExpenseData>((event, emit) {
@@ -212,10 +208,11 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
           ),
         ),
         (user) async {
-          _authBloc.add(InitUser());
-          await Future.delayed(const Duration(seconds: 2));
+          _authBloc.add(UpdateUser(currentExpenseId: event.expense.id));
           emit(
-            state.copyWith(expenseStatus: ExpenseStatus.expenseCreated),
+            state.copyWith(
+              expenseStatus: ExpenseStatus.expenseCreated,
+            ),
           );
         },
       );
@@ -233,8 +230,6 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
           ),
         ),
         (user) async {
-          _authBloc.add(InitUser());
-          await Future.delayed(const Duration(seconds: 2));
           emit(
             state.copyWith(expenseStatus: ExpenseStatus.expenseDeleted),
           );

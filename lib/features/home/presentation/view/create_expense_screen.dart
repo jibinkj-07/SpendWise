@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spend_wise/core/config/route/app_routes.dart';
 import 'package:spend_wise/core/util/helper/app_helper.dart';
 import 'package:spend_wise/core/util/widget/outlined_text_field.dart';
 import 'package:spend_wise/features/expense/domain/model/expense_model.dart';
 import 'package:spend_wise/features/home/presentation/view/home_screen.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../core/config/route/app_routes.dart';
 import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../account/domain/model/user.dart';
 import '../../../account/presentation/view/invite_members_screen.dart';
@@ -63,9 +63,8 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
           _loading.value = state.expenseStatus == ExpenseStatus.expenseCreating;
 
           if (state.expenseStatus == ExpenseStatus.expenseCreated) {
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => HomeScreen(expenseId: _id)),
-                (_) => false);
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil(RouteName.home, (_) => false);
           }
 
           if (state.error != null) {

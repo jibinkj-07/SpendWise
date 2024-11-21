@@ -41,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
         _loading.value = state.authStatus == AuthStatus.logging;
 
         if (state.authStatus == AuthStatus.loggedIn) {
-          if (state.currentUser!.joinedExpenses.isEmpty) {
+          if (state.currentUser!.currentExpenseId.isEmpty) {
             /// Navigate to decision screen if user doesn't have expenses
             Navigator.of(context).pushReplacementNamed(RouteName.decision);
           } else {

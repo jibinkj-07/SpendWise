@@ -124,6 +124,9 @@ class ExpenseFbDataSourceImpl implements ExpenseFbDataSource {
           .ref(
               "${FirebasePath.userNode}/${expense.adminId}/joined_expenses/${expense.id}")
           .set({"joined_on": date.millisecondsSinceEpoch.toString()});
+      await _firebaseDatabase
+          .ref("${FirebasePath.userNode}/${expense.adminId}")
+          .update({"current_expense_id": expense.id});
       return const Right(true);
     } catch (e) {
       log("er: [expense_fb_data_source_impl.dart][insertExpense] $e");

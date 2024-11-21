@@ -1,3 +1,4 @@
+import '../../../features/home/presentation/helper/home_helper.dart';
 import './imports.dart';
 
 final sl = GetIt.instance;
@@ -5,6 +6,7 @@ final sl = GetIt.instance;
 Future<void> initDependencies() async {
   // **************************************** Class ****************************************
   sl.registerLazySingleton<AccountHelper>(() => AccountHelper(sl()));
+  sl.registerLazySingleton<HomeHelper>(() => HomeHelper(sl()));
 
   // **************************************** Externals ****************************************
   final auth = FirebaseAuth.instance;
