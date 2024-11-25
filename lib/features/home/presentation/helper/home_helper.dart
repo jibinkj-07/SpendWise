@@ -10,25 +10,25 @@ class HomeHelper {
     final result =
         await _firebaseDatabase.ref("${FirebasePath.userNode}/$userId").get();
 
-    if (result.child("current_expense_id").exists) {
-      final expenseData = await _firebaseDatabase
+    if (result.child("current_budget_id").exists) {
+      final budgetData = await _firebaseDatabase
           .ref(
-            FirebasePath.expensePath(
-              result.child("current_expense_id").value.toString(),
+            FirebasePath.budgetPath(
+              result.child("current_budget_id").value.toString(),
             ),
           )
           .get();
-      if (expenseData.exists) {
-        return result.child("current_expense_id").value.toString();
+      if (budgetData.exists) {
+        return result.child("current_budget_id").value.toString();
       }
     }
-    //get any id from joined expense node
-    for (final expense in result.child("joined_expenses").children) {
-      final expenseData = await _firebaseDatabase
-          .ref(FirebasePath.expensePath(expense.key.toString()))
+    //get any id from joined budget node
+    for (final budget in result.child("joined_budgets").children) {
+      final budgetData = await _firebaseDatabase
+          .ref(FirebasePath.budgetPath(budget.key.toString()))
           .get();
-      if (expenseData.exists) {
-        return expenseData.key.toString();
+      if (budgetData.exists) {
+        return budgetData.key.toString();
       }
     }
 

@@ -24,7 +24,7 @@ class TransactionModel {
   });
 
   TransactionModel copyWith({
-    String? id,
+
     DateTime? date,
     double? amount,
     String? title,
@@ -35,7 +35,7 @@ class TransactionModel {
     String? accountType,
   }) =>
       TransactionModel(
-        id: id ?? this.id,
+        id: id,
         date: date ?? this.date,
         amount: amount ?? this.amount,
         title: title ?? this.title,
@@ -62,7 +62,7 @@ class TransactionModel {
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson(String url) => {
         "title": title,
         "amount": amount,
         "date": date.millisecondsSinceEpoch.toString(),

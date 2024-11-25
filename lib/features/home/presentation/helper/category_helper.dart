@@ -1,6 +1,7 @@
 import 'dart:ui';
 
-import '../../../expense/domain/model/category_model.dart';
+import '../../../budget/domain/model/category_model.dart';
+
 
 sealed class CategoryHelper {
   static List<CategoryModel> suggestionCategories() => [

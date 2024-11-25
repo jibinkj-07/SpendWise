@@ -38,10 +38,10 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        _loading.value = state.authStatus == AuthStatus.logging;
+        _loading.value = state.authStatus == AuthStatus.authenticating;
 
-        if (state.authStatus == AuthStatus.loggedIn) {
-          if (state.currentUser!.currentExpenseId.isEmpty) {
+        if (state.authStatus == AuthStatus.authenticated) {
+          if (state.currentUser!.selectedBudget.isEmpty) {
             /// Navigate to decision screen if user doesn't have expenses
             Navigator.of(context).pushReplacementNamed(RouteName.decision);
           } else {
@@ -114,10 +114,17 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
             thickness: .5,
             color: Colors.grey,
           ),
-          Center(
+          SizedBox(
+            width: double.infinity,
             child: OutlinedButton.icon(
               onPressed: () =>
                   context.read<AuthBloc>().add(LoginUserWithGoogle()),
+              style: OutlinedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 12.0),
+              ),
               icon: SvgPicture.asset(
                 AssetMapper.googleSVG,
                 height: 20.0,

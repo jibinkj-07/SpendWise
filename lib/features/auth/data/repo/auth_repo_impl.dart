@@ -12,15 +12,13 @@ class AuthRepoImpl implements AuthRepo {
 
   @override
   Future<Either<Failure, UserModel>> createUser({
-    required String firstName,
-    required String lastName,
+    required String name,
     required String email,
     required String password,
   }) async {
     if (await InternetConnection().hasInternetAccess) {
       return await _authFbDataSource.createUser(
-        firstName: firstName,
-        lastName: lastName,
+        name: name,
         email: email,
         password: password,
       );

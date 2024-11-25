@@ -21,76 +21,75 @@ class AuthBg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
     return Scaffold(
       backgroundColor: AppConfig.primaryColor,
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(15.0),
-          child: Center(
-            child: Container(
-              padding: EdgeInsets.all(20.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15.0),
-                border: Border.all(width: .2, color: Colors.grey),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 20.0,
-                    spreadRadius: 2.0,
-                  ),
-                ],
-              ),
-              child: Form(
-                key: formKey,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        children: [
-                          Image.asset(
-                            AssetMapper.appIcon2Image,
-                            height: 55,
-                            width: 55,
-                          ),
-                          const SizedBox(width: 10.0),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                AppConfig.name,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18.0,
-                                  color: AppConfig.primaryColor,
-                                ),
-                              ),
-                              Text(
-                                AppConfig.slogan,
-                                style: TextStyle(
-                                  fontSize: 13.0,
-                                  color: AppConfig.primaryColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20.0),
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.0,
+        child: Center(
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: size.width * .05),
+            padding: EdgeInsets.all(size.width * .08),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.0),
+              border: Border.all(width: .2, color: Colors.grey),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 20.0,
+                  spreadRadius: 2.0,
+                ),
+              ],
+            ),
+            child: Form(
+              key: formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Image.asset(
+                          AssetMapper.appIcon2Image,
+                          height: 55,
+                          width: 55,
                         ),
+                        const SizedBox(width: 10.0),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppConfig.name,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18.0,
+                                color: AppConfig.primaryColor,
+                              ),
+                            ),
+                            Text(
+                              AppConfig.slogan,
+                              style: TextStyle(
+                                fontSize: 13.0,
+                                color: AppConfig.primaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 30.0),
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
                       ),
-                      const SizedBox(height: 10.0),
-                      ...children,
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 10.0),
+                    ...children,
+                  ],
                 ),
               ),
             ),

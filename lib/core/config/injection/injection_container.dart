@@ -1,11 +1,10 @@
-import '../../../features/home/presentation/helper/home_helper.dart';
+
 import './imports.dart';
 
 final sl = GetIt.instance;
 
 Future<void> initDependencies() async {
   // **************************************** Class ****************************************
-  sl.registerLazySingleton<AccountHelper>(() => AccountHelper(sl()));
   sl.registerLazySingleton<HomeHelper>(() => HomeHelper(sl()));
 
   // **************************************** Externals ****************************************
@@ -28,20 +27,16 @@ Future<void> initDependencies() async {
       sl(),
     ),
   );
-  sl.registerLazySingleton<ExpenseFbDataSource>(
-    () => ExpenseFbDataSourceImpl(sl(), sl()),
-  );
+  sl.registerLazySingleton<BudgetFbDataSource>(
+      () => BudgetFbDataSourceImpl(sl(), sl(), sl()));
+  sl.registerLazySingleton<AccountFbDataSource>(
+      () => AccountFbDataSourceImpl(sl()));
 
   // **************************************** Repos ****************************************
   sl.registerLazySingleton<AuthRepo>(() => AuthRepoImpl(sl()));
-  sl.registerLazySingleton<ExpenseRepo>(() => ExpenseRepoImpl(sl()));
+  sl.registerLazySingleton<BudgetRepo>(() => BudgetRepoImpl(sl()));
+  sl.registerLazySingleton<AccountRepo>(() => AccountRepoImpl(sl()));
 
   // **************************************** Bloc ****************************************
   sl.registerSingleton<AuthBloc>(AuthBloc(sl()));
-  sl.registerSingleton<ExpenseBloc>(ExpenseBloc(
-    sl(),
-    sl(),
-    sl(),
-    sl(),
-  ));
 }

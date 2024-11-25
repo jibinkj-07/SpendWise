@@ -19,8 +19,7 @@ abstract class AuthFbDataSource {
   Future<Either<Failure, UserModel>> loginUserWithGoogle();
 
   Future<Either<Failure, UserModel>> createUser({
-    required String firstName,
-    required String lastName,
+    required String name,
     required String email,
     required String password,
   });
@@ -46,11 +45,11 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
   Future<Either<Failure, UserModel>> _getUserModel(String? userId) async {
     final id = userId ?? _unknown;
     final fbSnapshot =
-        await _firebaseDatabase.ref(FirebasePath.userNode).child(id).get();
-    if (!fbSnapshot.exists) {
+        await _firebaseDatabase.ref(FirebasePath.userPath(id)).once();
+    if (!fbSnapshot.snapshot.exists) {
       return Left(Failure(message: "No data found for this user."));
     }
-    return Right(UserModel.fromFirebase(fbSnapshot));
+    return Right(UserModel.fromFirebase(fbSnapshot.snapshot));
   }
 
   Future<void> _updateUserImage(String? userId, String? url) async {
@@ -63,8 +62,7 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
 
   @override
   Future<Either<Failure, UserModel>> createUser({
-    required String firstName,
-    required String lastName,
+    required String name,
     required String email,
     required String password,
   }) async {
@@ -78,18 +76,16 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
       final createdOn = DateTime.now();
       final user = UserModel(
         uid: userCredential.user?.uid ?? _unknown,
-        firstName: firstName,
-        lastName: lastName,
+        name: name,
         email: email,
         profileUrl: "",
-        currentExpenseId: "",
+        selectedBudget: "",
         createdOn: createdOn,
       );
 
-      await userCredential.user?.updateDisplayName("$firstName $lastName");
+      await userCredential.user?.updateDisplayName(name);
       await _firebaseDatabase
-          .ref(FirebasePath.userNode)
-          .child(user.uid)
+          .ref(FirebasePath.userPath(user.uid))
           .set(user.toJson());
 
       return Right(user);
@@ -108,8 +104,11 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
     required String password,
   }) async {
     try {
-      final UserCredential userCredential = await _firebaseAuth
-          .signInWithEmailAndPassword(email: email, password: password);
+      final UserCredential userCredential =
+          await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       return await _getUserModel(userCredential.user?.uid);
     } on FirebaseAuthException catch (e) {
       log("er: [auth_fb_data_source.dart][loginUser] $e");
@@ -151,17 +150,15 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
       }
       final user = UserModel(
         uid: userId ?? _unknown,
-        firstName: userCredential.user?.displayName ?? "User",
-        lastName: "",
+        name: userCredential.user?.displayName ?? "User",
         email: userCredential.user?.email ?? "user@gmail.com",
         profileUrl: userCredential.user?.photoURL ?? "",
-        currentExpenseId: "",
+        selectedBudget: "",
         createdOn: userCredential.user?.metadata.creationTime ?? DateTime.now(),
       );
 
       await _firebaseDatabase
-          .ref(FirebasePath.userNode)
-          .child(user.uid)
+          .ref(FirebasePath.userPath(user.uid))
           .set(user.toJson());
       return Right(user);
     } catch (e) {

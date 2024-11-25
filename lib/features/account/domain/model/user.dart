@@ -2,8 +2,7 @@ enum UserStatus { accepted, pending }
 
 class User {
   final String uid;
-  final String firstName;
-  final String lastName;
+  final String name;
   final String email;
   final String imageUrl;
   final UserStatus userStatus;
@@ -11,8 +10,7 @@ class User {
 
   User({
     required this.uid,
-    required this.firstName,
-    required this.lastName,
+    required this.name,
     required this.email,
     required this.imageUrl,
     required this.userStatus,
@@ -25,8 +23,7 @@ class User {
   }) =>
       User(
         uid: uid,
-        firstName: firstName,
-        lastName: lastName,
+        name: name,
         email: email,
         imageUrl: imageUrl,
         userStatus: userStatus ?? this.userStatus,

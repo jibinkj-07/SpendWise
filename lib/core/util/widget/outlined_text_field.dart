@@ -87,24 +87,24 @@ class OutlinedTextField extends StatelessWidget {
         ),
         contentPadding: const EdgeInsets.all(15.0),
         disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: const BorderSide(width: 1, color: Colors.grey),
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(width: .5, color: Colors.grey),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: const BorderSide(width: 1, color: Colors.grey),
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(width: .5, color: Colors.grey),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(width: 2, color: AppConfig.primaryColor),
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide(width: 1.5, color: AppConfig.primaryColor),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: const BorderSide(width: 1, color: Colors.red),
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(width: .5, color: Colors.red),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: const BorderSide(width: 2, color: Colors.red),
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(width: 1.5, color: Colors.red),
         ),
       ),
     );

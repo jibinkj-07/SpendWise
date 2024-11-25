@@ -21,8 +21,7 @@ class CreateAccountScreen extends StatefulWidget {
 
 class _CreateAccountScreenState extends State<CreateAccountScreen>
     with ValidationMixin {
-  String _firstName = "";
-  String _lastName = "";
+  String _name = "";
   String _email = "";
   String _password = "";
   final _formKey = GlobalKey<FormState>();
@@ -40,10 +39,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen>
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        _loading.value = state.authStatus == AuthStatus.creating;
+        _loading.value = state.authStatus == AuthStatus.authenticating;
 
         /// Navigate to home screen for success creation
-        if (state.authStatus == AuthStatus.created) {
+        if (state.authStatus == AuthStatus.authenticated) {
           Navigator.of(context).pushNamedAndRemoveUntil(
             RouteName.decision,
             (_) => false,
@@ -59,32 +58,14 @@ class _CreateAccountScreenState extends State<CreateAccountScreen>
         formKey: _formKey,
         title: "Create your Account",
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedTextField(
-                  textFieldKey: "first",
-                  hintText: "First Name",
-                  maxLength: 30,
-                  inputAction: TextInputAction.next,
-                  textCapitalization: TextCapitalization.words,
-                  validator: validateUsername,
-                  onSaved: (data) => _firstName = data.toString().trim(),
-                ),
-              ),
-              const SizedBox(width: 5.0),
-              Expanded(
-                child: OutlinedTextField(
-                  textFieldKey: "last",
-                  hintText: "Last Name",
-                  maxLength: 30,
-                  inputAction: TextInputAction.next,
-                  textCapitalization: TextCapitalization.words,
-                  validator: validateUsername,
-                  onSaved: (data) => _lastName = data.toString().trim(),
-                ),
-              ),
-            ],
+          OutlinedTextField(
+            textFieldKey: "name",
+            hintText: "Name",
+            maxLength: 30,
+            inputAction: TextInputAction.next,
+            textCapitalization: TextCapitalization.words,
+            validator: validateUsername,
+            onSaved: (data) => _name = data.toString().trim(),
           ),
           const SizedBox(height: 10.0),
           OutlinedTextField(
@@ -156,8 +137,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen>
       _formKey.currentState!.save();
       context.read<AuthBloc>().add(
             CreateUser(
-              firstName: _firstName,
-              lastName: _lastName,
+              name: _name,
               email: _email,
               password: _password,
             ),

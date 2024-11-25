@@ -6,8 +6,7 @@ import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../../core/util/widget/outlined_text_field.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../expense/domain/model/category_model.dart';
-import '../../../expense/presentation/bloc/expense_bloc.dart';
+import '../../../budget/domain/model/category_model.dart';
 import '../helper/category_helper.dart';
 
 /// @author : Jibin K John
@@ -78,142 +77,142 @@ class _CategoryEntryScreenState extends State<CategoryEntryScreen> {
           ),
         ),
       ),
-      body: BlocListener<ExpenseBloc, ExpenseState>(
-        listener: (BuildContext context, state) {
-          _loading.value =
-              state.expenseStatus == ExpenseStatus.categoryCreating;
-
-          /// Close current screen for success category creation
-          if (state.expenseStatus == ExpenseStatus.categoryCreated) {
-            Navigator.pop(context);
-          }
-
-          /// Show error snack bar if any!
-          if (state.error != null) {
-            state.error!.showSnackBar(context);
-          }
-        },
-        child: ListView(
-          padding: const EdgeInsets.all(20.0),
-          children: [
-            Form(
-              key: _formKey,
-              child: OutlinedTextField(
-                controller: _textEditingController,
-                initialValue: widget.category?.name,
-                textFieldKey: "name",
-                hintText: "Name",
-                maxLength: 30,
-                textCapitalization: TextCapitalization.words,
-                validator: (value) {
-                  if (value.toString().trim().isEmpty) {
-                    return "Fill this field";
-                  }
-                  return null;
-                },
-                onSaved: (value) => _name = value.toString().trim(),
-                inputAction: TextInputAction.done,
-              ),
-            ),
-            const SizedBox(height: 15.0),
-            ListTile(
-              onTap: _showIconPicker,
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.add_reaction_rounded),
-              title: Text(
-                "Icon",
-                style: TextStyle(
-                  fontSize: 15.5,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              subtitle: Text("Add an unique icon"),
-              trailing: ValueListenableBuilder(
-                valueListenable: _iconName,
-                builder: (ctx, iconName, _) {
-                  return Icon(
-                    AppHelper.getIconFromString(iconName),
-                    color: AppConfig.primaryColor,
-                    size: 30.0,
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 15.0),
-            ListTile(
-              onTap: _showColorPickerDialog,
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.palette_rounded),
-              title: Text(
-                "Color",
-                style: TextStyle(
-                  fontSize: 15.5,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              subtitle: Text("Provide an unique color"),
-              trailing: ValueListenableBuilder(
-                valueListenable: _color,
-                builder: (ctx, color, _) {
-                  return Container(
-                    height: 40.0,
-                    width: 40.0,
-                    decoration: BoxDecoration(
-                      color: color,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey, width: .5),
-                    ),
-                  );
-                },
-              ),
-            ),
-            if (widget.category == null) ...[
-              const SizedBox(height: 20.0),
-              Text("Suggestions"),
-              GridView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 10.0,
-                    crossAxisSpacing: 10.0,
-                    childAspectRatio: 1 / .25),
-                itemCount: _suggestions.length,
-                itemBuilder: (ctx, index) {
-                  return OutlinedButton.icon(
-                    onPressed: () {
-                      _textEditingController.text = _suggestions[index].name;
-                      _color.value = _suggestions[index].color;
-                      _iconName.value = _suggestions[index].icon;
-                    },
-                    style: FilledButton.styleFrom(
-                      side: BorderSide(
-                        color: _suggestions[index].color.withOpacity(.5),
-                      ),
-                      foregroundColor: _suggestions[index].color,
-                    ),
-                    icon: Icon(
-                        AppHelper.getIconFromString(_suggestions[index].icon)),
-                    label: Text(_suggestions[index].name),
-                  );
-                },
-              ),
-            ],
-            const SizedBox(height: 20.0),
-            ValueListenableBuilder(
-              valueListenable: _loading,
-              builder: (ctx, loading, _) {
-                return LoadingFilledButton(
-                  onPressed: _onCreateOrUpdate,
-                  loading: loading,
-                  child: Text(widget.category == null ? "Create" : "Update"),
-                );
-              },
-            )
-          ],
-        ),
-      ),
+      // body: BlocListener<ExpenseBloc, ExpenseState>(
+      //   listener: (BuildContext context, state) {
+      //     _loading.value =
+      //         state.expenseStatus == ExpenseStatus.categoryCreating;
+      //
+      //     /// Close current screen for success category creation
+      //     if (state.expenseStatus == ExpenseStatus.categoryCreated) {
+      //       Navigator.pop(context);
+      //     }
+      //
+      //     /// Show error snack bar if any!
+      //     if (state.error != null) {
+      //       state.error!.showSnackBar(context);
+      //     }
+      //   },
+      //   child: ListView(
+      //     padding: const EdgeInsets.all(20.0),
+      //     children: [
+      //       Form(
+      //         key: _formKey,
+      //         child: OutlinedTextField(
+      //           controller: _textEditingController,
+      //           initialValue: widget.category?.name,
+      //           textFieldKey: "name",
+      //           hintText: "Name",
+      //           maxLength: 30,
+      //           textCapitalization: TextCapitalization.words,
+      //           validator: (value) {
+      //             if (value.toString().trim().isEmpty) {
+      //               return "Fill this field";
+      //             }
+      //             return null;
+      //           },
+      //           onSaved: (value) => _name = value.toString().trim(),
+      //           inputAction: TextInputAction.done,
+      //         ),
+      //       ),
+      //       const SizedBox(height: 15.0),
+      //       ListTile(
+      //         onTap: _showIconPicker,
+      //         contentPadding: EdgeInsets.zero,
+      //         leading: Icon(Icons.add_reaction_rounded),
+      //         title: Text(
+      //           "Icon",
+      //           style: TextStyle(
+      //             fontSize: 15.5,
+      //             fontWeight: FontWeight.bold,
+      //           ),
+      //         ),
+      //         subtitle: Text("Add an unique icon"),
+      //         trailing: ValueListenableBuilder(
+      //           valueListenable: _iconName,
+      //           builder: (ctx, iconName, _) {
+      //             return Icon(
+      //               AppHelper.getIconFromString(iconName),
+      //               color: AppConfig.primaryColor,
+      //               size: 30.0,
+      //             );
+      //           },
+      //         ),
+      //       ),
+      //       const SizedBox(height: 15.0),
+      //       ListTile(
+      //         onTap: _showColorPickerDialog,
+      //         contentPadding: EdgeInsets.zero,
+      //         leading: Icon(Icons.palette_rounded),
+      //         title: Text(
+      //           "Color",
+      //           style: TextStyle(
+      //             fontSize: 15.5,
+      //             fontWeight: FontWeight.bold,
+      //           ),
+      //         ),
+      //         subtitle: Text("Provide an unique color"),
+      //         trailing: ValueListenableBuilder(
+      //           valueListenable: _color,
+      //           builder: (ctx, color, _) {
+      //             return Container(
+      //               height: 40.0,
+      //               width: 40.0,
+      //               decoration: BoxDecoration(
+      //                 color: color,
+      //                 shape: BoxShape.circle,
+      //                 border: Border.all(color: Colors.grey, width: .5),
+      //               ),
+      //             );
+      //           },
+      //         ),
+      //       ),
+      //       if (widget.category == null) ...[
+      //         const SizedBox(height: 20.0),
+      //         Text("Suggestions"),
+      //         GridView.builder(
+      //           padding: const EdgeInsets.symmetric(vertical: 10.0),
+      //           shrinkWrap: true,
+      //           physics: const NeverScrollableScrollPhysics(),
+      //           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      //               crossAxisCount: 2,
+      //               mainAxisSpacing: 10.0,
+      //               crossAxisSpacing: 10.0,
+      //               childAspectRatio: 1 / .25),
+      //           itemCount: _suggestions.length,
+      //           itemBuilder: (ctx, index) {
+      //             return OutlinedButton.icon(
+      //               onPressed: () {
+      //                 _textEditingController.text = _suggestions[index].name;
+      //                 _color.value = _suggestions[index].color;
+      //                 _iconName.value = _suggestions[index].icon;
+      //               },
+      //               style: FilledButton.styleFrom(
+      //                 side: BorderSide(
+      //                   color: _suggestions[index].color.withOpacity(.5),
+      //                 ),
+      //                 foregroundColor: _suggestions[index].color,
+      //               ),
+      //               icon: Icon(
+      //                   AppHelper.getIconFromString(_suggestions[index].icon)),
+      //               label: Text(_suggestions[index].name),
+      //             );
+      //           },
+      //         ),
+      //       ],
+      //       const SizedBox(height: 20.0),
+      //       ValueListenableBuilder(
+      //         valueListenable: _loading,
+      //         builder: (ctx, loading, _) {
+      //           return LoadingFilledButton(
+      //             onPressed: _onCreateOrUpdate,
+      //             loading: loading,
+      //             child: Text(widget.category == null ? "Create" : "Update"),
+      //           );
+      //         },
+      //       )
+      //     ],
+      //   ),
+      // ),
     );
   }
 
@@ -331,9 +330,9 @@ class _CategoryEntryScreenState extends State<CategoryEntryScreen> {
           ..add(categoryModel);
         Navigator.pop(context);
       } else {
-        context.read<ExpenseBloc>().add(
-              InsertCategory(category: categoryModel),
-            );
+        // context.read<ExpenseBloc>().add(
+        //       InsertCategory(category: categoryModel),
+        //     );
       }
     }
   }

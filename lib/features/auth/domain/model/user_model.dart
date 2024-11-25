@@ -2,45 +2,41 @@ import 'package:firebase_database/firebase_database.dart';
 
 class UserModel {
   final String uid;
-  final String firstName;
-  final String lastName;
+  final String name;
   final String email;
   final String profileUrl;
-  final String currentExpenseId;
+  final String selectedBudget;
   final DateTime createdOn;
 
   UserModel({
     required this.uid,
-    required this.firstName,
-    required this.lastName,
+    required this.name,
     required this.email,
     required this.profileUrl,
-    required this.currentExpenseId,
+    required this.selectedBudget,
     required this.createdOn,
   });
 
   UserModel copyWith({
     String? profileUrl,
-    String? currentExpenseId,
+    String? selectedBudget,
   }) =>
       UserModel(
         uid: uid,
-        firstName: firstName,
-        lastName: lastName,
+        name: name,
         email: email,
         profileUrl: profileUrl ?? this.profileUrl,
-        currentExpenseId: currentExpenseId ?? this.currentExpenseId,
+        selectedBudget: selectedBudget ?? this.selectedBudget,
         createdOn: createdOn,
       );
 
   factory UserModel.fromFirebase(DataSnapshot userData) {
     return UserModel(
       uid: userData.key.toString(),
-      firstName: userData.child("first_name").value.toString(),
-      lastName: userData.child("last_name").value.toString(),
+      name: userData.child("name").value.toString(),
       email: userData.child("email").value.toString(),
       profileUrl: userData.child("profile_url").value.toString(),
-      currentExpenseId: userData.child("current_expense_id").value.toString(),
+      selectedBudget: userData.child("selected").value.toString(),
       createdOn: DateTime.fromMillisecondsSinceEpoch(
         int.parse(userData.child("created_on").value.toString()),
       ),
@@ -48,11 +44,9 @@ class UserModel {
   }
 
   Map<String, dynamic> toJson() => {
-        "first_name": firstName,
-        "last_name": lastName,
+        "name": name,
         "email": email,
         "profile_url": profileUrl,
-        "current_expense_id": currentExpenseId,
         "created_on": createdOn.millisecondsSinceEpoch.toString(),
       };
 }

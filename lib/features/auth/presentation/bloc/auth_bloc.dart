@@ -15,16 +15,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepo _authRepo;
 
   AuthBloc(this._authRepo) : super(const AuthState.initial()) {
-    // Update user
-    on<UpdateUser>((event, emit) async {
-      emit(
-        state.copyWith(
-          currentUser: state.currentUser!
-              .copyWith(currentExpenseId: event.currentExpenseId),
-        ),
-      );
-    });
-
     // Initializing user
     on<InitUser>((event, emit) async {
       emit(state.copyWith(authStatus: AuthStatus.loading));
@@ -40,10 +30,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     // Creating user
     on<CreateUser>((event, emit) async {
-      emit(state.copyWith(authStatus: AuthStatus.creating));
+      emit(state.copyWith(authStatus: AuthStatus.authenticating));
       final result = await _authRepo.createUser(
-        firstName: event.firstName,
-        lastName: event.lastName,
+        name: event.name,
         email: event.email,
         password: event.password,
       );
@@ -51,14 +40,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         (failure) => emit(AuthState.error(failure)),
         (user) => emit(state.copyWith(
           currentUser: user,
-          authStatus: AuthStatus.created,
+          authStatus: AuthStatus.authenticated,
         )),
       );
     });
 
     // Logging user
     on<LoginUser>((event, emit) async {
-      emit(state.copyWith(authStatus: AuthStatus.logging));
+      emit(state.copyWith(authStatus: AuthStatus.authenticating));
       final result = await _authRepo.loginUser(
         email: event.email,
         password: event.password,
@@ -67,20 +56,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         (failure) => emit(AuthState.error(failure)),
         (user) => emit(state.copyWith(
           currentUser: user,
-          authStatus: AuthStatus.loggedIn,
+          authStatus: AuthStatus.authenticated,
         )),
       );
     });
 
     // Logging user with Google
     on<LoginUserWithGoogle>((event, emit) async {
-      emit(state.copyWith(authStatus: AuthStatus.logging));
+      emit(state.copyWith(authStatus: AuthStatus.authenticating));
       final result = await _authRepo.loginUserWithGoogle();
       result.fold(
         (failure) => emit(AuthState.error(failure)),
         (user) => emit(state.copyWith(
           currentUser: user,
-          authStatus: AuthStatus.loggedIn,
+          authStatus: AuthStatus.authenticated,
         )),
       );
     });

@@ -14,8 +14,7 @@ abstract class AuthRepo {
   Future<Either<Failure, UserModel>> loginUserWithGoogle();
 
   Future<Either<Failure, UserModel>> createUser({
-    required String firstName,
-    required String lastName,
+    required String name,
     required String email,
     required String password,
   });

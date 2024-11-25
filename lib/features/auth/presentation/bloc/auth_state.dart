@@ -3,10 +3,8 @@ part of 'auth_bloc.dart';
 enum AuthStatus {
   idle,
   loading,
-  logging,
-  loggedIn,
-  creating,
-  created,
+  authenticating,
+  authenticated,
   resetting,
   reset,
   signingOut,

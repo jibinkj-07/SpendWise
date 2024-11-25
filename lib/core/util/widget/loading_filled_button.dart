@@ -24,6 +24,7 @@ class LoadingFilledButton extends StatelessWidget {
       onPressed: loading ? null : onPressed,
       style: FilledButton.styleFrom(
         backgroundColor: isDelete ? Colors.red : null,
+        padding: EdgeInsets.symmetric(vertical: 15.0),
       ),
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
