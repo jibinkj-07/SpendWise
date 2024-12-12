@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/config/injection/injection_container.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../helper/home_helper.dart';
+
 
 /// @author : Jibin K John
 /// @date   : 14/11/2024
@@ -16,7 +15,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final HomeHelper _homeHelper = sl<HomeHelper>();
+
 
   @override
   void initState() {
@@ -37,6 +36,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _initExpenseListener() async {
     final user = context.read<AuthBloc>().state.currentUser!;
-    final expenseId = await _homeHelper.getCurrentExpenseId(user.uid);
+    // final expenseId = await _homeHelper.getCurrentExpenseId(user.uid);
   }
 }

@@ -74,4 +74,7 @@ sealed class AppHelper {
     String hex = color.value.toRadixString(16).toUpperCase().substring(2);
     return '#$hex';
   }
+
+  /// Function to return padding
+  static double horizontalPadding(Size size) => size.width * .05;
 }

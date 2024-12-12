@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'core/util/constant/constants.dart';
 import 'core/util/widget/custom_loading.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/view/login_screen.dart';
@@ -28,6 +29,11 @@ class Root extends StatelessWidget {
           if (state.currentUser!.selectedBudget.isEmpty) {
             return DecisionScreen();
           }
+
+          // check selected budget equals to "requested"
+          // if yes route to pending screen
+          else if (state.currentUser!.selectedBudget.toLowerCase() ==
+              kRequested) {}
           return HomeScreen();
         }
 

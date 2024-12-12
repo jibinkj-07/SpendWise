@@ -34,11 +34,13 @@ class LoadingFilledButton extends StatelessWidget {
         switchInCurve: Curves.easeIn,
         switchOutCurve: Curves.easeOut,
         child: loading
-            ? SizedBox(
-                height: 20.0,
-                width: 20.0,
-                child: const CircularProgressIndicator(strokeWidth: 2.0),
-              )
+            ? Center(
+              child: SizedBox(
+                  height: 20.0,
+                  width: 20.0,
+                  child: const CircularProgressIndicator(strokeWidth: 2.0),
+                ),
+            )
             : SizedBox(
                 width: double.infinity,
                 child: Center(child: child),

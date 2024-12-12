@@ -47,6 +47,7 @@ class UserModel {
         "name": name,
         "email": email,
         "profile_url": profileUrl,
+        "selected": selectedBudget,
         "created_on": createdOn.millisecondsSinceEpoch.toString(),
       };
 }

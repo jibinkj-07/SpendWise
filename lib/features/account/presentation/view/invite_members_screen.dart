@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/config/injection/injection_container.dart';
+import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../../core/util/widget/outlined_text_field.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/model/user.dart';
+import '../helper/account_helper.dart';
 
 /// @author : Jibin K John
 /// @date   : 21/11/2024
@@ -22,6 +25,7 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
   final _formKey = GlobalKey<FormState>();
   String _email = "";
   final ValueNotifier<bool> _loading = ValueNotifier(false);
+  final AccountHelper _accountHelper = sl<AccountHelper>();
 
   @override
   void dispose() {
@@ -31,6 +35,7 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -46,7 +51,10 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppHelper.horizontalPadding(size),
+          vertical: 20.0,
+        ),
         children: [
           Form(
             key: _formKey,
@@ -70,7 +78,7 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
               inputAction: TextInputAction.done,
             ),
           ),
-          const SizedBox(height: 20.0),
+          const SizedBox(height: 30.0),
           ValueListenableBuilder(
             valueListenable: _loading,
             builder: (ctx, loading, _) {
@@ -91,19 +99,20 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
       _formKey.currentState!.save();
       FocusScope.of(context).unfocus();
       _loading.value = true;
-      // final result = await _accountHelper.getUser(_email);
-      // if (result.isLeft) {
-      //   _loading.value = false;
-      //   result.left.showSnackBar(context);
-      // } else {
-      //   if (widget.members != null) {
-      //     widget.members!.value =
-      //         List.from(widget.members!.value..add(result.right));
-      //   } else {
-      //     // call invite member function
-      //   }
-      //   Navigator.pop(context);
-      // }
+      final result = await _accountHelper.getUserInfoByMail(email: _email);
+      if (result.isLeft) {
+        _loading.value = false;
+        result.left.showSnackBar(context);
+      } else {
+        if (widget.members != null) {
+          widget.members!.value = List.from(
+            widget.members!.value..add(result.right),
+          );
+        } else {
+          // call invite member function
+        }
+        Navigator.pop(context);
+      }
     }
   }
 }

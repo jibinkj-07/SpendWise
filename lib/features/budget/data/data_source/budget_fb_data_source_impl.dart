@@ -1,13 +1,12 @@
 import 'dart:developer';
 
+import 'package:currency_picker/currency_picker.dart';
 import 'package:either_dart/either.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:spend_wise/core/util/helper/firebase_path.dart';
 import 'package:spend_wise/features/account/domain/model/user.dart';
-import 'package:spend_wise/features/budget/domain/model/goal_model.dart';
-import 'package:spend_wise/features/budget/domain/model/goal_trans_model.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/util/error/failure.dart';
@@ -84,7 +83,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
     required String name,
     required String admin,
     required List<CategoryModel> categories,
-    required List<String> accountTypes,
+    required Currency currency,
     required List<User> members,
   }) async {
     final id = Uuid().v1();
@@ -93,6 +92,8 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
       await _firebaseDatabase.ref(FirebasePath.budgetPath(id)).set({
         "name": name,
         "admin": admin,
+        "currency": currency.name,
+        "currency_symbol": currency.symbol,
       });
 
       // Add Categories
@@ -101,12 +102,6 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
             .ref(FirebasePath.categoryPath(id, item.id))
             .set(item.toJson());
       }
-
-      // Add account types
-      await _firebaseDatabase
-          .ref(FirebasePath.budgetPath(id))
-          .child("account_types")
-          .set(accountTypes);
 
       final date = DateTime.now().millisecondsSinceEpoch.toString();
       // Add members and invitation into member node
@@ -135,40 +130,6 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
     } catch (e) {
       log("er: [budget_fb_data_source_impl.dart][insertBudget] $e");
       return Left(Failure(message: "Unable to create new budget."));
-    }
-  }
-
-  @override
-  Future<Either<Failure, bool>> insertGoal({
-    required String budgetId,
-    required GoalModel goal,
-  }) async {
-    try {
-      await _firebaseDatabase
-          .ref(FirebasePath.goalPath(budgetId, goal.id))
-          .set(goal.toJson());
-      return const Right(true);
-    } catch (e) {
-      log("er: [budget_fb_data_source_impl.dart][insertGoal] $e");
-      return Left(Failure(message: "Unable to create goal."));
-    }
-  }
-
-  @override
-  Future<Either<Failure, bool>> insertGoalTransaction({
-    required String budgetId,
-    required String goalId,
-    required GoalTransModel transaction,
-  }) async {
-    try {
-      await _firebaseDatabase
-          .ref(FirebasePath.goalPath(budgetId, goalId))
-          .child("history/${transaction.id}")
-          .set(transaction.toJson());
-      return const Right(true);
-    } catch (e) {
-      log("er: [budget_fb_data_source_impl.dart][insertGoalTransaction] $e");
-      return Left(Failure(message: "Unable to create new transaction."));
     }
   }
 
@@ -224,40 +185,6 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
     } catch (e) {
       log("er: [budget_fb_data_source_impl.dart][removeBudget] $e");
       return Left(Failure(message: "Unable to delete this budget."));
-    }
-  }
-
-  @override
-  Future<Either<Failure, bool>> removeGoal({
-    required String budgetId,
-    required String goalId,
-  }) async {
-    try {
-      await _firebaseDatabase
-          .ref(FirebasePath.goalPath(budgetId, goalId))
-          .remove();
-      return const Right(true);
-    } catch (e) {
-      log("er: [budget_fb_data_source_impl.dart][removeGoal] $e");
-      return Left(Failure(message: "Unable to delete this goal."));
-    }
-  }
-
-  @override
-  Future<Either<Failure, bool>> removeGoalTransaction({
-    required String budgetId,
-    required String goalId,
-    required String transactionId,
-  }) async {
-    try {
-      await _firebaseDatabase
-          .ref(FirebasePath.goalPath(budgetId, goalId))
-          .child("history/$transactionId")
-          .remove();
-      return const Right(true);
-    } catch (e) {
-      log("er: [budget_fb_data_source_impl.dart][removeGoalTransaction] $e");
-      return Left(Failure(message: "Unable to delete this transaction."));
     }
   }
 

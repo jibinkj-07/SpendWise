@@ -66,7 +66,7 @@ class DecisionScreen extends StatelessWidget {
                       backgroundColor: Colors.white,
                       foregroundColor: AppConfig.primaryColor,
                     ),
-                    child: Text("Create Expense"),
+                    child: Text("Create Budget"),
                   ),
                 ),
                 OutlinedButton(
@@ -75,7 +75,7 @@ class DecisionScreen extends StatelessWidget {
                     side: BorderSide(color: Colors.white),
                     foregroundColor: Colors.white,
                   ),
-                  child: Text("Join Expense"),
+                  child: Text("Join Budget"),
                 )
               ],
             ),

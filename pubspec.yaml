@@ -28,6 +28,7 @@ dependencies:
   lottie: # for rendering lottie animations
   flutter_colorpicker: # for picking color
   uuid: # for generating random keys
+  currency_picker: # for currency picking
 
 
 dev_dependencies:

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:spend_wise/features/auth/presentation/view/create_account_screen.dart';
 import 'package:spend_wise/features/auth/presentation/view/password_reset_screen.dart';
-import 'package:spend_wise/features/home/presentation/view/category_entry_screen.dart';
-import 'package:spend_wise/features/home/presentation/view/create_expense_screen.dart';
+import 'package:spend_wise/features/account/presentation/view/category_entry_screen.dart';
+import 'package:spend_wise/features/budget/presentation/view/create_budget_screen.dart';
 import 'package:spend_wise/features/home/presentation/view/decision_screen.dart';
 import 'package:spend_wise/features/home/presentation/view/home_screen.dart';
 import '../../../features/account/presentation/view/invite_members_screen.dart';
@@ -45,7 +45,7 @@ sealed class AppRoutes {
       case RouteName.decision:
         return MaterialPageRoute(builder: (_) => const DecisionScreen());
       case RouteName.createExpense:
-        return MaterialPageRoute(builder: (_) => const CreateExpenseScreen());
+        return MaterialPageRoute(builder: (_) => const CreateBudgetScreen());
       case RouteName.createCategory:
         return MaterialPageRoute(builder: (_) => const CategoryEntryScreen());
       case RouteName.inviteMembers:

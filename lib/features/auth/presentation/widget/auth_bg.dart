@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/config/app_config.dart';
+import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/helper/asset_mapper.dart';
 
 /// @author : Jibin K John
@@ -27,7 +28,9 @@ class AuthBg extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: Container(
-            margin: EdgeInsets.symmetric(horizontal: size.width * .05),
+            margin: EdgeInsets.symmetric(
+              horizontal: AppHelper.horizontalPadding(size),
+            ),
             padding: EdgeInsets.all(size.width * .08),
             decoration: BoxDecoration(
               color: Colors.white,
