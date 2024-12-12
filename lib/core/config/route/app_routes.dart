@@ -5,6 +5,7 @@ import 'package:spend_wise/features/account/presentation/view/category_entry_scr
 import 'package:spend_wise/features/budget/presentation/view/create_budget_screen.dart';
 import 'package:spend_wise/features/home/presentation/view/decision_screen.dart';
 import 'package:spend_wise/features/home/presentation/view/home_screen.dart';
+import '../../../features/account/presentation/view/account_screen.dart';
 import '../../../features/account/presentation/view/invite_members_screen.dart';
 import '../../../features/auth/presentation/view/login_screen.dart';
 import '../../../root.dart';
@@ -21,6 +22,7 @@ sealed class RouteName {
   static const String createExpense = "create-expense-screen";
   static const String createCategory = "create-category-screen";
   static const String inviteMembers = "invite-members-screen";
+  static const String account = "account-screen";
 }
 
 /// class for declaring app page navigation screens
@@ -50,6 +52,8 @@ sealed class AppRoutes {
         return MaterialPageRoute(builder: (_) => const CategoryEntryScreen());
       case RouteName.inviteMembers:
         return MaterialPageRoute(builder: (_) => const InviteMembersScreen());
+      case RouteName.account:
+        return MaterialPageRoute(builder: (_) => const AccountScreen());
       default:
         return MaterialPageRoute(builder: (_) => const ErrorRoute());
     }

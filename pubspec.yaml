@@ -29,6 +29,8 @@ dependencies:
   flutter_colorpicker: # for picking color
   uuid: # for generating random keys
   currency_picker: # for currency picking
+  google_nav_bar: # for home screen bottom nav bar
+  shimmer: # for loading animation
 
 
 dev_dependencies:

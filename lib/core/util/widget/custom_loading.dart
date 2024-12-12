@@ -37,9 +37,11 @@ class CustomLoading extends StatelessWidget {
         ),
       );
     }
-    return CircularProgressIndicator(
-      strokeWidth: 2.5,
-      backgroundColor: Colors.black12,
+    return Center(
+      child: CircularProgressIndicator(
+        strokeWidth: 2.5,
+        backgroundColor: Colors.black12,
+      ),
     );
   }
 }

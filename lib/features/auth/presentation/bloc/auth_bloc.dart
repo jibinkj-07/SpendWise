@@ -84,6 +84,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
     });
 
+    on<UpdateUser>((event, emit) async {
+      final user = state.currentUser!.copyWith(
+        selectedBudget: event.selectedBudget,
+        profileUrl: event.profile,
+      );
+      emit(state.copyWith(currentUser: user));
+    });
+
     // Sign Out
     on<SignOut>((event, emit) async {
       emit(state.copyWith(authStatus: AuthStatus.signingOut));

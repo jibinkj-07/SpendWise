@@ -87,13 +87,15 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
     required List<User> members,
   }) async {
     final id = Uuid().v1();
+    final date = DateTime.now().millisecondsSinceEpoch.toString();
     try {
       // Add budget basic data
-      await _firebaseDatabase.ref(FirebasePath.budgetPath(id)).set({
+      await _firebaseDatabase.ref(FirebasePath.budgetDetailPath(id)).set({
         "name": name,
         "admin": admin,
         "currency": currency.name,
         "currency_symbol": currency.symbol,
+        "created_on": date,
       });
 
       // Add Categories
@@ -103,7 +105,6 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
             .set(item.toJson());
       }
 
-      final date = DateTime.now().millisecondsSinceEpoch.toString();
       // Add members and invitation into member node
       for (final user in members) {
         await _firebaseDatabase
@@ -120,8 +121,23 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
             .set({
           "date": date,
         });
+
+        // Adding notification to corresponding users
+        await _firebaseDatabase
+            .ref(FirebasePath.notificationPath(user.uid))
+            .child(date)
+            .set({
+          "title": "Budget Invitation",
+          "body": "You have a new invitation to join the budget \"$name\"",
+          "time": date,
+        });
       }
 
+      // Adding current budget to joined budget node for owner
+      await _firebaseDatabase
+          .ref(FirebasePath.joinedBudgetPath(admin))
+          .child(id)
+          .set({"date": date});
       // Call the account class function to update selection to current budget to admin node
       return await _accountFbDataSource.updateSelectedBudget(
         id: admin,

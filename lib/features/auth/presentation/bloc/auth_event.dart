@@ -39,6 +39,21 @@ class CreateUser extends AuthEvent {
   List<Object?> get props => [name, email, password];
 }
 
+class UpdateUser extends AuthEvent {
+  final String? name;
+  final String? selectedBudget;
+  final String? profile;
+
+  const UpdateUser({
+    this.name,
+    this.selectedBudget,
+    this.profile,
+  });
+
+  @override
+  List<Object?> get props => [name, selectedBudget, profile];
+}
+
 class ResetPassword extends AuthEvent {
   final String email;
 

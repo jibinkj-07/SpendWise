@@ -1,14 +1,17 @@
-
 import '../../../features/account/presentation/helper/account_helper.dart';
+import '../../../features/budget/presentation/bloc/budget_bloc.dart';
+import '../../../features/budget/presentation/bloc/category_bloc.dart';
 import '../../../features/budget/presentation/helper/budget_helper.dart';
+import '../../../features/home/presentation/helper/home_helper.dart';
 import './imports.dart';
 
 final sl = GetIt.instance;
 
 Future<void> initDependencies() async {
   // **************************************** Class ****************************************
-  sl.registerLazySingleton<AccountHelper>(() => AccountHelper(sl()));
+  sl.registerLazySingleton<AccountHelper>(() => AccountHelper(sl(), sl()));
   sl.registerLazySingleton<BudgetHelper>(() => BudgetHelper(sl()));
+  sl.registerLazySingleton<HomeHelper>(() => HomeHelper(sl()));
 
   // **************************************** Externals ****************************************
   final auth = FirebaseAuth.instance;
@@ -42,4 +45,6 @@ Future<void> initDependencies() async {
 
   // **************************************** Bloc ****************************************
   sl.registerSingleton<AuthBloc>(AuthBloc(sl()));
+  sl.registerSingleton<BudgetBloc>(BudgetBloc(sl()));
+  sl.registerSingleton<CategoryBloc>(CategoryBloc(sl()));
 }
