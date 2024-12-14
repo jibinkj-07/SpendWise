@@ -53,14 +53,14 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
           style: IconButton.styleFrom(
             foregroundColor: Colors.black,
           ),
-          icon: Icon(Icons.cached_rounded),
+          icon: Icon(Icons.swap_vertical_circle_outlined),
         ),
         IconButton(
           onPressed: () {},
           style: IconButton.styleFrom(
             foregroundColor: Colors.black,
           ),
-          icon: Icon(Icons.notifications_rounded),
+          icon: Icon(Icons.notifications_none_rounded),
         ),
       ],
     );

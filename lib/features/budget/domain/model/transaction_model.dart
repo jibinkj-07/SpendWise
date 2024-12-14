@@ -9,7 +9,6 @@ class TransactionModel {
   final String docUrl;
   final String categoryId;
   final String createdUserId;
-  final String accountType;
 
   TransactionModel({
     required this.id,
@@ -20,7 +19,6 @@ class TransactionModel {
     required this.description,
     required this.categoryId,
     required this.createdUserId,
-    required this.accountType,
   });
 
   TransactionModel copyWith({
@@ -32,7 +30,6 @@ class TransactionModel {
     String? categoryId,
     String? docUrl,
     String? createdUserId,
-    String? accountType,
   }) =>
       TransactionModel(
         id: id,
@@ -42,7 +39,6 @@ class TransactionModel {
         docUrl: docUrl ?? this.docUrl,
         description: description ?? this.description,
         categoryId: categoryId ?? this.categoryId,
-        accountType: accountType ?? this.accountType,
         createdUserId: createdUserId ?? this.createdUserId,
       );
 
@@ -57,7 +53,6 @@ class TransactionModel {
       description: transData.child("description").value.toString(),
       docUrl: transData.child("doc_url").value.toString(),
       categoryId: transData.child("category_id").value.toString(),
-      accountType: transData.child("account_type").value.toString(),
       createdUserId: transData.child("created_userid").value.toString(),
     );
   }
@@ -69,7 +64,6 @@ class TransactionModel {
         "doc_url": docUrl,
         "description": description,
         "category_id": categoryId,
-        "account_type": accountType,
         "created_userid": createdUserId,
       };
 }

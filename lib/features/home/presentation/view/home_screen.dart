@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spend_wise/core/util/widget/custom_loading.dart';
@@ -7,8 +6,8 @@ import '../../../../core/util/helper/app_helper.dart';
 import '../../../analysis/presentation/view/analysis_view.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/presentation/bloc/budget_bloc.dart';
-import '../../../budget/presentation/bloc/category_bloc.dart';
 import '../../../transactions/presentation/view/transaction_view.dart';
+import '../helper/home_helper.dart';
 import '../widgets/my_app_bar.dart';
 import '../widgets/nav_bar.dart';
 import 'home_view.dart';
@@ -31,10 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    final currentBudget =
-        context.read<AuthBloc>().state.currentUser?.selectedBudget ?? "";
-    context.read<BudgetBloc>().add(FetchBudget(budgetId: currentBudget));
-    context.read<CategoryBloc>().add(FetchCategory(budgetId: currentBudget));
+    final context = this.context;
+    initBudgetData(context);
   }
 
   @override
@@ -46,12 +43,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    // return CustomLoading(appLaunch: true);
     return BlocBuilder<BudgetBloc, BudgetState>(
       builder: (ctc, state) {
         if (state.error != null) {
           return Scaffold(
-            body: Center(child: Text(state.error?.message ?? "Error Occurred")),
+            body: Center(
+              child: Text(
+                state.error?.message ?? "Error Occurred",
+              ),
+            ),
           );
         }
 

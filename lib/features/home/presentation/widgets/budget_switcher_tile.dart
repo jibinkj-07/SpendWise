@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/config/injection/injection_container.dart';
@@ -55,13 +54,7 @@ class _BudgetSwitcherTileState extends State<BudgetSwitcherTile> {
                       id: context.read<AuthBloc>().state.currentUser?.uid ?? "",
                       budgetId: budget.id,
                     );
-
-                    context.read<BudgetBloc>().add(FetchBudget(
-                          budgetId: budget.id,
-                        ));
-                    context.read<CategoryBloc>().add(FetchCategory(
-                          budgetId: budget.id,
-                        ));
+                    initBudgetData(context, budget.id);
                   },
                   tileColor: Colors.grey.withOpacity(.15),
                   shape: RoundedRectangleBorder(

@@ -1,6 +1,10 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+
+import '../../../features/budget/presentation/bloc/budget_bloc.dart';
 
 sealed class AppHelper {
   /// Map for category icons
@@ -77,4 +81,13 @@ sealed class AppHelper {
 
   /// Function to return padding
   static double horizontalPadding(Size size) => size.width * .05;
+
+  /// Function to format price
+  static String formatAmount(BuildContext context, double amount) {
+    final budget = context.read<BudgetBloc>().state.budgetDetail;
+    return NumberFormat.currency(
+      name: budget?.currency,
+      symbol: budget?.currencySymbol,
+    ).format(amount);
+  }
 }

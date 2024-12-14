@@ -1,8 +1,5 @@
-import '../../../features/account/presentation/helper/account_helper.dart';
-import '../../../features/budget/presentation/bloc/budget_bloc.dart';
 import '../../../features/budget/presentation/bloc/category_bloc.dart';
-import '../../../features/budget/presentation/helper/budget_helper.dart';
-import '../../../features/home/presentation/helper/home_helper.dart';
+import '../../../features/budget/presentation/bloc/transaction_bloc.dart';
 import './imports.dart';
 
 final sl = GetIt.instance;
@@ -47,4 +44,5 @@ Future<void> initDependencies() async {
   sl.registerSingleton<AuthBloc>(AuthBloc(sl()));
   sl.registerSingleton<BudgetBloc>(BudgetBloc(sl()));
   sl.registerSingleton<CategoryBloc>(CategoryBloc(sl()));
+  sl.registerSingleton<TransactionBloc>(TransactionBloc(sl()));
 }

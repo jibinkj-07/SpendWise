@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -53,17 +52,13 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
               ThrownError(
                 error: Failure(
                   message:
-                      "An error occurred while processing the budget data.",
+                      "An error occurred while processing the category data.",
                 ),
               ),
             );
           }
         } else {
-          add(
-            ThrownError(
-              error: Failure(message: "Unable to retrieve category details"),
-            ),
-          );
+          add(CategoryLoaded(categories: []));
         }
       },
       onError: (error) {

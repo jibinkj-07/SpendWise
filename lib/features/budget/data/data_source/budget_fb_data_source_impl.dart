@@ -164,7 +164,8 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
         );
       }
       await _firebaseDatabase
-          .ref(FirebasePath.transactionPath(budgetId, transaction.id))
+          .ref(FirebasePath.transactionPath(budgetId))
+          .child(transaction.id)
           .set(transaction.toJson(url));
 
       return Right(url);
@@ -221,7 +222,8 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
       }
 
       await _firebaseDatabase
-          .ref(FirebasePath.transactionPath(budgetId, transactionId))
+          .ref(FirebasePath.transactionPath(budgetId))
+          .child(transactionId)
           .remove();
 
       return const Right(true);
