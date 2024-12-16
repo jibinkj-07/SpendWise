@@ -20,12 +20,18 @@ class HomeView extends StatelessWidget {
       children: [
         // Budget Card
         Container(
-          padding: const EdgeInsets.all(15.0),
-          margin: const EdgeInsets.symmetric(vertical: 15.0),
+          padding: const EdgeInsets.all(25.0),
+          margin: const EdgeInsets.only(top: 30.0, bottom: 20.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(25.0),
-            border: Border.all(width: .5, color: Colors.black12),
-            color: Colors.blue.shade50.withOpacity(.4),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.shade300,
+                blurRadius: 15.0,
+                spreadRadius: 4.0,
+              ),
+            ],
+            color: Colors.white,
           ),
           child: BlocBuilder<TransactionBloc, TransactionState>(
               builder: (ctx, state) {
@@ -35,27 +41,38 @@ class HomeView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "Total Expense",
-                      style: TextStyle(color: Colors.black54),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Total Expense",
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          AppHelper.formatAmount(
+                            context,
+                            TransactionHelper.findTotal(state.transactions),
+                          ),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 35.0,
+                          ),
+                        ),
+                      ],
                     ),
                     Text(
                       DateFormat.MMMM().format(DateTime.now()),
-                      style: TextStyle(fontSize: 15.0),
+                      style: TextStyle(
+                        // color: AppConfig.primaryColor,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
-                Text(
-                  AppHelper.formatAmount(
-                    context,
-                    TransactionHelper.findTotal(state.transactions),
-                  ),
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 35.0,
-                  ),
-                ),
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 25.0),
                 WeeklyBarChart(
                   chartData: generateWeekChartData(state.transactions),
                 ),

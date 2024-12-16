@@ -41,6 +41,10 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
 
   @override
   Widget build(BuildContext context) {
+    // Find the maximum amount in the current data
+    final maxAmount = widget.chartData.map((data) => data.amount).reduce(
+          (value, element) => value > element ? value : element,
+        );
     return SizedBox(
       height: MediaQuery.sizeOf(context).height * .25,
       child: SfCartesianChart(
@@ -54,6 +58,7 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
         primaryXAxis: CategoryAxis(
           labelStyle: TextStyle(
             fontFamily: AppConfig.fontFamily,
+            fontWeight: FontWeight.w500,
           ),
           majorGridLines: MajorGridLines(color: Colors.transparent),
           majorTickLines: MajorTickLines(width: 0.0),
@@ -61,6 +66,8 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
           axisLine: AxisLine(width: 0.0),
         ),
         primaryYAxis: NumericAxis(
+          isVisible: true,
+          maximum: maxAmount,
           numberFormat: NumberFormat.compactCurrency(
               decimalDigits: 0,
               symbol: context
@@ -71,21 +78,31 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
                   ""),
           majorGridLines: MajorGridLines(
             dashArray: [6],
-            width: 1,
+            width: .5,
           ),
           labelStyle: TextStyle(
             fontFamily: AppConfig.fontFamily,
             fontWeight: FontWeight.w500,
+            fontSize: 11.0,
           ),
           majorTickLines: MajorTickLines(width: 0.0),
-          isVisible: true,
           axisLine: AxisLine(width: 0.0),
         ),
         series: <CartesianSeries>[
           ColumnSeries<WeeklyChartData, String>(
             dataSource: widget.chartData,
             borderRadius: BorderRadius.circular(20.0),
-            width: 0.5,
+            width: 0.4,
+            pointColorMapper: (data, _) => data.isToday
+                ? data.color.withOpacity(.4)
+                : data.color.withOpacity(.1),
+            xValueMapper: (data, _) => data.day,
+            yValueMapper: (data, _) => maxAmount,
+          ),
+          ColumnSeries<WeeklyChartData, String>(
+            dataSource: widget.chartData,
+            borderRadius: BorderRadius.circular(20.0),
+            width: 0.4,
             pointColorMapper: (data, _) => data.color,
             xValueMapper: (data, _) => data.day,
             yValueMapper: (data, _) => data.amount,

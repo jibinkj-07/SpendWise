@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -59,10 +60,12 @@ List<WeeklyChartData> generateWeekChartData(
       (index) {
         final day = DateTime.now().subtract(
             Duration(days: 6 - index)); // Generate 7 days ending with today
+
         return WeeklyChartData(
-          DateFormat.E().format(day),
+          "${DateFormat.E().format(day)}\n${DateFormat.d().format(day)}",
           TransactionHelper.findDayWiseTotal(transactions, day),
-          index == 6 ? AppConfig.focusColor : AppConfig.generalColor,
+          index == 6 ? AppConfig.focusColor : AppConfig.primaryColor,
+          index == 6,
         );
       },
     );

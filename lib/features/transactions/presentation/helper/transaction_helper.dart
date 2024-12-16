@@ -16,4 +16,11 @@ sealed class TransactionHelper {
         .toList();
     return trans.fold(0.0, (sum, transaction) => sum + transaction.amount);
   }
+
+  static TransactionModel findGreatestTransaction(
+    List<TransactionModel> transactions,
+  ) =>
+      transactions.reduce(
+        (current, next) => current.amount > next.amount ? current : next,
+      );
 }

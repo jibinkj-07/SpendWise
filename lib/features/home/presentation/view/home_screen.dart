@@ -58,12 +58,6 @@ class _HomeScreenState extends State<HomeScreen> {
         if (state.status == BudgetStatus.loading) {
           return CustomLoading(appLaunch: true);
         }
-        log(context
-            .read<AuthBloc>()
-            .state
-            .currentUser!
-            .selectedBudget
-            .toString());
         return ValueListenableBuilder(
           valueListenable: _index,
           builder: (ctx, index, _) {
