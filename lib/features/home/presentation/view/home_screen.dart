@@ -75,6 +75,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: _views[index],
                 ),
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () {},
+                ),
                 bottomNavigationBar: NavBar(index: _index, currentIndex: index),
               ),
             );

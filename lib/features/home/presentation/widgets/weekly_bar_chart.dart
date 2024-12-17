@@ -42,11 +42,13 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
   @override
   Widget build(BuildContext context) {
     // Find the maximum amount in the current data
-    final maxAmount = widget.chartData.map((data) => data.amount).reduce(
+    double maxAmount = widget.chartData.map((data) => data.amount).reduce(
           (value, element) => value > element ? value : element,
         );
+    // maxAmount = maxAmount == 0 ? 50 : maxAmount;
+
     return SizedBox(
-      height: MediaQuery.sizeOf(context).height * .25,
+      height: MediaQuery.sizeOf(context).height * .23,
       child: SfCartesianChart(
         tooltipBehavior: _tooltipBehavior,
         margin: EdgeInsets.zero,

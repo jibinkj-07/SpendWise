@@ -18,6 +18,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       title: BlocBuilder<AuthBloc, AuthState>(
         builder: (ctx, state) {
           return ListTile(
@@ -49,7 +50,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: [
         IconButton(
-          onPressed: () =>_showBudgetSwitcher(context),
+          onPressed: () => _showBudgetSwitcher(context),
           style: IconButton.styleFrom(
             foregroundColor: Colors.black,
           ),

@@ -56,6 +56,8 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
           vertical: 20.0,
         ),
         children: [
+          //todo
+          // Add invite svg file here
           Form(
             key: _formKey,
             child: OutlinedTextField(
