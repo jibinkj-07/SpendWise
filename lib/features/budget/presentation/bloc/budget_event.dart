@@ -4,10 +4,10 @@ sealed class BudgetEvent extends Equatable {
   const BudgetEvent();
 }
 
-class FetchBudget extends BudgetEvent {
+class SubscribeBudget extends BudgetEvent {
   final String budgetId;
 
-  const FetchBudget({required this.budgetId});
+  const SubscribeBudget({required this.budgetId});
 
   @override
   List<Object?> get props => [budgetId];

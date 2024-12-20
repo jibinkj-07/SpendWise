@@ -41,10 +41,11 @@ void initBudgetData(BuildContext context, [String? budgetId]) {
   final currentBudget = budgetId ??
       context.read<AuthBloc>().state.currentUser?.selectedBudget ??
       "";
-  context.read<BudgetBloc>().add(FetchBudget(budgetId: currentBudget));
-  context.read<CategoryBloc>().add(FetchCategory(budgetId: currentBudget));
+  // this only subscribe to budget basic details node
+  context.read<BudgetBloc>().add(SubscribeBudget(budgetId: currentBudget));
+  context.read<CategoryBloc>().add(SubscribeCategory(budgetId: currentBudget));
   context.read<TransactionBloc>().add(
-        FetchTransaction(
+        SubscribeTransaction(
           budgetId: currentBudget,
           startDate: DateTime(date.year, date.month, 1),
           endDate: DateTime(date.year, date.month + 1, 0), // End of the month
@@ -69,3 +70,27 @@ List<WeeklyChartData> generateWeekChartData(
         );
       },
     );
+
+List<TransactionModel> generateWeekTransactions(
+  List<TransactionModel> transactions,
+) {
+  Map<String, TransactionModel> transactionMap = {
+    for (var transaction in transactions)
+      '${transaction.date.year}-${transaction.date.month}-${transaction.date.day}':
+          transaction,
+  };
+
+  List<TransactionModel> data = [];
+  DateTime now = DateTime.now();
+
+  for (int i = 6; i >= 0; i--) {
+    DateTime day = now.subtract(Duration(days: i));
+    String key = '${day.year}-${day.month}-${day.day}';
+
+    if (transactionMap.containsKey(key)) {
+      data.add(transactionMap[key]!);
+    }
+  }
+
+  return data;
+}

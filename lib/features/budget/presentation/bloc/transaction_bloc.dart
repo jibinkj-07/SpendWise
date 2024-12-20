@@ -19,13 +19,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   StreamSubscription? _categorySubscription;
 
   TransactionBloc(this._firebaseDatabase) : super(TransactionState.initial()) {
-    on<FetchTransaction>(_onFetchTransaction);
+    on<SubscribeTransaction>(_onSubscribeTransaction);
     on<TransactionLoaded>(_onTransactionLoaded);
     on<ThrownError>(_onError);
   }
 
-  Future<void> _onFetchTransaction(
-    FetchTransaction event,
+  Future<void> _onSubscribeTransaction(
+    SubscribeTransaction event,
     Emitter<TransactionState> emit,
   ) async {
     // Cancel any previous subscription to avoid multiple listeners

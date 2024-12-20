@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spend_wise/core/util/widget/custom_loading.dart';
+import '../../../../core/config/route/app_routes.dart';
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../analysis/presentation/view/analysis_view.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -75,8 +76,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: _views[index],
                 ),
-                floatingActionButton: FloatingActionButton(
-                  onPressed: () {},
+                floatingActionButton: FloatingActionButton.extended(
+                  onPressed: () => Navigator.of(context).pushNamed(
+                    RouteName.transactionEntry,
+                  ),
+                  icon: Icon(Icons.add_rounded),
+                  label: Text("Add"),
                 ),
                 bottomNavigationBar: NavBar(index: _index, currentIndex: index),
               ),

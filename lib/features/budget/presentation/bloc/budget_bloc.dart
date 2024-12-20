@@ -4,11 +4,9 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_database/firebase_database.dart';
-
 import '../../../../core/util/error/failure.dart';
 import '../../../../core/util/helper/firebase_path.dart';
 import '../../domain/model/budget_model.dart';
-import '../../domain/model/category_model.dart';
 
 part 'budget_event.dart';
 
@@ -20,13 +18,13 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
   StreamSubscription? _budgetSubscription;
 
   BudgetBloc(this._firebaseDatabase) : super(BudgetState.initial()) {
-    on<FetchBudget>(_onFetchBudget);
+    on<SubscribeBudget>(_onSubscribeBudget);
     on<BudgetLoaded>(_onBudgetLoaded);
     on<ThrownError>(_onError);
   }
 
-  Future<void> _onFetchBudget(
-    FetchBudget event,
+  Future<void> _onSubscribeBudget(
+    SubscribeBudget event,
     Emitter<BudgetState> emit,
   ) async {
     // Cancel any previous subscription to avoid multiple listeners

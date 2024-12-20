@@ -4,12 +4,12 @@ sealed class TransactionEvent extends Equatable {
   const TransactionEvent();
 }
 
-class FetchTransaction extends TransactionEvent {
+class SubscribeTransaction extends TransactionEvent {
   final String budgetId;
   final DateTime startDate;
   final DateTime endDate;
 
-  const FetchTransaction({
+  const SubscribeTransaction({
     required this.budgetId,
     required this.startDate,
     required this.endDate,

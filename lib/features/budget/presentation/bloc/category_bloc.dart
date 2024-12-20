@@ -18,13 +18,13 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   StreamSubscription? _categorySubscription;
 
   CategoryBloc(this._firebaseDatabase) : super(CategoryState.initial()) {
-    on<FetchCategory>(_onFetchCategory);
+    on<SubscribeCategory>(_onSubscribeCategory);
     on<CategoryLoaded>(_onCategoryLoaded);
     on<ThrownError>(_onError);
   }
 
-  Future<void> _onFetchCategory(
-    FetchCategory event,
+  Future<void> _onSubscribeCategory(
+    SubscribeCategory event,
     Emitter<CategoryState> emit,
   ) async {
     // Cancel any previous subscription to avoid multiple listeners

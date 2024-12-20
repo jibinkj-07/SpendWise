@@ -4,10 +4,10 @@ sealed class CategoryEvent extends Equatable {
   const CategoryEvent();
 }
 
-class FetchCategory extends CategoryEvent {
+class SubscribeCategory extends CategoryEvent {
   final String budgetId;
 
-  const FetchCategory({required this.budgetId});
+  const SubscribeCategory({required this.budgetId});
 
   @override
   List<Object?> get props => [budgetId];

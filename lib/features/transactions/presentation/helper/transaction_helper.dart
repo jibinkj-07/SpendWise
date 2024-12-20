@@ -1,5 +1,12 @@
 import '../../../budget/domain/model/transaction_model.dart';
 
+enum TransactionFilter {
+  recent,
+  oldest,
+  highToLow,
+  lowToHigh,
+}
+
 sealed class TransactionHelper {
   static double findTotal(List<TransactionModel> transactions) =>
       transactions.fold(0.0, (sum, transaction) => sum + transaction.amount);
@@ -25,9 +32,9 @@ sealed class TransactionHelper {
       );
 
   static Map<DateTime, List<TransactionModel>> groupByDate(
-    List<TransactionModel> transactions,
-    bool isAscend,
-  ) {
+      List<TransactionModel> transactions,
+      TransactionFilter filter, // Custom filter type
+      ) {
     // Group transactions by date
     Map<DateTime, List<TransactionModel>> items = {};
 
@@ -44,9 +51,18 @@ sealed class TransactionHelper {
       }
     }
 
-    // Sort the map by keys (dates) in ascending or descending order
-    final sortedKeys = items.keys.toList()
-      ..sort((a, b) => isAscend ? a.compareTo(b) : b.compareTo(a));
+    // Sort the map by keys (dates) based on filter
+    final sortedKeys = items.keys.toList();
+    switch (filter) {
+      case TransactionFilter.recent:
+        sortedKeys.sort((a, b) => b.compareTo(a)); // Most recent dates first
+        break;
+      case TransactionFilter.oldest:
+        sortedKeys.sort((a, b) => a.compareTo(b)); // Oldest dates first
+        break;
+      default:
+        break;
+    }
 
     // Rebuild the map with sorted keys
     final sortedMap = {
@@ -55,4 +71,5 @@ sealed class TransactionHelper {
 
     return sortedMap;
   }
+
 }

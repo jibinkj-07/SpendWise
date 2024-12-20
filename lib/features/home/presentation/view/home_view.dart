@@ -6,7 +6,7 @@ import '../helper/home_helper.dart';
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../budget/presentation/bloc/transaction_bloc.dart';
 import '../../../transactions/presentation/helper/transaction_helper.dart';
-import '../widgets/monthly_transaction_history.dart';
+import '../widgets/recent_transactions.dart';
 import '../widgets/weekly_bar_chart.dart';
 
 /// @author : Jibin K John
@@ -88,7 +88,9 @@ class HomeView extends StatelessWidget {
 
           // Transactions History
           Expanded(
-            child: MonthlyTransactionHistory(transactions: state.transactions),
+            child: RecentTransactions(
+              transactions: generateWeekTransactions(state.transactions),
+            ),
           ),
         ],
       );
