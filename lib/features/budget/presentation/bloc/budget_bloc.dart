@@ -2,11 +2,15 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:currency_picker/currency_picker.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../../../../core/util/error/failure.dart';
 import '../../../../core/util/helper/firebase_path.dart';
+import '../../../account/domain/model/user.dart';
 import '../../domain/model/budget_model.dart';
+import '../../domain/model/category_model.dart';
+import '../../domain/repo/budget_repo.dart';
 
 part 'budget_event.dart';
 
@@ -14,13 +18,17 @@ part 'budget_state.dart';
 
 class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
   final FirebaseDatabase _firebaseDatabase;
+  final BudgetRepo _budgetRepo;
 
   StreamSubscription? _budgetSubscription;
 
-  BudgetBloc(this._firebaseDatabase) : super(BudgetState.initial()) {
+  BudgetBloc(this._firebaseDatabase, this._budgetRepo)
+      : super(BudgetState.initial()) {
     on<SubscribeBudget>(_onSubscribeBudget);
     on<BudgetLoaded>(_onBudgetLoaded);
     on<ThrownError>(_onError);
+    on<InsertBudget>(_onInsert);
+    on<RemoveBudget>(_onRemove);
   }
 
   Future<void> _onSubscribeBudget(
@@ -86,8 +94,62 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     Emitter<BudgetState> emit,
   ) async {
     emit(
-      state.copyWith(status: BudgetStatus.idle, budgetDetail: event.budget),
+      state.copyWith(
+        status: BudgetStatus.idle,
+        budgetDetail: event.budget,
+      ),
     );
+  }
+
+  Future<void> _onInsert(
+    InsertBudget event,
+    Emitter<BudgetState> emit,
+  ) async {
+    emit(state.copyWith(status: BudgetStatus.inserting));
+    try {
+      final result = await _budgetRepo.insertBudget(
+        name: event.name,
+        admin: event.admin,
+        categories: event.categories,
+        currency: event.currency,
+        members: event.members,
+      );
+      result.fold(
+        (failure) => emit(
+          state.copyWith(status: BudgetStatus.idle, error: failure),
+        ),
+        (_) => emit(state.copyWith(status: BudgetStatus.inserted)),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+            status: BudgetStatus.idle,
+            error: Failure(message: "Unable to create budget!")),
+      );
+    }
+  }
+
+  Future<void> _onRemove(
+    RemoveBudget event,
+    Emitter<BudgetState> emit,
+  ) async {
+    emit(state.copyWith(status: BudgetStatus.removing));
+    try {
+      final result = await _budgetRepo.removeBudget(budgetId: event.budgetId);
+      result.fold(
+        (failure) => emit(
+          state.copyWith(status: BudgetStatus.idle, error: failure),
+        ),
+        (_) => emit(state.copyWith(status: BudgetStatus.removed)),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: BudgetStatus.idle,
+          error: Failure(message: "Unable to remove budget!"),
+        ),
+      );
+    }
   }
 
   Future<void> _onError(

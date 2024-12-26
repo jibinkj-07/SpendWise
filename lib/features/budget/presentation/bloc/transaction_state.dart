@@ -1,6 +1,6 @@
 part of 'transaction_bloc.dart';
 
-enum TransactionStatus { idle, loading }
+enum TransactionStatus { idle, loading , inserting, inserted, removing, removed}
 
 class TransactionState extends Equatable {
   final TransactionStatus status;

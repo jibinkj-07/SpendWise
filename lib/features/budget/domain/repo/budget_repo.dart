@@ -31,12 +31,12 @@ abstract class BudgetRepo {
     required String transactionId,
   });
 
-
   /// Budget
   Future<Either<Failure, bool>> insertBudget({
     required String name,
     required String admin,
-    required List<CategoryModel> categories, required Currency currency,
+    required List<CategoryModel> categories,
+    required Currency currency,
     required List<User> members,
   });
 

@@ -22,6 +22,26 @@ class CategoryLoaded extends CategoryEvent {
   List<Object?> get props => [categories];
 }
 
+class InsertCategory extends CategoryEvent {
+  final String budgetId;
+  final CategoryModel category;
+
+  const InsertCategory({required this.budgetId, required this.category});
+
+  @override
+  List<Object?> get props => [budgetId, category];
+}
+
+class RemoveCategory extends CategoryEvent {
+  final String budgetId;
+  final String categoryId;
+
+  const RemoveCategory({required this.budgetId, required this.categoryId});
+
+  @override
+  List<Object?> get props => [budgetId, categoryId];
+}
+
 class ThrownError extends CategoryEvent {
   final Failure error;
 

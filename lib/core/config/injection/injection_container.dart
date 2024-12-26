@@ -1,3 +1,5 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../../features/budget/presentation/bloc/category_bloc.dart';
 import '../../../features/budget/presentation/bloc/transaction_bloc.dart';
 import './imports.dart';
@@ -7,7 +9,6 @@ final sl = GetIt.instance;
 Future<void> initDependencies() async {
   // **************************************** Class ****************************************
   sl.registerLazySingleton<AccountHelper>(() => AccountHelper(sl(), sl()));
-  sl.registerLazySingleton<BudgetHelper>(() => BudgetHelper(sl()));
   sl.registerLazySingleton<HomeHelper>(() => HomeHelper(sl()));
 
   // **************************************** Externals ****************************************
@@ -15,11 +16,13 @@ Future<void> initDependencies() async {
   final googleAuth = GoogleSignIn();
   final db = FirebaseDatabase.instance;
   final storage = FirebaseStorage.instance;
+  final sharedPref = await SharedPreferences.getInstance();
 
   sl.registerLazySingleton<GoogleSignIn>(() => googleAuth);
   sl.registerLazySingleton<FirebaseAuth>(() => auth);
   sl.registerLazySingleton<FirebaseDatabase>(() => db);
   sl.registerLazySingleton<FirebaseStorage>(() => storage);
+  sl.registerLazySingleton<SharedPreferences>(() => sharedPref);
 
   // **************************************** Data Sources ****************************************
 
@@ -42,7 +45,7 @@ Future<void> initDependencies() async {
 
   // **************************************** Bloc ****************************************
   sl.registerSingleton<AuthBloc>(AuthBloc(sl()));
-  sl.registerSingleton<BudgetBloc>(BudgetBloc(sl()));
-  sl.registerSingleton<CategoryBloc>(CategoryBloc(sl()));
-  sl.registerSingleton<TransactionBloc>(TransactionBloc(sl()));
+  sl.registerSingleton<BudgetBloc>(BudgetBloc(sl(), sl()));
+  sl.registerSingleton<CategoryBloc>(CategoryBloc(sl(), sl()));
+  sl.registerSingleton<TransactionBloc>(TransactionBloc(sl(), sl()));
 }

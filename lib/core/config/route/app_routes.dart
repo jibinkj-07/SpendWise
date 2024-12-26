@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spend_wise/features/auth/presentation/view/create_account_screen.dart';
 import 'package:spend_wise/features/auth/presentation/view/password_reset_screen.dart';
-import 'package:spend_wise/features/account/presentation/view/category_entry_screen.dart';
+import 'package:spend_wise/features/home/presentation/view/category_entry_screen.dart';
 import 'package:spend_wise/features/budget/presentation/view/create_budget_screen.dart';
 import 'package:spend_wise/features/home/presentation/view/decision_screen.dart';
 import 'package:spend_wise/features/home/presentation/view/home_screen.dart';

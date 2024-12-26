@@ -19,7 +19,8 @@ class BudgetRepoImpl implements BudgetRepo {
   Future<Either<Failure, bool>> insertBudget({
     required String name,
     required String admin,
-    required List<CategoryModel> categories, required Currency currency,
+    required List<CategoryModel> categories,
+    required Currency currency,
     required List<User> members,
   }) async {
     if (await InternetConnection().hasInternetAccess) {
@@ -31,7 +32,7 @@ class BudgetRepoImpl implements BudgetRepo {
         members: members,
       );
     } else {
-      return Left(Failure.network());
+      return Left(NetworkError());
     }
   }
 
@@ -46,7 +47,7 @@ class BudgetRepoImpl implements BudgetRepo {
         category: category,
       );
     } else {
-      return Left(Failure.network());
+      return Left(NetworkError());
     }
   }
 
@@ -63,7 +64,7 @@ class BudgetRepoImpl implements BudgetRepo {
         doc: doc,
       );
     } else {
-      return Left(Failure.network());
+      return Left(NetworkError());
     }
   }
 
@@ -72,7 +73,7 @@ class BudgetRepoImpl implements BudgetRepo {
     if (await InternetConnection().hasInternetAccess) {
       return await _expenseFbDataSource.removeBudget(budgetId: budgetId);
     } else {
-      return Left(Failure.network());
+      return Left(NetworkError());
     }
   }
 
@@ -87,7 +88,7 @@ class BudgetRepoImpl implements BudgetRepo {
         categoryId: categoryId,
       );
     } else {
-      return Left(Failure.network());
+      return Left(NetworkError());
     }
   }
 
@@ -102,7 +103,7 @@ class BudgetRepoImpl implements BudgetRepo {
         transactionId: transactionId,
       );
     } else {
-      return Left(Failure.network());
+      return Left(NetworkError());
     }
   }
 }

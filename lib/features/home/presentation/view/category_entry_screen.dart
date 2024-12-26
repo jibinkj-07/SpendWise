@@ -5,10 +5,11 @@ import '../../../../core/config/app_config.dart';
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/widget/filled_text_field.dart';
 import '../../../../core/util/widget/loading_filled_button.dart';
-import '../../../../core/util/widget/outlined_text_field.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/domain/model/category_model.dart';
-import '../../../home/presentation/helper/category_helper.dart';
+import '../../../budget/presentation/bloc/budget_bloc.dart';
+import '../../../budget/presentation/bloc/category_bloc.dart';
+import '../helper/category_helper.dart';
 
 /// @author : Jibin K John
 /// @date   : 14/11/2024
@@ -143,7 +144,7 @@ class _CategoryEntryScreenState extends State<CategoryEntryScreen> {
                   key: _formKey,
                   child: FilledTextField(
                     textFieldKey: "name",
-                    hintText: "Category Name",
+                    labelText: "Category Name",
                     controller: _textEditingController,
                     maxLength: 40,
                     textCapitalization: TextCapitalization.words,
@@ -238,15 +239,26 @@ class _CategoryEntryScreenState extends State<CategoryEntryScreen> {
                     ),
                   ),
                 ),
-                ValueListenableBuilder(
-                  valueListenable: _loading,
-                  builder: (ctx, loading, _) {
-                    return LoadingFilledButton(
-                      onPressed: _onCreateOrUpdate,
-                      loading: loading,
-                      child: const Text("Done"),
-                    );
+                BlocListener<CategoryBloc, CategoryState>(
+                  listener: (BuildContext context, CategoryState state) {
+                    _loading.value = state.status == CategoryStatus.inserting;
+                    if (state.error != null) {
+                      state.error!.showSnackBar(context);
+                    }
+                    if (state.status == CategoryStatus.inserted) {
+                      Navigator.pop(context);
+                    }
                   },
+                  child: ValueListenableBuilder(
+                    valueListenable: _loading,
+                    builder: (ctx, loading, _) {
+                      return LoadingFilledButton(
+                        onPressed: _onCreateOrUpdate,
+                        loading: loading,
+                        child: const Text("Done"),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
@@ -370,14 +382,20 @@ class _CategoryEntryScreenState extends State<CategoryEntryScreen> {
             context.read<AuthBloc>().state.currentUser?.uid ?? "unknownUser",
       );
       if (widget.categories != null) {
-        /// Dont need to call bloc, because it is called from Expense creation screen
+        /// Do not need to call Category bloc, because
+        /// category will automatically get added to firebase
+        /// when creating budget [this section only trigger from budget creation screen]
         widget.categories!.value = List.from(widget.categories!.value)
           ..add(categoryModel);
         Navigator.pop(context);
       } else {
-        // context.read<ExpenseBloc>().add(
-        //       InsertCategory(category: categoryModel),
-        //     );
+        context.read<CategoryBloc>().add(
+              InsertCategory(
+                budgetId:
+                    context.read<BudgetBloc>().state.budgetDetail?.id ?? "",
+                category: categoryModel,
+              ),
+            );
       }
     }
   }

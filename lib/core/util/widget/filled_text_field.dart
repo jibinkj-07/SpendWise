@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../config/app_config.dart';
 
@@ -7,8 +8,10 @@ class FilledTextField extends StatelessWidget {
   final bool isObscure;
   final bool? readOnly;
   final bool? enabled;
+  final bool numberOnly;
   final Widget? icon;
-  final String hintText;
+  final String? labelText;
+  final String? hintText;
   final String? initialValue;
   final int? maxLines;
   final int? minLines;
@@ -28,9 +31,11 @@ class FilledTextField extends StatelessWidget {
     super.key,
     required this.textFieldKey,
     this.isObscure = false,
+    this.numberOnly = false,
     this.icon,
     this.maxLines = 1,
-    required this.hintText,
+    this.labelText,
+    this.hintText,
     required this.inputAction,
     this.validator,
     this.onSaved,
@@ -51,6 +56,10 @@ class FilledTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      style: const TextStyle(
+        fontSize: 15,
+        fontWeight: FontWeight.w500,
+      ),
       key: ValueKey(key),
       enabled: enabled,
       controller: controller,
@@ -68,6 +77,13 @@ class FilledTextField extends StatelessWidget {
       minLines: minLines,
       initialValue: initialValue,
       maxLength: maxLength,
+      inputFormatters: numberOnly
+          ? <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(
+                RegExp(r'^\d*\.?\d*'), // Allow digits and optional decimal
+              ),
+            ]
+          : null,
       decoration: InputDecoration(
         filled: true,
         fillColor: fillColor ?? Colors.white,
@@ -83,9 +99,14 @@ class FilledTextField extends StatelessWidget {
           },
         ),
         suffixIcon: suffixIcon,
-        labelText: hintText,
+        labelText: labelText,
+        hintText: hintText,
         floatingLabelStyle: TextStyle(color: AppConfig.primaryColor),
         labelStyle: const TextStyle(
+          fontSize: 14.0,
+          color: Colors.grey,
+        ),
+        hintStyle: const TextStyle(
           fontSize: 14.0,
           color: Colors.grey,
         ),

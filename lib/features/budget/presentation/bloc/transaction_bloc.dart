@@ -4,10 +4,12 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/util/error/failure.dart';
 import '../../../../core/util/helper/firebase_path.dart';
 import '../../domain/model/transaction_model.dart';
+import '../../domain/repo/budget_repo.dart';
 
 part 'transaction_event.dart';
 
@@ -16,12 +18,16 @@ part 'transaction_state.dart';
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final FirebaseDatabase _firebaseDatabase;
 
+  final BudgetRepo _budgetRepo;
   StreamSubscription? _categorySubscription;
 
-  TransactionBloc(this._firebaseDatabase) : super(TransactionState.initial()) {
+  TransactionBloc(this._firebaseDatabase, this._budgetRepo)
+      : super(TransactionState.initial()) {
     on<SubscribeTransaction>(_onSubscribeTransaction);
     on<TransactionLoaded>(_onTransactionLoaded);
     on<ThrownError>(_onError);
+    on<InsertTransaction>(_onInsert);
+    on<RemoveTransaction>(_onRemove);
   }
 
   Future<void> _onSubscribeTransaction(
@@ -89,6 +95,57 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         transactions: event.transactions,
       ),
     );
+  }
+
+  Future<void> _onInsert(
+    InsertTransaction event,
+    Emitter<TransactionState> emit,
+  ) async {
+    emit(state.copyWith(status: TransactionStatus.inserting));
+    try {
+      final result = await _budgetRepo.insertTransaction(
+        budgetId: event.budgetId,
+        transaction: event.transaction,
+      );
+      result.fold(
+        (failure) => emit(
+          state.copyWith(status: TransactionStatus.idle, error: failure),
+        ),
+        (_) => emit(state.copyWith(status: TransactionStatus.inserted)),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+            status: TransactionStatus.idle,
+            error: Failure(message: "Unable to create transaction!")),
+      );
+    }
+  }
+
+  Future<void> _onRemove(
+    RemoveTransaction event,
+    Emitter<TransactionState> emit,
+  ) async {
+    emit(state.copyWith(status: TransactionStatus.removing));
+    try {
+      final result = await _budgetRepo.removeTransaction(
+        transactionId: event.transactionId,
+        budgetId: event.budgetId,
+      );
+      result.fold(
+        (failure) => emit(
+          state.copyWith(status: TransactionStatus.idle, error: failure),
+        ),
+        (_) => emit(state.copyWith(status: TransactionStatus.removed)),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: TransactionStatus.idle,
+          error: Failure(message: "Unable to remove transaction!"),
+        ),
+      );
+    }
   }
 
   Future<void> _onError(

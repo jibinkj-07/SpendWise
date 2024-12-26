@@ -12,8 +12,8 @@ import '../../../account/presentation/view/invite_members_screen.dart';
 import '../../../account/presentation/widget/display_image.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/model/category_model.dart';
-import '../../../account/presentation/view/category_entry_screen.dart';
-import '../helper/budget_helper.dart';
+import '../../../home/presentation/view/category_entry_screen.dart';
+import '../bloc/budget_bloc.dart';
 
 /// @author : Jibin K John
 /// @date   : 14/11/2024
@@ -27,7 +27,6 @@ class CreateBudgetScreen extends StatefulWidget {
 }
 
 class _CreateBudgetScreenState extends State<CreateBudgetScreen> {
-  final BudgetHelper _budgetHelper = sl<BudgetHelper>();
   final _formKey = GlobalKey<FormState>();
   String _name = "";
   final ValueNotifier<List<CategoryModel>> _categories = ValueNotifier([]);
@@ -73,7 +72,7 @@ class _CreateBudgetScreenState extends State<CreateBudgetScreen> {
             _heading("Details"),
             FilledTextField(
               textFieldKey: "name",
-              hintText: "Budget Name",
+              labelText: "Budget Name",
               maxLength: 40,
               inputAction: TextInputAction.next,
               textCapitalization: TextCapitalization.words,
@@ -91,7 +90,7 @@ class _CreateBudgetScreenState extends State<CreateBudgetScreen> {
               onTap: _currencySelector,
               controller: _currencyController,
               textFieldKey: "currency",
-              hintText: "Currency",
+              labelText: "Currency",
               inputAction: TextInputAction.next,
               validator: (data) {
                 if (data.toString().trim().isEmpty) {
@@ -231,15 +230,31 @@ class _CreateBudgetScreenState extends State<CreateBudgetScreen> {
               ),
             ),
             const SizedBox(height: 20.0),
-            ValueListenableBuilder(
-              valueListenable: _loading,
-              builder: (ctx, loading, _) {
-                return LoadingFilledButton(
-                  onPressed: _onCreate,
-                  loading: loading,
-                  child: Text("Create"),
-                );
+            BlocListener<BudgetBloc, BudgetState>(
+              listener: (ctx, state) {
+                _loading.value = state.status == BudgetStatus.inserting;
+
+                if (state.status == BudgetStatus.inserted) {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    RouteName.home,
+                    (_) => false,
+                  );
+                }
+                if (state.error != null) {
+                  state.error!.showSnackBar(context);
+                }
               },
+              child: ValueListenableBuilder(
+                valueListenable: _loading,
+                builder: (ctx, loading, _) {
+                  return LoadingFilledButton(
+                    onPressed: _onCreate,
+                    loading: loading,
+                    child: Text("Create"),
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -247,28 +262,20 @@ class _CreateBudgetScreenState extends State<CreateBudgetScreen> {
     );
   }
 
-  Future<void> _onCreate() async {
+  void _onCreate() {
     if (_formKey.currentState!.validate()) {
-      _loading.value = true;
       _formKey.currentState!.save();
       FocusScope.of(context).unfocus();
-      final result = await _budgetHelper.insertBudget(
-        name: _name,
-        admin: context.read<AuthBloc>().state.currentUser?.uid ?? "unknownUser",
-        currency: _currency.value!,
-        categories: _categories.value,
-        members: _members.value,
-      );
-      if (result.isLeft) {
-        _loading.value = false;
-        result.left.showSnackBar(context);
-      } else {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          RouteName.home,
-          (_) => false,
-        );
-      }
+      context.read<BudgetBloc>().add(
+            InsertBudget(
+              name: _name,
+              admin: context.read<AuthBloc>().state.currentUser?.uid ??
+                  "unknownUser",
+              currency: _currency.value!,
+              categories: _categories.value,
+              members: _members.value,
+            ),
+          );
     }
   }
 

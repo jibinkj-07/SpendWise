@@ -16,7 +16,7 @@ class AccountRepoImpl implements AccountRepo {
     if (await InternetConnection().hasInternetAccess) {
       return await _accountFbDataSource.getUserInfoByID(id: id);
     } else {
-      return Left(Failure.network());
+      return Left(NetworkError());
     }
   }
 
@@ -27,7 +27,7 @@ class AccountRepoImpl implements AccountRepo {
     if (await InternetConnection().hasInternetAccess) {
       return await _accountFbDataSource.getUserInfoByMail(email: email);
     } else {
-      return Left(Failure.network());
+      return Left(NetworkError());
     }
   }
 
@@ -42,7 +42,7 @@ class AccountRepoImpl implements AccountRepo {
         budgetId: budgetId,
       );
     } else {
-      return Left(Failure.network());
+      return Left(NetworkError());
     }
   }
 }

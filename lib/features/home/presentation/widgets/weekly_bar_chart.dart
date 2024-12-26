@@ -45,7 +45,7 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
     double maxAmount = widget.chartData.map((data) => data.amount).reduce(
           (value, element) => value > element ? value : element,
         );
-    // maxAmount = maxAmount == 0 ? 50 : maxAmount;
+    maxAmount = maxAmount == 0 ? 50 : maxAmount;
 
     return SizedBox(
       height: MediaQuery.sizeOf(context).height * .23,

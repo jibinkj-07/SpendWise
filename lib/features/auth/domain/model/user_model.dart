@@ -43,6 +43,17 @@ class UserModel {
     );
   }
 
+  factory UserModel.fromSharedPrefMap(Map<String, String> map) => UserModel(
+        uid: map["uid"]!,
+        name: map["name"]!,
+        email: map["email"]!,
+        profileUrl: map["profile_url"]!,
+        selectedBudget: map["selected_budget"]!,
+        createdOn: DateTime.fromMillisecondsSinceEpoch(
+          int.parse(map["created_on"]!),
+        ),
+      );
+
   Map<String, dynamic> toJson() => {
         "name": name,
         "email": email,

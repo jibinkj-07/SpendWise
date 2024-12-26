@@ -1,6 +1,6 @@
 part of 'category_bloc.dart';
 
-enum CategoryStatus { idle, loading }
+enum CategoryStatus { idle, loading, inserting, inserted, removing, removed }
 
 class CategoryState extends Equatable {
   final CategoryStatus status;

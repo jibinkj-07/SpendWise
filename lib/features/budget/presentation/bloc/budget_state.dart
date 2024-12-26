@@ -1,6 +1,6 @@
 part of 'budget_bloc.dart';
 
-enum BudgetStatus { idle, loading }
+enum BudgetStatus { idle, loading, inserting, inserted, removing, removed }
 
 class BudgetState extends Equatable {
   final BudgetStatus status;

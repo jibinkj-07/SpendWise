@@ -23,7 +23,7 @@ class AuthRepoImpl implements AuthRepo {
         password: password,
       );
     } else {
-      return Left(Failure.network());
+      return Left(NetworkError());
     }
   }
 
@@ -38,7 +38,7 @@ class AuthRepoImpl implements AuthRepo {
         password: password,
       );
     } else {
-      return Left(Failure.network());
+      return Left(NetworkError());
     }
   }
 
@@ -47,7 +47,7 @@ class AuthRepoImpl implements AuthRepo {
     if (await InternetConnection().hasInternetAccess) {
       return await _authFbDataSource.loginUserWithGoogle();
     } else {
-      return Left(Failure.network());
+      return Left(NetworkError());
     }
   }
 
@@ -56,7 +56,7 @@ class AuthRepoImpl implements AuthRepo {
     if (await InternetConnection().hasInternetAccess) {
       return await _authFbDataSource.resetPassword(email: email);
     } else {
-      return Left(Failure.network());
+      return Left(NetworkError());
     }
   }
 
@@ -65,7 +65,7 @@ class AuthRepoImpl implements AuthRepo {
     if (await InternetConnection().hasInternetAccess) {
       return await _authFbDataSource.initUser();
     } else {
-      return Left(Failure.network());
+      return Left(NetworkError());
     }
   }
 
@@ -74,7 +74,7 @@ class AuthRepoImpl implements AuthRepo {
     if (await InternetConnection().hasInternetAccess) {
       return await _authFbDataSource.signOut();
     } else {
-      return Left(Failure.network());
+      return Left(NetworkError());
     }
   }
 }

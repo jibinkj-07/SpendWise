@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/util/constant/constants.dart';
+import 'core/util/error/failure.dart';
 import 'core/util/widget/custom_loading.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/view/login_screen.dart';
+import 'features/auth/presentation/view/network_error_screen.dart';
 import 'features/home/presentation/view/decision_screen.dart';
 import 'features/home/presentation/view/home_screen.dart';
 
@@ -19,6 +21,11 @@ class Root extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (ctx, state) {
+        /// Route to network error screen if there is not internet
+        if (state.error != null && state.error is NetworkError) {
+          return const NetworkErrorScreen();
+        }
+
         /// Show loading screen [Data is fetching from database]
         if (state.authStatus == AuthStatus.loading) {
           return CustomLoading(appLaunch: true);
@@ -30,6 +37,7 @@ class Root extends StatelessWidget {
             return DecisionScreen();
           }
 
+          //todo
           // check selected budget equals to "requested"
           // if yes route to pending screen
           else if (state.currentUser!.selectedBudget.toLowerCase() ==

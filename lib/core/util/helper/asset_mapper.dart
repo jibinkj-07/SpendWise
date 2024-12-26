@@ -1,6 +1,8 @@
 sealed class AssetMapper {
   /// ---------------------- LOTTIE FILES -------------------------
 
+  static const String noInternetLottie = "assets/animations/no-internet.json";
+
   /// ---------------------- IMAGE FILES -------------------------
   static const String appIconImage = "assets/images/logo-01.png";
   static const String appIcon2Image = "assets/images/logo-02.png";
