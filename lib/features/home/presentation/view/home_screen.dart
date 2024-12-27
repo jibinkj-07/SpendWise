@@ -76,13 +76,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: _views[index],
                 ),
-                floatingActionButton: FloatingActionButton.extended(
-                  onPressed: () => Navigator.of(context).pushNamed(
-                    RouteName.transactionEntry,
-                  ),
-                  icon: Icon(Icons.add_rounded),
-                  label: Text("Add"),
-                ),
                 bottomNavigationBar: NavBar(index: _index, currentIndex: index),
               ),
             );

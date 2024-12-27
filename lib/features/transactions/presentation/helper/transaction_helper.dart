@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import '../../../budget/domain/model/transaction_model.dart';
 
 enum TransactionFilter {
@@ -32,9 +34,9 @@ sealed class TransactionHelper {
       );
 
   static Map<DateTime, List<TransactionModel>> groupByDate(
-      List<TransactionModel> transactions,
-      TransactionFilter filter, // Custom filter type
-      ) {
+    List<TransactionModel> transactions,
+    TransactionFilter filter, // Custom filter type
+  ) {
     // Group transactions by date
     Map<DateTime, List<TransactionModel>> items = {};
 
@@ -71,5 +73,4 @@ sealed class TransactionHelper {
 
     return sortedMap;
   }
-
 }

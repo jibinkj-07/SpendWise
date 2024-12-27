@@ -1,29 +1,23 @@
-part of 'transaction_bloc.dart';
+part of 'home_transaction_bloc.dart';
 
-sealed class TransactionEvent extends Equatable {
-  const TransactionEvent();
+sealed class HomeTransactionEvent extends Equatable {
+  const HomeTransactionEvent();
 }
 
-class SubscribeTransaction extends TransactionEvent {
+class SubscribeTransaction extends HomeTransactionEvent {
   final String budgetId;
-  final DateTime startDate;
-  final DateTime endDate;
 
   const SubscribeTransaction({
-    required this.budgetId,
-    required this.startDate,
-    required this.endDate,
+    required this.budgetId
   });
 
   @override
   List<Object?> get props => [
-        budgetId,
-        startDate,
-        endDate,
+        budgetId
       ];
 }
 
-class TransactionLoaded extends TransactionEvent {
+class TransactionLoaded extends HomeTransactionEvent {
   final List<TransactionModel> transactions;
 
   const TransactionLoaded({required this.transactions});
@@ -32,7 +26,7 @@ class TransactionLoaded extends TransactionEvent {
   List<Object?> get props => [transactions];
 }
 
-class InsertTransaction extends TransactionEvent {
+class InsertTransaction extends HomeTransactionEvent {
   final String budgetId;
   final TransactionModel transaction;
   final XFile? doc;
@@ -47,7 +41,7 @@ class InsertTransaction extends TransactionEvent {
   List<Object?> get props => [budgetId, transaction];
 }
 
-class RemoveTransaction extends TransactionEvent {
+class RemoveTransaction extends HomeTransactionEvent {
   final String budgetId;
   final String transactionId;
 
@@ -60,7 +54,7 @@ class RemoveTransaction extends TransactionEvent {
   List<Object?> get props => [budgetId, transactionId];
 }
 
-class ThrownError extends TransactionEvent {
+class ThrownError extends HomeTransactionEvent {
   final Failure error;
 
   const ThrownError({required this.error});

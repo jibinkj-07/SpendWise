@@ -8,21 +8,22 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/util/error/failure.dart';
 import '../../../../core/util/helper/firebase_path.dart';
-import '../../domain/model/transaction_model.dart';
-import '../../domain/repo/budget_repo.dart';
+import '../../../budget/domain/model/transaction_model.dart';
+import '../../../budget/domain/repo/budget_repo.dart';
 
-part 'transaction_event.dart';
+part 'home_transaction_event.dart';
 
-part 'transaction_state.dart';
+part 'home_transaction_state.dart';
 
-class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
+class HomeTransactionBloc
+    extends Bloc<HomeTransactionEvent, HomeTransactionState> {
   final FirebaseDatabase _firebaseDatabase;
 
   final BudgetRepo _budgetRepo;
-  StreamSubscription? _categorySubscription;
+  StreamSubscription? _transactionSubscription;
 
-  TransactionBloc(this._firebaseDatabase, this._budgetRepo)
-      : super(TransactionState.initial()) {
+  HomeTransactionBloc(this._firebaseDatabase, this._budgetRepo)
+      : super(HomeTransactionState.initial()) {
     on<SubscribeTransaction>(_onSubscribeTransaction);
     on<TransactionLoaded>(_onTransactionLoaded);
     on<ThrownError>(_onError);
@@ -32,30 +33,36 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   Future<void> _onSubscribeTransaction(
     SubscribeTransaction event,
-    Emitter<TransactionState> emit,
+    Emitter<HomeTransactionState> emit,
   ) async {
+    final date = DateTime.now();
     // Cancel any previous subscription to avoid multiple listeners
-    await _categorySubscription?.cancel();
+    await _transactionSubscription?.cancel();
 
     // Set loading state
-    emit(state.copyWith(status: TransactionStatus.loading));
+    emit(state.copyWith(status: HomeTransactionStatus.loading));
 
-    int startTimestamp = event.startDate.millisecondsSinceEpoch;
-    int endTimestamp = event.endDate.millisecondsSinceEpoch;
+    // Calculate start and end timestamps for the month
+    final startOfMonth =
+        DateTime(date.year, date.month, 1).millisecondsSinceEpoch;
+    final endOfMonth = DateTime(date.year, date.month + 1, 0)
+        .subtract(Duration(milliseconds: 1))
+        .millisecondsSinceEpoch;
 
     // Start listening to the budget node
-    _categorySubscription = _firebaseDatabase
+    _transactionSubscription = _firebaseDatabase
         .ref(FirebasePath.transactionPath(event.budgetId))
-        .orderByChild("date")
-        .startAt(startTimestamp)
-        .endAt(endTimestamp)
+        .orderByChild('date')
+        .startAt(startOfMonth)
+        .endAt(endOfMonth)
         .onValue
         .listen(
       (snapshotEvent) {
         if (snapshotEvent.snapshot.exists) {
           try {
             final transactions = snapshotEvent.snapshot.children
-                .map((category) => TransactionModel.fromFirebase(category))
+                .map(
+                    (transaction) => TransactionModel.fromFirebase(transaction))
                 .toList();
 
             add(TransactionLoaded(transactions: transactions));
@@ -87,11 +94,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   Future<void> _onTransactionLoaded(
     TransactionLoaded event,
-    Emitter<TransactionState> emit,
+    Emitter<HomeTransactionState> emit,
   ) async {
     emit(
       state.copyWith(
-        status: TransactionStatus.idle,
+        status: HomeTransactionStatus.idle,
         transactions: event.transactions,
       ),
     );
@@ -99,24 +106,25 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   Future<void> _onInsert(
     InsertTransaction event,
-    Emitter<TransactionState> emit,
+    Emitter<HomeTransactionState> emit,
   ) async {
-    emit(state.copyWith(status: TransactionStatus.inserting));
+    emit(state.copyWith(status: HomeTransactionStatus.inserting));
     try {
       final result = await _budgetRepo.insertTransaction(
         budgetId: event.budgetId,
         transaction: event.transaction,
+        doc: event.doc,
       );
       result.fold(
         (failure) => emit(
-          state.copyWith(status: TransactionStatus.idle, error: failure),
+          state.copyWith(status: HomeTransactionStatus.idle, error: failure),
         ),
-        (_) => emit(state.copyWith(status: TransactionStatus.inserted)),
+        (_) => emit(state.copyWith(status: HomeTransactionStatus.inserted)),
       );
     } catch (e) {
       emit(
         state.copyWith(
-            status: TransactionStatus.idle,
+            status: HomeTransactionStatus.idle,
             error: Failure(message: "Unable to create transaction!")),
       );
     }
@@ -124,9 +132,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   Future<void> _onRemove(
     RemoveTransaction event,
-    Emitter<TransactionState> emit,
+    Emitter<HomeTransactionState> emit,
   ) async {
-    emit(state.copyWith(status: TransactionStatus.removing));
+    emit(state.copyWith(status: HomeTransactionStatus.removing));
     try {
       final result = await _budgetRepo.removeTransaction(
         transactionId: event.transactionId,
@@ -134,14 +142,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       );
       result.fold(
         (failure) => emit(
-          state.copyWith(status: TransactionStatus.idle, error: failure),
+          state.copyWith(status: HomeTransactionStatus.idle, error: failure),
         ),
-        (_) => emit(state.copyWith(status: TransactionStatus.removed)),
+        (_) => emit(state.copyWith(status: HomeTransactionStatus.removed)),
       );
     } catch (e) {
       emit(
         state.copyWith(
-          status: TransactionStatus.idle,
+          status: HomeTransactionStatus.idle,
           error: Failure(message: "Unable to remove transaction!"),
         ),
       );
@@ -150,20 +158,20 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
   Future<void> _onError(
     ThrownError event,
-    Emitter<TransactionState> emit,
+    Emitter<HomeTransactionState> emit,
   ) async {
-    emit(TransactionState.error(event.error));
+    emit(HomeTransactionState.error(event.error));
   }
 
   @override
-  void onEvent(TransactionEvent event) {
+  void onEvent(HomeTransactionEvent event) {
     super.onEvent(event);
-    log("TransactionEvent dispatched: $event");
+    log("HomeTransactionEvent dispatched: $event");
   }
 
   @override
   Future<void> close() {
-    _categorySubscription?.cancel();
+    _transactionSubscription?.cancel();
     return super.close();
   }
 }

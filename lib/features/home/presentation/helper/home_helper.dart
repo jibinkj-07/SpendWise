@@ -14,7 +14,7 @@ import '../../../budget/domain/model/budget_model.dart';
 import '../../../budget/domain/model/transaction_model.dart';
 import '../../../budget/presentation/bloc/budget_bloc.dart';
 import '../../../budget/presentation/bloc/category_bloc.dart';
-import '../../../budget/presentation/bloc/transaction_bloc.dart';
+import '../bloc/home_transaction_bloc.dart';
 import '../../../transactions/presentation/helper/transaction_helper.dart';
 
 class HomeHelper {
@@ -44,11 +44,11 @@ void initBudgetData(BuildContext context, [String? budgetId]) {
   // this only subscribe to budget basic details node
   context.read<BudgetBloc>().add(SubscribeBudget(budgetId: currentBudget));
   context.read<CategoryBloc>().add(SubscribeCategory(budgetId: currentBudget));
-  context.read<TransactionBloc>().add(
+  context.read<HomeTransactionBloc>().add(
         SubscribeTransaction(
           budgetId: currentBudget,
-          startDate: DateTime(date.year, date.month, 1),
-          endDate: DateTime(date.year, date.month + 1, 0), // End of the month
+          // startDate: DateTime(date.year, date.month, 1),
+          // endDate: DateTime(date.year, date.month + 1, 0), // End of the month
         ),
       );
 }
@@ -74,11 +74,17 @@ List<WeeklyChartData> generateWeekChartData(
 List<TransactionModel> generateWeekTransactions(
   List<TransactionModel> transactions,
 ) {
-  Map<String, TransactionModel> transactionMap = {
-    for (var transaction in transactions)
-      '${transaction.date.year}-${transaction.date.month}-${transaction.date.day}':
-          transaction,
-  };
+  Map<String, List<TransactionModel>> transactionMap = {};
+
+  for (var transaction in transactions) {
+    final date =
+        '${transaction.date.year}-${transaction.date.month}-${transaction.date.day}';
+    if (transactionMap.containsKey(date)) {
+      transactionMap[date]!.add(transaction);
+    } else {
+      transactionMap[date] = [transaction];
+    }
+  }
 
   List<TransactionModel> data = [];
   DateTime now = DateTime.now();
@@ -88,7 +94,7 @@ List<TransactionModel> generateWeekTransactions(
     String key = '${day.year}-${day.month}-${day.day}';
 
     if (transactionMap.containsKey(key)) {
-      data.add(transactionMap[key]!);
+      data.addAll(transactionMap[key]!);
     }
   }
 

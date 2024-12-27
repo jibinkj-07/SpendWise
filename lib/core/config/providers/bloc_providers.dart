@@ -3,7 +3,7 @@ import 'package:provider/single_child_widget.dart';
 import '../../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../../features/budget/presentation/bloc/budget_bloc.dart';
 import '../../../features/budget/presentation/bloc/category_bloc.dart';
-import '../../../features/budget/presentation/bloc/transaction_bloc.dart';
+import '../../../features/home/presentation/bloc/home_transaction_bloc.dart';
 import '../injection/injection_container.dart';
 
 sealed class BlocProviders {
@@ -11,6 +11,6 @@ sealed class BlocProviders {
         BlocProvider<AuthBloc>(create: (_) => sl<AuthBloc>()),
         BlocProvider<BudgetBloc>(create: (_) => sl<BudgetBloc>()),
         BlocProvider<CategoryBloc>(create: (_) => sl<CategoryBloc>()),
-        BlocProvider<TransactionBloc>(create: (_) => sl<TransactionBloc>()),
+        BlocProvider<HomeTransactionBloc>(create: (_) => sl<HomeTransactionBloc>()),
       ];
 }

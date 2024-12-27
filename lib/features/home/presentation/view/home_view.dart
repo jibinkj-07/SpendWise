@@ -1,10 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/util/widget/custom_loading.dart';
 import '../helper/home_helper.dart';
 import '../../../../core/util/helper/app_helper.dart';
-import '../../../budget/presentation/bloc/transaction_bloc.dart';
+import '../bloc/home_transaction_bloc.dart';
 import '../../../transactions/presentation/helper/transaction_helper.dart';
 import '../widgets/recent_transactions.dart';
 import '../widgets/weekly_bar_chart.dart';
@@ -18,11 +20,12 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionBloc, TransactionState>(
+    return BlocBuilder<HomeTransactionBloc, HomeTransactionState>(
         builder: (ctx, state) {
-      if (state.status == TransactionStatus.loading) {
+      if (state.status == HomeTransactionStatus.loading) {
         return CustomLoading();
       }
+
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -71,10 +74,7 @@ class HomeView extends StatelessWidget {
                     ),
                     Text(
                       DateFormat.MMMM().format(DateTime.now()),
-                      style: TextStyle(
-                        // color: AppConfig.primaryColor,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),

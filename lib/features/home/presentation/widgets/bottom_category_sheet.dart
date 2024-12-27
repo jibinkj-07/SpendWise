@@ -7,7 +7,6 @@ import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/widget/empty.dart';
 import '../../../budget/domain/model/category_model.dart';
 import '../../../budget/presentation/bloc/category_bloc.dart';
-import '../helper/category_helper.dart';
 
 /// @author : Jibin K John
 /// @date   : 20/12/2024
@@ -131,29 +130,33 @@ class _BottomCategorySheetState extends State<BottomCategorySheet> {
                         Expanded(
                           child: _categories.isEmpty
                               ? const Empty(message: "Category not found")
-                              : ListView.builder(
+                              : GridView.builder(
                                   controller: scrollController,
                                   itemCount: _categories.length,
                                   itemBuilder: (context, index) {
-                                    return Material(
-                                      color: Colors.transparent,
-                                      child: ListTile(
-                                        onTap: (){},
-                                        leading: CircleAvatar(
-                                          backgroundColor: _categories[index]
-                                              .color
-                                              .withOpacity(.15),
-                                          child: Icon(
-                                            AppHelper.getIconFromString(
-                                              _categories[index].icon,
-                                            ),
-                                            color: _categories[index].color,
+                                    return ListTile(
+                                      contentPadding: EdgeInsets.zero,
+                                      onTap: () => Navigator.pop(
+                                          context, _categories[index]),
+                                      leading: CircleAvatar(
+                                        backgroundColor: _categories[index]
+                                            .color
+                                            .withOpacity(.15),
+                                        child: Icon(
+                                          AppHelper.getIconFromString(
+                                            _categories[index].icon,
                                           ),
+                                          color: _categories[index].color,
                                         ),
-                                        title: Text(_categories[index].name),
                                       ),
+                                      title: Text(_categories[index].name),
                                     );
                                   },
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    childAspectRatio: 1 / .35,
+                                  ),
                                 ),
                         ),
                       ],

@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:spend_wise/core/config/app_config.dart';
 import 'package:spend_wise/core/util/widget/filled_text_field.dart';
 
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/widget/loading_filled_button.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/domain/model/category_model.dart';
 import '../../../budget/domain/model/transaction_model.dart';
+import '../../../budget/presentation/bloc/budget_bloc.dart';
 import '../../../budget/presentation/bloc/category_bloc.dart';
+import '../../../home/presentation/bloc/home_transaction_bloc.dart';
 import '../../../home/presentation/widgets/bottom_category_sheet.dart';
+import '../../../home/presentation/widgets/xFile_image_view.dart';
 
 /// @author : Jibin K John
 /// @date   : 18/12/2024
@@ -30,6 +34,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
   final ValueNotifier<bool> _loading = ValueNotifier(false);
+  final ValueNotifier<XFile?> _document = ValueNotifier(null);
   late ValueNotifier<DateTime> _date;
   late ValueNotifier<CategoryModel?> _category;
 
@@ -68,6 +73,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
     _dateController.dispose();
     _category.dispose();
     _categoryController.dispose();
+    _document.dispose();
   }
 
   @override
@@ -121,7 +127,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                         textFieldKey: "date",
                         inputAction: TextInputAction.none,
                       ),
-                      color: Colors.orange,
+                      color: Colors.brown.shade800,
                     ),
                     _tile(
                       icon: Icons.title_rounded,
@@ -227,17 +233,105 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                       ),
                       color: Colors.deepPurple,
                     ),
+                    _tile(
+                      icon: Icons.folder_rounded,
+                      title: "Document [Optional]",
+                      child: Container(
+                        padding: const EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          border: Border.all(
+                            width: .15,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        child: ValueListenableBuilder(
+                            valueListenable: _document,
+                            builder: (ctx, doc, _) {
+                              return Column(
+                                children: [
+                                  if (doc != null)
+                                    XFileImageView(image: doc)
+                                  else
+                                    Text(
+                                      "Choose document",
+                                      style: TextStyle(
+                                        fontSize: 13.0,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      if (doc == null)
+                                        const SizedBox.shrink()
+                                      else
+                                        TextButton(
+                                          onPressed: () =>
+                                              _document.value = null,
+                                          child: Text("Remove"),
+                                        ),
+                                      Row(
+                                        children: [
+                                          IconButton(
+                                            onPressed: () async {
+                                              _document.value =
+                                                  await ImagePicker().pickImage(
+                                                source: ImageSource.gallery,
+                                              );
+                                            },
+                                            icon:
+                                                Icon(Icons.attach_file_rounded),
+                                          ),
+                                          IconButton(
+                                            onPressed: () async {
+                                              _document.value =
+                                                  await ImagePicker().pickImage(
+                                                source: ImageSource.camera,
+                                              );
+                                            },
+                                            icon:
+                                                Icon(Icons.camera_alt_rounded),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              );
+                            }),
+                      ),
+                      color: Colors.orange.shade600,
+                    ),
                   ],
                 ),
               ),
             ),
+            const SizedBox(height: 5.0),
             // Button
-            LoadingFilledButton(
-              onPressed: () {},
-              loading: false,
-              child:
-                  Text("${widget.transactionModel == null ? "Add" : "Update"}"
-                      " Transaction"),
+            BlocListener<HomeTransactionBloc, HomeTransactionState>(
+              listener: (BuildContext context, HomeTransactionState state) {
+                _loading.value = state.status == HomeTransactionStatus.inserting;
+                if (state.error != null) {
+                  state.error!.showSnackBar(context);
+                }
+                if (state.status == HomeTransactionStatus.inserted) {
+                  Navigator.pop(context);
+                }
+              },
+              child: ValueListenableBuilder(
+                valueListenable: _loading,
+                builder: (ctx, loading, _) {
+                  return LoadingFilledButton(
+                    onPressed: _onAddOrUpdate,
+                    loading: loading,
+                    child: Text(
+                        "${widget.transactionModel == null ? "Add" : "Update"}"
+                        " Transaction"),
+                  );
+                },
+              ),
             )
           ],
         ),
@@ -254,11 +348,11 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
       ListTile(
         contentPadding: EdgeInsets.only(bottom: 8.0),
         leading: CircleAvatar(
-          radius: 25.0,
+          radius: 20.0,
           backgroundColor: color.withOpacity(.15),
           child: Icon(
             icon,
-            size: 22.0,
+            size: 20.0,
             color: color,
           ),
         ),
@@ -281,4 +375,30 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
         ),
         subtitle: child,
       );
+
+  void _onAddOrUpdate() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      FocusScope.of(context).unfocus();
+      final transactionModel = TransactionModel(
+        id: widget.transactionModel?.id ??
+            DateTime.now().millisecondsSinceEpoch.toString(),
+        date: _date.value,
+        amount: _amount,
+        title: _title,
+        docUrl: "",
+        description: _description,
+        categoryId: _category.value?.id ?? "",
+        createdUserId:
+            context.read<AuthBloc>().state.currentUser?.uid ?? "unknownUser",
+      );
+      context.read<HomeTransactionBloc>().add(
+            InsertTransaction(
+              budgetId: context.read<BudgetBloc>().state.budgetDetail?.id ?? "",
+              transaction: transactionModel,
+              doc: _document.value,
+            ),
+          );
+    }
+  }
 }

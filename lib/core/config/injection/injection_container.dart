@@ -1,7 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../features/budget/presentation/bloc/category_bloc.dart';
-import '../../../features/budget/presentation/bloc/transaction_bloc.dart';
+import '../../../features/home/presentation/bloc/home_transaction_bloc.dart';
 import './imports.dart';
 
 final sl = GetIt.instance;
@@ -47,5 +47,5 @@ Future<void> initDependencies() async {
   sl.registerSingleton<AuthBloc>(AuthBloc(sl()));
   sl.registerSingleton<BudgetBloc>(BudgetBloc(sl(), sl()));
   sl.registerSingleton<CategoryBloc>(CategoryBloc(sl(), sl()));
-  sl.registerSingleton<TransactionBloc>(TransactionBloc(sl(), sl()));
+  sl.registerSingleton<HomeTransactionBloc>(HomeTransactionBloc(sl(), sl()));
 }
