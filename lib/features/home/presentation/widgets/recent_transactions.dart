@@ -39,45 +39,14 @@ class _RecentTransactions extends State<RecentTransactions> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Recent Transactions",
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16.0,
-              ),
-            ),
-            PopupMenuButton(
-              surfaceTintColor: Colors.transparent,
-              color: Colors.blue.shade50,
-              iconColor: AppConfig.primaryColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              itemBuilder: (ctx) => [
-                PopupMenuItem(
-                  child: Text("Recent"),
-                  onTap: () => _filter.value = TransactionFilter.recent,
-                ),
-                PopupMenuItem(
-                  child: Text("Oldest"),
-                  onTap: () => _filter.value = TransactionFilter.oldest,
-                ),
-                PopupMenuItem(
-                  child: Text("High to Low"),
-                  onTap: () => _filter.value = TransactionFilter.highToLow,
-                ),
-                PopupMenuItem(
-                  child: Text("Low to High"),
-                  onTap: () => _filter.value = TransactionFilter.lowToHigh,
-                ),
-              ],
-              icon: Icon(Icons.sort_rounded),
-            )
-          ],
+        Text(
+          "Recent Transactions",
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 16.0,
+          ),
         ),
         Expanded(
           child: widget.transactions.isNotEmpty
@@ -147,12 +116,16 @@ class Section extends MultiSliver {
                     Text(
                       title,
                       style: const TextStyle(
-                          fontWeight: FontWeight.w500, color: Colors.black54),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
                     Text(
                       amount,
                       style: const TextStyle(
-                          fontWeight: FontWeight.w500, color: Colors.black54),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
                   ],
                 ),
