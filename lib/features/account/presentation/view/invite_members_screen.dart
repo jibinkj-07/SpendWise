@@ -66,12 +66,16 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
               inputType: TextInputType.emailAddress,
               maxLength: 50,
               validator: (email) {
+                final authBloc = context.read<AuthBloc>();
+                String currentUserEmail = "";
+                if (authBloc.state is Authenticated) {
+                  currentUserEmail = (authBloc.state as Authenticated).user.email;
+                }
                 if (email.toString().trim().isEmpty) {
                   return 'Email is empty';
                 } else if (!email.toString().trim().contains('@')) {
                   return 'Provide a valid email address';
-                } else if (email.toString().trim() ==
-                    context.read<AuthBloc>().state.currentUser?.email) {
+                } else if (email.toString().trim() == currentUserEmail) {
                   return "You are the admin";
                 }
                 return null;

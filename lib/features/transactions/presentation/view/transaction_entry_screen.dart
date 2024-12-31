@@ -312,7 +312,8 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
             // Button
             BlocListener<HomeTransactionBloc, HomeTransactionState>(
               listener: (BuildContext context, HomeTransactionState state) {
-                _loading.value = state.status == HomeTransactionStatus.inserting;
+                _loading.value =
+                    state.status == HomeTransactionStatus.inserting;
                 if (state.error != null) {
                   state.error!.showSnackBar(context);
                 }
@@ -380,6 +381,11 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       FocusScope.of(context).unfocus();
+      String admin = "unknownUser";
+      final authBloc = context.read<AuthBloc>();
+      if (authBloc.state is Authenticated) {
+        admin = (authBloc.state as Authenticated).user.uid;
+      }
       final transactionModel = TransactionModel(
         id: widget.transactionModel?.id ??
             DateTime.now().millisecondsSinceEpoch.toString(),
@@ -389,8 +395,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
         docUrl: "",
         description: _description,
         categoryId: _category.value?.id ?? "",
-        createdUserId:
-            context.read<AuthBloc>().state.currentUser?.uid ?? "unknownUser",
+        createdUserId: admin,
       );
       context.read<HomeTransactionBloc>().add(
             InsertTransaction(

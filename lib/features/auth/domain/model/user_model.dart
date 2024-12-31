@@ -31,12 +31,17 @@ class UserModel {
       );
 
   factory UserModel.fromFirebase(DataSnapshot userData) {
+    // If user logging with google there might be a chance to
+    // not creating selected node under user detail
+    final budget = userData.child("selected").exists
+        ? userData.child("selected").value.toString()
+        : "";
     return UserModel(
       uid: userData.key.toString(),
       name: userData.child("name").value.toString(),
       email: userData.child("email").value.toString(),
       profileUrl: userData.child("profile_url").value.toString(),
-      selectedBudget: userData.child("selected").value.toString(),
+      selectedBudget: budget,
       createdOn: DateTime.fromMillisecondsSinceEpoch(
         int.parse(userData.child("created_on").value.toString()),
       ),
@@ -61,4 +66,8 @@ class UserModel {
         "selected": selectedBudget,
         "created_on": createdOn.millisecondsSinceEpoch.toString(),
       };
+
+  @override
+  String toString() =>
+      "UID $uid Name $name Email $email\nURL $profileUrl Selected $selectedBudget";
 }

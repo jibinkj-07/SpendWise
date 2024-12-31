@@ -4,9 +4,18 @@ sealed class AuthEvent extends Equatable {
   const AuthEvent();
 }
 
-class InitUser extends AuthEvent {
+class SubscribeUserData extends AuthEvent {
   @override
   List<Object?> get props => [];
+}
+
+class UserDataLoaded extends AuthEvent {
+  final UserModel userData;
+
+  const UserDataLoaded({required this.userData});
+
+  @override
+  List<Object?> get props => [userData];
 }
 
 class LoginUser extends AuthEvent {
@@ -39,21 +48,6 @@ class CreateUser extends AuthEvent {
   List<Object?> get props => [name, email, password];
 }
 
-class UpdateUser extends AuthEvent {
-  final String? name;
-  final String? selectedBudget;
-  final String? profile;
-
-  const UpdateUser({
-    this.name,
-    this.selectedBudget,
-    this.profile,
-  });
-
-  @override
-  List<Object?> get props => [name, selectedBudget, profile];
-}
-
 class ResetPassword extends AuthEvent {
   final String email;
 
@@ -61,6 +55,15 @@ class ResetPassword extends AuthEvent {
 
   @override
   List<Object?> get props => [email];
+}
+
+class AuthErrorOccurred extends AuthEvent {
+  final Failure error;
+
+  const AuthErrorOccurred({required this.error});
+
+  @override
+  List<Object?> get props => [error];
 }
 
 class SignOut extends AuthEvent {

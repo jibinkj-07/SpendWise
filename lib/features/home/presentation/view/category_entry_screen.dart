@@ -372,14 +372,18 @@ class _CategoryEntryScreenState extends State<CategoryEntryScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       FocusScope.of(context).unfocus();
+      String admin = "unknownUser";
+      final authBloc = context.read<AuthBloc>();
+      if (authBloc.state is Authenticated) {
+        admin = (authBloc.state as Authenticated).user.uid;
+      }
       final CategoryModel categoryModel = CategoryModel(
         id: _name.toLowerCase().split(" ").first,
         name: _name,
         color: _color.value,
         icon: _iconName.value,
         createdOn: DateTime.now(),
-        createdBy:
-            context.read<AuthBloc>().state.currentUser?.uid ?? "unknownUser",
+        createdBy: admin,
       );
       if (widget.categories != null) {
         /// Do not need to call Category bloc, because

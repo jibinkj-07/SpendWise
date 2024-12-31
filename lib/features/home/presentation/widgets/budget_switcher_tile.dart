@@ -50,10 +50,10 @@ class _BudgetSwitcherTileState extends State<BudgetSwitcherTile> {
               ? ListTile(
                   onTap: () {
                     Navigator.pop(context);
-                    _accountHelper.updateSelectedBudget(
-                      id: context.read<AuthBloc>().state.currentUser?.uid ?? "",
-                      budgetId: budget.id,
-                    );
+                    // _accountHelper.updateSelectedBudget(
+                    //   id: context.read<AuthBloc>().state.currentUser?.uid ?? "",
+                    //   budgetId: budget.id,
+                    // );
                     initBudgetData(context, budget.id);
                   },
                   tileColor: Colors.grey.withOpacity(.15),

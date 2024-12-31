@@ -8,23 +8,25 @@ import 'package:spend_wise/features/home/presentation/view/home_screen.dart';
 import '../../../features/account/presentation/view/account_screen.dart';
 import '../../../features/account/presentation/view/invite_members_screen.dart';
 import '../../../features/auth/presentation/view/login_screen.dart';
+import '../../../features/auth/presentation/view/network_error_screen.dart';
 import '../../../features/transactions/presentation/view/transaction_entry_screen.dart';
 import '../../../root.dart';
 import 'error_route.dart';
 
 /// class for adding page route name entry
 sealed class RouteName {
-  static const String root = "root";
-  static const String login = "login-screen";
-  static const String createAccount = "create-account-screen";
-  static const String passwordReset = "password-reset-screen";
-  static const String home = "home";
-  static const String decision = "decision-screen";
-  static const String createExpense = "create-expense-screen";
-  static const String createCategory = "create-category-screen";
-  static const String inviteMembers = "invite-members-screen";
-  static const String account = "account-screen";
-  static const String transactionEntry = "transaction-entry-screen";
+  static const String root = "/root";
+  static const String login = "/login-screen";
+  static const String createAccount = "/create-account-screen";
+  static const String passwordReset = "/password-reset-screen";
+  static const String home = "/home";
+  static const String decision = "/decision-screen";
+  static const String createExpense = "/create-expense-screen";
+  static const String createCategory = "/create-category-screen";
+  static const String inviteMembers = "/invite-members-screen";
+  static const String account = "/account-screen";
+  static const String transactionEntry = "/transaction-entry-screen";
+  static const String networkError = "/network-error-screen";
 }
 
 /// class for declaring app page navigation screens
@@ -59,6 +61,8 @@ sealed class AppRoutes {
       case RouteName.transactionEntry:
         return MaterialPageRoute(
             builder: (_) => const TransactionEntryScreen());
+      case RouteName.networkError:
+        return MaterialPageRoute(builder: (_) => const NetworkErrorScreen());
       default:
         return MaterialPageRoute(builder: (_) => const ErrorRoute());
     }

@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spend_wise/core/util/helper/app_helper.dart';
 import 'package:spend_wise/core/util/widget/filled_text_field.dart';
 import '../../../../core/config/app_config.dart';
-import '../../../../core/config/injection/injection_container.dart';
 import '../../../../core/config/route/app_routes.dart';
 import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../account/domain/model/user.dart';
@@ -266,11 +265,15 @@ class _CreateBudgetScreenState extends State<CreateBudgetScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       FocusScope.of(context).unfocus();
+      String admin = "unknownUser";
+      final authBloc = context.read<AuthBloc>();
+      if (authBloc.state is Authenticated) {
+        admin = (authBloc.state as Authenticated).user.uid;
+      }
       context.read<BudgetBloc>().add(
             InsertBudget(
               name: _name,
-              admin: context.read<AuthBloc>().state.currentUser?.uid ??
-                  "unknownUser",
+              admin: admin,
               currency: _currency.value!,
               categories: _categories.value,
               members: _members.value,

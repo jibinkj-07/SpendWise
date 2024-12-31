@@ -39,7 +39,7 @@ class NetworkErrorScreen extends StatelessWidget {
         Center(
           child: FilledButton(
               onPressed: () {
-                context.read<AuthBloc>().add(InitUser());
+                context.read<AuthBloc>().add(SubscribeUserData());
                 Navigator.pushReplacementNamed(context, RouteName.root);
               },
               child: Text("Try Again")),

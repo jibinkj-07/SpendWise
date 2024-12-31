@@ -37,16 +37,22 @@ class HomeHelper {
 }
 
 void initBudgetData(BuildContext context, [String? budgetId]) {
-  final date = DateTime.now();
-  final currentBudget = budgetId ??
-      context.read<AuthBloc>().state.currentUser?.selectedBudget ??
-      "";
+  String currentBudget = "";
+  final authBloc = context.read<AuthBloc>();
+  if (authBloc.state is Authenticated) {
+    currentBudget = (authBloc.state as Authenticated).user.selectedBudget;
+  }
+
   // this only subscribe to budget basic details node
-  context.read<BudgetBloc>().add(SubscribeBudget(budgetId: currentBudget));
-  context.read<CategoryBloc>().add(SubscribeCategory(budgetId: currentBudget));
+  context
+      .read<BudgetBloc>()
+      .add(SubscribeBudget(budgetId: budgetId ?? currentBudget));
+  context
+      .read<CategoryBloc>()
+      .add(SubscribeCategory(budgetId: budgetId ?? currentBudget));
   context.read<HomeTransactionBloc>().add(
         SubscribeTransaction(
-          budgetId: currentBudget,
+          budgetId: budgetId ?? currentBudget,
           // startDate: DateTime(date.year, date.month, 1),
           // endDate: DateTime(date.year, date.month + 1, 0), // End of the month
         ),

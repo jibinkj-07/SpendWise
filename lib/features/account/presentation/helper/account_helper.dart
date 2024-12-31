@@ -28,7 +28,7 @@ class AccountHelper {
     final result =
         await _accountRepo.updateSelectedBudget(id: id, budgetId: budgetId);
     if (result.isRight) {
-      _authBloc.add(UpdateUser(selectedBudget: budgetId));
+      // _authBloc.add(UpdateUser(selectedBudget: budgetId));
     }
     return result;
   }

@@ -20,7 +20,7 @@ Future<void> main() async {
   await initDependencies();
 
   // Initialing user data
-  sl<AuthBloc>().add(InitUser());
+  sl<AuthBloc>().add(SubscribeUserData());
   // restricting application orientation to portrait only
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -38,7 +38,6 @@ Future<void> main() async {
 class SpendWiseApp extends StatelessWidget {
   const SpendWiseApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

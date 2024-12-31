@@ -19,20 +19,48 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       surfaceTintColor: Colors.transparent,
+      automaticallyImplyLeading: false,
       title: BlocBuilder<AuthBloc, AuthState>(
         builder: (ctx, state) {
+          if (state is Authenticated) {
+            return ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: GestureDetector(
+                onTap: () => Navigator.of(context).pushNamed(RouteName.account),
+                child: DisplayImage(
+                  imageUrl: state.user.profileUrl,
+                  width: 45.0,
+                  height: 45.0,
+                ),
+              ),
+              title: Text(
+                state.user.name,
+                style: TextStyle(
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+              subtitle: Text(
+                budgetName,
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            );
+          }
           return ListTile(
             contentPadding: EdgeInsets.zero,
             leading: GestureDetector(
               onTap: () => Navigator.of(context).pushNamed(RouteName.account),
               child: DisplayImage(
-                imageUrl: state.currentUser?.profileUrl ?? "",
+                imageUrl: "",
                 width: 45.0,
                 height: 45.0,
               ),
             ),
             title: Text(
-              state.currentUser?.name ?? "User",
+              "User",
               style: TextStyle(
                 fontSize: 15.0,
                 fontWeight: FontWeight.normal,

@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -28,60 +27,64 @@ class BudgetSwitcher extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(25.0),
       ),
-      child: StreamBuilder<DatabaseEvent>(
-          stream: FirebaseDatabase.instance
-              .ref(
-                FirebasePath.joinedBudgetPath(
-                    context.read<AuthBloc>().state.currentUser?.uid ?? ""),
-              )
-              .onValue,
-          builder: (context, snapshot) {
-            return Column(
-              children: [
-                Align(
-                  alignment: AlignmentDirectional.centerEnd,
-                  child: IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: Icon(Icons.close_rounded),
-                  ),
-                ),
-                Expanded(
-                  child: snapshot.connectionState == ConnectionState.waiting
-                      ? CustomLoading()
-                      : snapshot.data!.snapshot.exists
-                          ? ListView.builder(
-                              shrinkWrap: true,
-                              itemCount:
-                                  snapshot.data!.snapshot.children.length,
-                              itemBuilder: (ctx, index) {
-                                final data = snapshot.data!.snapshot.children
-                                    .toList()[index];
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: BudgetSwitcherTile(
-                                    id: data.key.toString(),
-                                  ),
-                                );
-                              },
-                            )
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text("No Budgets available"),
-                                FilledButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    Navigator.of(context)
-                                        .pushNamed(RouteName.createExpense);
+      child: BlocBuilder<AuthBloc, AuthState>(builder: (ctx, state) {
+        if (state is Authenticated) {
+          return StreamBuilder<DatabaseEvent>(
+              stream: FirebaseDatabase.instance
+                  .ref(FirebasePath.joinedBudgetPath(state.user.uid))
+                  .onValue,
+              builder: (context, snapshot) {
+                return Column(
+                  children: [
+                    Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: Icon(Icons.close_rounded),
+                      ),
+                    ),
+                    Expanded(
+                      child: snapshot.connectionState == ConnectionState.waiting
+                          ? CustomLoading()
+                          : snapshot.data!.snapshot.exists
+                              ? ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount:
+                                      snapshot.data!.snapshot.children.length,
+                                  itemBuilder: (ctx, index) {
+                                    final data = snapshot
+                                        .data!.snapshot.children
+                                        .toList()[index];
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 8.0),
+                                      child: BudgetSwitcherTile(
+                                        id: data.key.toString(),
+                                      ),
+                                    );
                                   },
-                                  child: Text("Create New"),
                                 )
-                              ],
-                            ),
-                ),
-              ],
-            );
-          }),
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text("No Budgets available"),
+                                    FilledButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        Navigator.of(context)
+                                            .pushNamed(RouteName.createExpense);
+                                      },
+                                      child: Text("Create New"),
+                                    )
+                                  ],
+                                ),
+                    ),
+                  ],
+                );
+              });
+        }
+        return const SizedBox.shrink();
+      }),
     );
   }
 }

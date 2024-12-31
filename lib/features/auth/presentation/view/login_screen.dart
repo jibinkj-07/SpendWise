@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:spend_wise/core/config/route/app_routes.dart';
-import 'package:spend_wise/core/util/helper/asset_mapper.dart';
-import 'package:spend_wise/core/util/mixin/validation_mixin.dart';
-import 'package:spend_wise/core/util/widget/loading_filled_button.dart';
-import 'package:spend_wise/core/util/widget/outlined_text_field.dart';
-import 'package:spend_wise/features/auth/presentation/widget/auth_bg.dart';
+import '../../../../core/config/route/app_routes.dart';
+import '../../../../core/util/constant/constants.dart';
+import '../../../../core/util/helper/asset_mapper.dart';
+import '../../../../core/util/mixin/validation_mixin.dart';
+import '../../../../core/util/widget/loading_filled_button.dart';
+import '../../../../core/util/widget/outlined_text_field.dart';
 import '../bloc/auth_bloc.dart';
+import '../widget/auth_bg.dart';
 
 /// @author : Jibin K John
 /// @date   : 08/11/2024
@@ -38,12 +39,15 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        _loading.value = state.authStatus == AuthStatus.authenticating;
+        _loading.value = state is Authenticating;
 
-        if (state.authStatus == AuthStatus.authenticated) {
-          if (state.currentUser!.selectedBudget.isEmpty) {
+        if (state is Authenticated) {
+          if (state.user.selectedBudget.isEmpty) {
             /// Navigate to decision screen if user doesn't have expenses
             Navigator.of(context).pushReplacementNamed(RouteName.decision);
+          } else if (state.user.selectedBudget == kRequested) {
+            // todo
+            /// Navigate to Waiting screen
           } else {
             /// Navigate to home screen for success login
             Navigator.of(context).pushReplacementNamed(RouteName.home);
@@ -51,8 +55,8 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
         }
 
         /// Show error if any occurs
-        if (state.error != null) {
-          state.error!.showSnackBar(context);
+        if (state is AuthError) {
+          state.error.showSnackBar(context);
         }
       },
       child: AuthBg(

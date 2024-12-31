@@ -11,7 +11,7 @@ class AuthRepoImpl implements AuthRepo {
   AuthRepoImpl(this._authFbDataSource);
 
   @override
-  Future<Either<Failure, UserModel>> createUser({
+  Future<Either<Failure, void>> createUser({
     required String name,
     required String email,
     required String password,
@@ -28,7 +28,7 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
-  Future<Either<Failure, UserModel>> loginUser({
+  Future<Either<Failure, void>> loginUser({
     required String email,
     required String password,
   }) async {
@@ -43,7 +43,7 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
-  Future<Either<Failure, UserModel>> loginUserWithGoogle() async {
+  Future<Either<Failure, void>> loginUserWithGoogle() async {
     if (await InternetConnection().hasInternetAccess) {
       return await _authFbDataSource.loginUserWithGoogle();
     } else {
@@ -61,11 +61,11 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
-  Future<Either<Failure, UserModel>> initUser() async {
+  Stream<Either<Failure, UserModel>> subscribeUserData() async* {
     if (await InternetConnection().hasInternetAccess) {
-      return await _authFbDataSource.initUser();
+      yield* _authFbDataSource.subscribeUserData();
     } else {
-      return Left(NetworkError());
+      yield Left(NetworkError());
     }
   }
 

@@ -1,42 +1,56 @@
 part of 'auth_bloc.dart';
 
-enum AuthStatus {
-  idle,
-  loading,
-  authenticating,
-  authenticated,
-  resetting,
-  reset,
-  signingOut,
-  signedOut,
+sealed class AuthState extends Equatable {}
+
+class Fetching extends AuthState {
+  @override
+  List<Object?> get props => [];
 }
 
-class AuthState extends Equatable {
-  final AuthStatus authStatus;
-  final UserModel? currentUser;
-  final Failure? error;
+class Authenticating extends AuthState {
+  @override
+  List<Object?> get props => [];
+}
 
-  const AuthState._({
-    this.authStatus = AuthStatus.idle,
-    this.currentUser,
-    this.error,
-  });
+class Authenticated extends AuthState {
+  final UserModel user;
 
-  const AuthState.initial() : this._();
-
-  const AuthState.error(Failure message) : this._(error: message);
-
-  AuthState copyWith({
-    UserModel? currentUser,
-    AuthStatus? authStatus,
-    Failure? error,
-  }) =>
-      AuthState._(
-        currentUser: currentUser ?? this.currentUser,
-        authStatus: authStatus ?? this.authStatus,
-        error: error,
-      );
+  Authenticated({required this.user});
 
   @override
-  List<Object?> get props => [authStatus, currentUser, error];
+  List<Object?> get props => [user];
+}
+
+class ResetMailSending extends AuthState {
+  @override
+  List<Object?> get props => [];
+}
+
+class ResetMailSent extends AuthState {
+  @override
+  List<Object?> get props => [];
+}
+
+class SigningOut extends AuthState {
+  @override
+  List<Object?> get props => [];
+}
+
+class SignedOut extends AuthState {
+  @override
+  List<Object?> get props => [];
+}
+
+class Logging extends AuthState {
+  @override
+  List<Object?> get props => [];
+}
+
+class AuthError extends AuthState {
+  final Failure error;
+
+  AuthError({required this.error});
+
+  @override
+  List<Object?> get props => [Error];
 }

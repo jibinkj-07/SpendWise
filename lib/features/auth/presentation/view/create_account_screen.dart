@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spend_wise/core/util/mixin/validation_mixin.dart';
 
 import '../../../../core/config/route/app_routes.dart';
+import '../../../../core/util/mixin/validation_mixin.dart';
 import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../../core/util/widget/outlined_text_field.dart';
 import '../bloc/auth_bloc.dart';
@@ -39,19 +39,17 @@ class _CreateAccountScreenState extends State<CreateAccountScreen>
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        _loading.value = state.authStatus == AuthStatus.authenticating;
+        _loading.value = state is Authenticating;
 
         /// Navigate to home screen for success creation
-        if (state.authStatus == AuthStatus.authenticated) {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            RouteName.decision,
-            (_) => false,
-          );
+        if (state is Authenticated) {
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil(RouteName.decision, (_) => false);
         }
 
         /// Show error if any occurs
-        if (state.error != null) {
-          state.error!.showSnackBar(context);
+        if (state is AuthError) {
+          state.error.showSnackBar(context);
         }
       },
       child: AuthBg(

@@ -11,6 +11,14 @@ class Failure {
       CustomSnackBar.showErrorSnackBar(context, message);
 }
 
+class AuthenticationError extends Failure {
+  AuthenticationError({required super.message});
+}
+
+class DatabaseError extends Failure {
+  DatabaseError({required super.message});
+}
+
 class NetworkError extends Failure {
   NetworkError() : super(message: "Check your network connection");
 }

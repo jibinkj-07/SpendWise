@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spend_wise/core/util/mixin/validation_mixin.dart';
 
+import '../../../../core/util/mixin/validation_mixin.dart';
 import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../../core/util/widget/outlined_text_field.dart';
 import '../bloc/auth_bloc.dart';
@@ -34,16 +34,16 @@ class _PasswordResetScreenState extends State<PasswordResetScreen>
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        _loading.value = state.authStatus == AuthStatus.resetting;
+        _loading.value = state is ResetMailSending;
 
         /// Pop current screen for success reset
-        if (state.authStatus == AuthStatus.reset) {
+        if (state is ResetMailSent) {
           Navigator.of(context).pop();
         }
 
         /// Show error if any occurs
-        if (state.error != null) {
-          state.error!.showSnackBar(context);
+        if (state is AuthError) {
+          state.error.showSnackBar(context);
         }
       },
       child: AuthBg(
