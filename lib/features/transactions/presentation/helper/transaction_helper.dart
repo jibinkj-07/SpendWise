@@ -34,9 +34,9 @@ sealed class TransactionHelper {
       );
 
   static Map<DateTime, List<TransactionModel>> groupByDate(
-    List<TransactionModel> transactions,
-    TransactionFilter filter, // Custom filter type
-  ) {
+      List<TransactionModel> transactions,
+      [TransactionFilter? filter] // Custom filter type
+      ) {
     // Group transactions by date
     Map<DateTime, List<TransactionModel>> items = {};
 
@@ -55,16 +55,16 @@ sealed class TransactionHelper {
 
     // Sort the map by keys (dates) based on filter
     final sortedKeys = items.keys.toList();
-    switch (filter) {
-      case TransactionFilter.recent:
-        sortedKeys.sort((a, b) => b.compareTo(a)); // Most recent dates first
-        break;
-      case TransactionFilter.oldest:
-        sortedKeys.sort((a, b) => a.compareTo(b)); // Oldest dates first
-        break;
-      default:
-        break;
-    }
+    // switch (filter) {
+    //   case TransactionFilter.recent:
+    //     sortedKeys.sort((a, b) => b.compareTo(a)); // Most recent dates first
+    //     break;
+    //   case TransactionFilter.oldest:
+    //     sortedKeys.sort((a, b) => a.compareTo(b)); // Oldest dates first
+    //     break;
+    //   default:
+    //     break;
+    // }
 
     // Rebuild the map with sorted keys
     final sortedMap = {

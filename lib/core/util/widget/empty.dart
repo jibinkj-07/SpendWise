@@ -14,19 +14,21 @@ class Empty extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SvgPicture.asset(
-          AssetMapper.emptySVG,
-          height: 100.0,
-        ),
-        const SizedBox(height: 10.0),
-        Text(
-          message,
-          style: TextStyle(fontWeight: FontWeight.w500),
-        ),
-      ],
+    return SizedBox.expand(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            AssetMapper.emptySVG,
+            height: 100.0,
+          ),
+          const SizedBox(height: 10.0),
+          Text(
+            message,
+            style: TextStyle(fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
     );
   }
 }

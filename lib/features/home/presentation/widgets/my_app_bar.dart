@@ -18,6 +18,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      backgroundColor: Colors.white,
       surfaceTintColor: Colors.transparent,
       automaticallyImplyLeading: false,
       title: BlocBuilder<AuthBloc, AuthState>(

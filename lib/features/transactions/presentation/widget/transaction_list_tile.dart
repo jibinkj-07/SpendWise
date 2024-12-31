@@ -27,7 +27,8 @@ class TransactionListTile extends StatelessWidget {
         (item) => item.id == transaction.categoryId,
         orElse: CategoryModel.deleted,
       );
-      return GestureDetector(
+
+      return ListTile(
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -38,6 +39,40 @@ class TransactionListTile extends StatelessWidget {
             ),
           );
         },
+        leading: CircleAvatar(
+          backgroundColor: category.color,
+          child: Center(
+            child: Text(
+              category.name.substring(0, 1),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 17.0,
+                color: category.color.computeLuminance() < .5
+                    ? Colors.white
+                    : Colors.black,
+              ),
+            ),
+          ),
+        ),
+        title: Text(
+          transaction.title,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 15.0,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(
+          category.name,
+          style: TextStyle(fontSize: 12.0),
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: Text(
+          AppHelper.formatAmount(context, transaction.amount),
+          style: TextStyle(fontSize: 13.0),
+        ),
+      );
+      return GestureDetector(
         child: Container(
           padding: const EdgeInsets.all(10.0),
           margin: const EdgeInsets.symmetric(vertical: 5.0),

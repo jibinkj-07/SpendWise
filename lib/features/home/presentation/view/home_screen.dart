@@ -66,16 +66,12 @@ class _HomeScreenState extends State<HomeScreen> {
               canPop: index == 0,
               onPopInvokedWithResult: (_, __) => _index.value = 0,
               child: Scaffold(
+                backgroundColor: index == 0 ? Colors.white : null,
                 appBar: MyAppBar(
                   index: index,
                   budgetName: state.budgetDetail?.name ?? "Budget",
                 ),
-                body: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppHelper.horizontalPadding(size),
-                  ),
-                  child: _views[index],
-                ),
+                body: _views[index],
                 bottomNavigationBar: NavBar(index: _index, currentIndex: index),
               ),
             );

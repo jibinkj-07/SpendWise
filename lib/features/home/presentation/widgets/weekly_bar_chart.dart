@@ -9,8 +9,13 @@ import '../../../budget/presentation/bloc/budget_bloc.dart';
 
 class WeeklyBarChart extends StatefulWidget {
   final List<WeeklyChartData> chartData;
+  final Size size;
 
-  const WeeklyBarChart({super.key, required this.chartData});
+  const WeeklyBarChart({
+    super.key,
+    required this.chartData,
+    required this.size,
+  });
 
   @override
   State<WeeklyBarChart> createState() => _WeeklyBarChartState();
@@ -95,9 +100,12 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
             dataSource: widget.chartData,
             borderRadius: BorderRadius.circular(20.0),
             width: 0.4,
-            pointColorMapper: (data, _) => data.isToday
-                ? data.color.withOpacity(.4)
-                : data.color.withOpacity(.1),
+            pointColorMapper: (data, _) =>
+            data.amount == 0
+                ? Colors.transparent
+                : data.isToday
+                    ? data.color.withOpacity(.4)
+                    : data.color.withOpacity(.1),
             xValueMapper: (data, _) => data.day,
             yValueMapper: (data, _) => maxAmount,
           ),

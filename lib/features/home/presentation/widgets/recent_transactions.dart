@@ -14,81 +14,65 @@ import '../../../transactions/presentation/widget/transaction_list_tile.dart';
 /// @date   : 16/12/2024
 /// @time   : 19:00:49
 
-class RecentTransactions extends StatefulWidget {
+class RecentTransactions extends StatelessWidget {
   final List<TransactionModel> transactions;
+  final Size size;
 
   const RecentTransactions({
     super.key,
     required this.transactions,
+    required this.size,
   });
-
-  @override
-  State<RecentTransactions> createState() => _RecentTransactions();
-}
-
-class _RecentTransactions extends State<RecentTransactions> {
-  final ValueNotifier<TransactionFilter> _filter =
-      ValueNotifier(TransactionFilter.recent);
-
-  @override
-  void dispose() {
-    _filter.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Recent Transactions",
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 16.0,
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: AppHelper.horizontalPadding(size),
+          ),
+          child: Text(
+            "Recent Transactions",
+            style: TextStyle(fontWeight: FontWeight.w500),
           ),
         ),
         Expanded(
-          child: widget.transactions.isNotEmpty
-              ? ValueListenableBuilder(
-                  valueListenable: _filter,
-                  builder: (ctx, filter, _) {
-                    final groupedData = TransactionHelper.groupByDate(
-                      widget.transactions,
-                      filter,
-                    );
-                    return Material(
-                      color: Colors.transparent,
-                      child: CustomScrollView(
-                        slivers: [
-                          for (final dateHeader in groupedData.entries)
-                            Section(
-                              title:
-                                  DateFormat("dd EEEE").format(dateHeader.key),
-                              amount: AppHelper.formatAmount(
-                                context,
-                                TransactionHelper.findDayWiseTotal(
-                                  widget.transactions,
-                                  dateHeader.key,
-                                ),
-                              ),
-                              context: context,
-                              items: List.generate(
-                                dateHeader.value.length,
-                                (index) => TransactionListTile(
-                                  transaction: dateHeader.value[index],
-                                ),
-                              ),
-                            ),
-                          SliverToBoxAdapter(
-                            child: SizedBox(
-                              height: MediaQuery.sizeOf(context).height * .1,
+          child: transactions.isNotEmpty
+              ? Material(
+                  color: Colors.transparent,
+                  child: CustomScrollView(
+                    slivers: [
+                      for (final dateHeader
+                          in TransactionHelper.groupByDate(transactions)
+                              .entries)
+                        Section(
+                          title: DateFormat("dd EEEE").format(dateHeader.key),
+                          amount: AppHelper.formatAmount(
+                            context,
+                            TransactionHelper.findDayWiseTotal(
+                              transactions,
+                              dateHeader.key,
                             ),
                           ),
-                        ],
+                          size: size,
+                          context: context,
+                          items: List.generate(
+                            dateHeader.value.length,
+                            (index) => TransactionListTile(
+                              transaction: dateHeader.value[index],
+                            ),
+                          ),
+                        ),
+                      SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: MediaQuery.sizeOf(context).height * .1,
+                        ),
                       ),
-                    );
-                  })
+                    ],
+                  ),
+                )
               : Empty(message: "No History"),
         )
       ],
@@ -99,6 +83,7 @@ class _RecentTransactions extends State<RecentTransactions> {
 class Section extends MultiSliver {
   Section({
     super.key,
+    required Size size,
     required BuildContext context,
     required String title,
     required String amount,
@@ -108,8 +93,16 @@ class Section extends MultiSliver {
           children: [
             SliverPinnedHeader(
               child: Container(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                padding: const EdgeInsets.symmetric(vertical: 15.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border(
+                      bottom:
+                          BorderSide(color: Colors.grey.shade200, width: .8)),
+                ),
+                padding: EdgeInsets.symmetric(
+                  vertical: 15.0,
+                  horizontal: AppHelper.horizontalPadding(size),
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -118,6 +111,7 @@ class Section extends MultiSliver {
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
+                        fontSize: 15.5,
                       ),
                     ),
                     Text(
@@ -125,6 +119,7 @@ class Section extends MultiSliver {
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
+                        fontSize: 15.5,
                       ),
                     ),
                   ],
