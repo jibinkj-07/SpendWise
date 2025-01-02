@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../budget/domain/model/category_model.dart';
-import '../../../budget/domain/model/transaction_model.dart';
+import '../../domain/model/transaction_model.dart';
 
 /// @author : Jibin K John
 /// @date   : 29/12/2024

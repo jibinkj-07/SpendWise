@@ -57,12 +57,12 @@ class TransactionModel {
   }
 
   Map<String, dynamic> toJson(String url) => {
-        "title": title,
-        "amount": amount,
-        "date": date.millisecondsSinceEpoch,
-        "doc_url": url,
-        "description": description,
-        "category_id": categoryId,
-        "created_userid": createdUserId,
-      };
+    "title": title,
+    "amount": amount,
+    "date": date.millisecondsSinceEpoch,
+    "doc_url": url,
+    "description": description,
+    "category_id": categoryId,
+    "created_userid": createdUserId,
+  };
 }

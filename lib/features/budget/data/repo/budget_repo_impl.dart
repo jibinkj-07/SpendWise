@@ -1,12 +1,11 @@
 import 'package:currency_picker/currency_picker.dart';
 import 'package:either_dart/either.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:spend_wise/features/budget/domain/model/budget_model.dart';
 
 import '../../../../core/util/error/failure.dart';
 import '../../../account/domain/model/user.dart';
 import '../../domain/model/category_model.dart';
-import '../../domain/model/transaction_model.dart';
 import '../../domain/repo/budget_repo.dart';
 import '../data_source/budget_fb_data_source.dart';
 
@@ -16,7 +15,7 @@ class BudgetRepoImpl implements BudgetRepo {
   BudgetRepoImpl(this._expenseFbDataSource);
 
   @override
-  Future<Either<Failure, bool>> insertBudget({
+  Future<Either<Failure, bool>> addBudget({
     required String name,
     required String admin,
     required List<CategoryModel> categories,
@@ -24,7 +23,7 @@ class BudgetRepoImpl implements BudgetRepo {
     required List<User> members,
   }) async {
     if (await InternetConnection().hasInternetAccess) {
-      return await _expenseFbDataSource.insertBudget(
+      return await _expenseFbDataSource.addBudget(
         name: name,
         admin: admin,
         categories: categories,
@@ -37,12 +36,12 @@ class BudgetRepoImpl implements BudgetRepo {
   }
 
   @override
-  Future<Either<Failure, bool>> insertCategory({
+  Future<Either<Failure, bool>> addCategory({
     required String budgetId,
     required CategoryModel category,
   }) async {
     if (await InternetConnection().hasInternetAccess) {
-      return await _expenseFbDataSource.insertCategory(
+      return await _expenseFbDataSource.addCategory(
         budgetId: budgetId,
         category: category,
       );
@@ -52,38 +51,21 @@ class BudgetRepoImpl implements BudgetRepo {
   }
 
   @override
-  Future<Either<Failure, String>> insertTransaction({
-    required String budgetId,
-    required TransactionModel transaction,
-    XFile? doc,
-  }) async {
+  Future<Either<Failure, bool>> deleteBudget({required String budgetId}) async {
     if (await InternetConnection().hasInternetAccess) {
-      return await _expenseFbDataSource.insertTransaction(
-        budgetId: budgetId,
-        transaction: transaction,
-        doc: doc,
-      );
+      return await _expenseFbDataSource.deleteBudget(budgetId: budgetId);
     } else {
       return Left(NetworkError());
     }
   }
 
   @override
-  Future<Either<Failure, bool>> removeBudget({required String budgetId}) async {
-    if (await InternetConnection().hasInternetAccess) {
-      return await _expenseFbDataSource.removeBudget(budgetId: budgetId);
-    } else {
-      return Left(NetworkError());
-    }
-  }
-
-  @override
-  Future<Either<Failure, bool>> removeCategory({
+  Future<Either<Failure, bool>> deleteCategory({
     required String budgetId,
     required String categoryId,
   }) async {
     if (await InternetConnection().hasInternetAccess) {
-      return await _expenseFbDataSource.removeCategory(
+      return await _expenseFbDataSource.deleteCategory(
         budgetId: budgetId,
         categoryId: categoryId,
       );
@@ -93,17 +75,22 @@ class BudgetRepoImpl implements BudgetRepo {
   }
 
   @override
-  Future<Either<Failure, bool>> removeTransaction({
-    required String budgetId,
-    required String transactionId,
-  }) async {
+  Stream<Either<Failure, BudgetModel>> subscribeBudget(
+      {required String budgetId}) async* {
     if (await InternetConnection().hasInternetAccess) {
-      return await _expenseFbDataSource.removeTransaction(
-        budgetId: budgetId,
-        transactionId: transactionId,
-      );
+      yield* _expenseFbDataSource.subscribeBudget(budgetId: budgetId);
     } else {
-      return Left(NetworkError());
+      yield Left(NetworkError());
+    }
+  }
+
+  @override
+  Stream<Either<Failure, List<CategoryModel>>> subscribeCategory(
+      {required String budgetId}) async* {
+    if (await InternetConnection().hasInternetAccess) {
+      yield* _expenseFbDataSource.subscribeCategory(budgetId: budgetId);
+    } else {
+      yield Left(NetworkError());
     }
   }
 }

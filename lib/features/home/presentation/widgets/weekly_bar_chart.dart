@@ -5,7 +5,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../../../core/config/app_config.dart';
 import '../../../../core/util/helper/chart_helpers.dart';
-import '../../../budget/presentation/bloc/budget_bloc.dart';
+import '../../../budget/presentation/bloc/budget_view_bloc.dart';
 
 class WeeklyBarChart extends StatefulWidget {
   final List<WeeklyChartData> chartData;
@@ -76,13 +76,11 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
           isVisible: true,
           maximum: maxAmount,
           numberFormat: NumberFormat.compactCurrency(
-              decimalDigits: 0,
-              symbol: context
-                      .read<BudgetBloc>()
-                      .state
-                      .budgetDetail
-                      ?.currencySymbol ??
-                  ""),
+            decimalDigits: 0,
+            symbol: (context.read<BudgetViewBloc>().state as BudgetSubscribed)
+                .budget
+                .currencySymbol,
+          ),
           majorGridLines: MajorGridLines(
             dashArray: [6],
             width: .5,
@@ -100,8 +98,7 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
             dataSource: widget.chartData,
             borderRadius: BorderRadius.circular(20.0),
             width: 0.4,
-            pointColorMapper: (data, _) =>
-            data.amount == 0
+            pointColorMapper: (data, _) => data.amount == 0
                 ? Colors.transparent
                 : data.isToday
                     ? data.color.withOpacity(.4)

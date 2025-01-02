@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/util/helper/app_helper.dart';
-import '../../../budget/domain/model/transaction_model.dart';
+import '../../../transactions/domain/model/transaction_model.dart';
 import '../../../transactions/presentation/helper/transaction_helper.dart';
 import '../helper/home_helper.dart';
 import 'weekly_bar_chart.dart';

@@ -1,6 +1,4 @@
-import 'dart:developer';
-
-import '../../../budget/domain/model/transaction_model.dart';
+import '../../domain/model/transaction_model.dart';
 
 enum TransactionFilter {
   recent,

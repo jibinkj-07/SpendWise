@@ -12,7 +12,7 @@ import '../../../account/presentation/widget/display_image.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/model/category_model.dart';
 import '../../../home/presentation/view/category_entry_screen.dart';
-import '../bloc/budget_bloc.dart';
+import '../bloc/budget_edit_bloc.dart';
 
 /// @author : Jibin K John
 /// @date   : 14/11/2024
@@ -229,19 +229,19 @@ class _CreateBudgetScreenState extends State<CreateBudgetScreen> {
               ),
             ),
             const SizedBox(height: 20.0),
-            BlocListener<BudgetBloc, BudgetState>(
+            BlocListener<BudgetEditBloc, BudgetEditState>(
               listener: (ctx, state) {
-                _loading.value = state.status == BudgetStatus.inserting;
+                _loading.value = state is AddingBudget;
 
-                if (state.status == BudgetStatus.inserted) {
+                if (state is BudgetAdded) {
                   Navigator.pushNamedAndRemoveUntil(
                     context,
                     RouteName.home,
                     (_) => false,
                   );
                 }
-                if (state.error != null) {
-                  state.error!.showSnackBar(context);
+                if (state is BudgetErrorOccurred) {
+                  state.error.showSnackBar(context);
                 }
               },
               child: ValueListenableBuilder(
@@ -270,8 +270,8 @@ class _CreateBudgetScreenState extends State<CreateBudgetScreen> {
       if (authBloc.state is Authenticated) {
         admin = (authBloc.state as Authenticated).user.uid;
       }
-      context.read<BudgetBloc>().add(
-            InsertBudget(
+      context.read<BudgetEditBloc>().add(
+            AddBudget(
               name: _name,
               admin: admin,
               currency: _currency.value!,

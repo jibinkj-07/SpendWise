@@ -1,10 +1,9 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import '../../../features/budget/presentation/bloc/budget_bloc.dart';
+import '../../../features/budget/domain/model/budget_model.dart';
+import '../../../features/budget/presentation/bloc/budget_view_bloc.dart';
 
 sealed class AppHelper {
   /// Map for category icons
@@ -84,7 +83,11 @@ sealed class AppHelper {
 
   /// Function to format price
   static String formatAmount(BuildContext context, double amount) {
-    final budget = context.read<BudgetBloc>().state.budgetDetail;
+    final budgetState = context.read<BudgetViewBloc>().state;
+    BudgetModel? budget;
+    if (budgetState is BudgetSubscribed) {
+      budget = budgetState.budget;
+    }
     return NumberFormat.currency(
       name: budget?.currency,
       symbol: budget?.currencySymbol,

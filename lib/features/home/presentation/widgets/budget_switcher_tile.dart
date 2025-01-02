@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/config/injection/injection_container.dart';
 import '../../../account/presentation/helper/account_helper.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/domain/model/budget_model.dart';
-import '../../../budget/presentation/bloc/budget_bloc.dart';
-import '../../../budget/presentation/bloc/category_bloc.dart';
 import '../helper/home_helper.dart';
 import 'package:shimmer/shimmer.dart';
 

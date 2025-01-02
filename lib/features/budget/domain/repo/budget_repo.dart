@@ -4,43 +4,36 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/util/error/failure.dart';
 import '../../../account/domain/model/user.dart';
+import '../../../transactions/domain/model/transaction_model.dart';
+import '../model/budget_model.dart';
 import '../model/category_model.dart';
-import '../model/transaction_model.dart';
 
 abstract class BudgetRepo {
   /// Category
-  Future<Either<Failure, bool>> insertCategory({
+  Stream<Either<Failure, List<CategoryModel>>> subscribeCategory(
+      {required String budgetId});
+
+  Future<Either<Failure, bool>> addCategory({
     required String budgetId,
     required CategoryModel category,
   });
 
-  Future<Either<Failure, bool>> removeCategory({
+  Future<Either<Failure, bool>> deleteCategory({
     required String budgetId,
     required String categoryId,
   });
 
-  /// Transaction
-  Future<Either<Failure, String>> insertTransaction({
-    required String budgetId,
-    required TransactionModel transaction,
-    XFile? doc,
-  });
-
-  Future<Either<Failure, bool>> removeTransaction({
-    required String budgetId,
-    required String transactionId,
-  });
-
   /// Budget
-  Future<Either<Failure, bool>> insertBudget({
+  Stream<Either<Failure, BudgetModel>> subscribeBudget(
+      {required String budgetId});
+
+  Future<Either<Failure, bool>> addBudget({
     required String name,
     required String admin,
-    required List<CategoryModel> categories,
     required Currency currency,
+    required List<CategoryModel> categories,
     required List<User> members,
   });
 
-  Future<Either<Failure, bool>> removeBudget({
-    required String budgetId,
-  });
+  Future<Either<Failure, bool>> deleteBudget({required String budgetId});
 }

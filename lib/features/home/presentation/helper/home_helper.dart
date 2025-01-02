@@ -11,10 +11,7 @@ import '../../../../core/util/helper/chart_helpers.dart';
 import '../../../../core/util/helper/firebase_path.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/domain/model/budget_model.dart';
-import '../../../budget/domain/model/transaction_model.dart';
-import '../../../budget/presentation/bloc/budget_bloc.dart';
-import '../../../budget/presentation/bloc/category_bloc.dart';
-import '../bloc/home_transaction_bloc.dart';
+import '../../../transactions/domain/model/transaction_model.dart';
 import '../../../transactions/presentation/helper/transaction_helper.dart';
 
 class HomeHelper {
@@ -44,19 +41,19 @@ void initBudgetData(BuildContext context, [String? budgetId]) {
   }
 
   // this only subscribe to budget basic details node
-  context
-      .read<BudgetBloc>()
-      .add(SubscribeBudget(budgetId: budgetId ?? currentBudget));
-  context
-      .read<CategoryBloc>()
-      .add(SubscribeCategory(budgetId: budgetId ?? currentBudget));
-  context.read<HomeTransactionBloc>().add(
-        SubscribeTransaction(
-          budgetId: budgetId ?? currentBudget,
-          // startDate: DateTime(date.year, date.month, 1),
-          // endDate: DateTime(date.year, date.month + 1, 0), // End of the month
-        ),
-      );
+  // context
+  //     .read<BudgetBloc>()
+  //     .add(SubscribeBudget(budgetId: budgetId ?? currentBudget));
+  // context
+  //     .read<CategoryBloc>()
+  //     .add(SubscribeCategory(budgetId: budgetId ?? currentBudget));
+  // context.read<HomeTransactionBloc>().add(
+  //       SubscribeTransaction(
+  //         budgetId: budgetId ?? currentBudget,
+  //         // startDate: DateTime(date.year, date.month, 1),
+  //         // endDate: DateTime(date.year, date.month + 1, 0), // End of the month
+  //       ),
+  //     );
 }
 
 List<WeeklyChartData> generateWeekChartData(

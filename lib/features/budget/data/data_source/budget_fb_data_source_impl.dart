@@ -4,15 +4,14 @@ import 'package:currency_picker/currency_picker.dart';
 import 'package:either_dart/either.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:spend_wise/core/util/helper/firebase_path.dart';
 import 'package:spend_wise/features/account/domain/model/user.dart';
+import 'package:spend_wise/features/budget/domain/model/budget_model.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/util/error/failure.dart';
 import '../../../account/data/data_source/account_fb_data_source.dart';
 import '../../domain/model/category_model.dart';
-import '../../domain/model/transaction_model.dart';
 import 'budget_fb_data_source.dart';
 
 class BudgetFbDataSourceImpl implements BudgetFbDataSource {
@@ -26,44 +25,46 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
     this._accountFbDataSource,
   );
 
-  /// PRIVATE INTERNAL FUNCTIONS
-  Future<String> _uploadImage({
-    required String path,
-    required XFile image,
-  }) async {
+  @override
+  Stream<Either<Failure, List<CategoryModel>>> subscribeCategory({
+    required String budgetId,
+  }) async* {
     try {
-      final reference = _firebaseStorage.ref(path);
-      final metadata = SettableMetadata(contentType: 'image/jpeg');
-      await reference.putData(await image.readAsBytes(), metadata);
-      return await reference.getDownloadURL();
-    } catch (e) {
-      log("er: [_uploadImage][budget_fb_data_source_impl.dart] $e");
-      return "";
-    }
-  }
-
-  Future<void> _deleteAllImagesInFolder(String folderPath) async {
-    // Get a reference to the folder
-    final Reference folderRef = _firebaseStorage.ref().child(folderPath);
-
-    // List all files in the folder
-    final ListResult result = await folderRef.listAll();
-
-    // Delete each file in the folder
-    for (Reference fileRef in result.items) {
-      await fileRef.delete();
-    }
-
-    // Optionally, you could also delete any subfolders
-    for (Reference dirRef in result.prefixes) {
-      await _deleteAllImagesInFolder(
-        dirRef.fullPath,
-      );
+      yield* _firebaseDatabase
+          .ref(FirebasePath.budgetPath(budgetId))
+          .child("categories")
+          .onValue
+          .map<Either<Failure, List<CategoryModel>>>((event) {
+        if (event.snapshot.exists) {
+          try {
+            // Parse the category snapshot into a CategoryModel
+            final List<CategoryModel> categories = event.snapshot.children
+                .map((category) => CategoryModel.fromFirebase(category))
+                .toList();
+            return Right(categories); // Emit the parsed CategoryModel
+          } catch (e) {
+            return Left(
+              DatabaseError(message: "Failed to parse category data: $e"),
+            );
+          }
+        } else {
+          return const Right([]);
+        }
+      }).handleError((error) {
+        // Handle stream errors and return a failure
+        return Left(
+            DatabaseError(message: "An error occurred: ${error.toString()}"));
+      }).cast<
+              Either<Failure,
+                  List<CategoryModel>>>(); // Ensure the correct type is emitted
+    } catch (e, stackTrace) {
+      log("Error: [budget_fb_data_source_impl.dart][subscribeCategory] $e, $stackTrace");
+      yield Left(DatabaseError(message: "Something went wrong."));
     }
   }
 
   @override
-  Future<Either<Failure, bool>> insertCategory({
+  Future<Either<Failure, bool>> addCategory({
     required String budgetId,
     required CategoryModel category,
   }) async {
@@ -73,13 +74,56 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
           .set(category.toJson());
       return const Right(true);
     } catch (e) {
-      log("er: [budget_fb_data_source_impl.dart][insertCategory] $e");
+      log("er: [budget_fb_data_source_impl.dart][addCategory] $e");
       return Left(Failure(message: "Unable to create new category."));
     }
   }
 
   @override
-  Future<Either<Failure, bool>> insertBudget({
+  Stream<Either<Failure, BudgetModel>> subscribeBudget(
+      {required String budgetId}) async* {
+    try {
+      yield* _firebaseDatabase
+          .ref(FirebasePath.budgetPath(budgetId))
+          .onValue
+          .map<Either<Failure, BudgetModel>>((event) {
+        if (event.snapshot.exists) {
+          try {
+            // Parse the budget snapshot into a BudgetModel
+            final BudgetModel budget = BudgetModel.fromFirebase(
+              event.snapshot,
+              budgetId,
+            );
+            return Right(budget); // Emit the parsed BudgetModel
+          } catch (e) {
+            return Left(
+              DatabaseError(message: "Failed to parse budget data: $e"),
+            );
+          }
+        } else {
+          return Left(
+            DatabaseError(
+                message:
+                    "Unable to retrieve budget details. The data might have been deleted,"
+                    " or you may not have access to this budget."
+                    " Please contact the administrator for further assistance."),
+          );
+        }
+      }).handleError((error) {
+        // Handle stream errors and return a failure
+        return Left(
+            DatabaseError(message: "An error occurred: ${error.toString()}"));
+      }).cast<
+              Either<Failure,
+                  BudgetModel>>(); // Ensure the correct type is emitted
+    } catch (e, stackTrace) {
+      log("Error: [budget_fb_data_source_impl.dart][subscribeBudget] $e, $stackTrace");
+      yield Left(DatabaseError(message: "Something went wrong."));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> addBudget({
     required String name,
     required String admin,
     required List<CategoryModel> categories,
@@ -144,39 +188,13 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
         budgetId: id,
       );
     } catch (e) {
-      log("er: [budget_fb_data_source_impl.dart][insertBudget] $e");
+      log("er: [budget_fb_data_source_impl.dart][addBudget] $e");
       return Left(Failure(message: "Unable to create new budget."));
     }
   }
 
   @override
-  Future<Either<Failure, String>> insertTransaction({
-    required String budgetId,
-    required TransactionModel transaction,
-    XFile? doc,
-  }) async {
-    String url = "";
-    try {
-      if (doc != null) {
-        url = await _uploadImage(
-          path: "Images/$budgetId/${transaction.id}.jpg",
-          image: doc,
-        );
-      }
-      await _firebaseDatabase
-          .ref(FirebasePath.transactionPath(budgetId))
-          .child(transaction.id)
-          .set(transaction.toJson(url));
-
-      return Right(url);
-    } catch (e) {
-      log("er: [budget_fb_data_source_impl.dart][insertTransaction] $e");
-      return Left(Failure(message: "Unable to create new transaction."));
-    }
-  }
-
-  @override
-  Future<Either<Failure, bool>> removeCategory({
+  Future<Either<Failure, bool>> deleteCategory({
     required String budgetId,
     required String categoryId,
   }) async {
@@ -186,13 +204,13 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
           .remove();
       return const Right(true);
     } catch (e) {
-      log("er: [budget_fb_data_source_impl.dart][removeCategory] $e");
+      log("er: [budget_fb_data_source_impl.dart][deleteCategory] $e");
       return Left(Failure(message: "Unable to delete this category."));
     }
   }
 
   @override
-  Future<Either<Failure, bool>> removeBudget({
+  Future<Either<Failure, bool>> deleteBudget({
     required String budgetId,
   }) async {
     try {
@@ -200,36 +218,28 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
       await _firebaseDatabase.ref(FirebasePath.budgetPath(budgetId)).remove();
       return const Right(true);
     } catch (e) {
-      log("er: [budget_fb_data_source_impl.dart][removeBudget] $e");
+      log("er: [budget_fb_data_source_impl.dart][deleteBudget] $e");
       return Left(Failure(message: "Unable to delete this budget."));
     }
   }
 
-  @override
-  Future<Either<Failure, bool>> removeTransaction({
-    required String budgetId,
-    required String transactionId,
-  }) async {
-    try {
-      try {
-        // Deleting transaction image
-        await _firebaseStorage
-            .ref()
-            .child("Images/$budgetId/$transactionId.jpg")
-            .delete();
-      } catch (e) {
-        log("er: [budget_fb_data_source_impl.dart][removeTransaction] $e");
-      }
+  Future<void> _deleteAllImagesInFolder(String folderPath) async {
+    // Get a reference to the folder
+    final Reference folderRef = _firebaseStorage.ref().child(folderPath);
 
-      await _firebaseDatabase
-          .ref(FirebasePath.transactionPath(budgetId))
-          .child(transactionId)
-          .remove();
+    // List all files in the folder
+    final ListResult result = await folderRef.listAll();
 
-      return const Right(true);
-    } catch (e) {
-      log("er: [budget_fb_data_source_impl.dart][removeTransaction] $e");
-      return Left(Failure(message: "Unable to delete this transaction."));
+    // Delete each file in the folder
+    for (Reference fileRef in result.items) {
+      await fileRef.delete();
+    }
+
+    // Optionally, you could also delete any subfolders
+    for (Reference dirRef in result.prefixes) {
+      await _deleteAllImagesInFolder(
+        dirRef.fullPath,
+      );
     }
   }
 }

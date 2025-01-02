@@ -2,18 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:spend_wise/core/config/injection/imports.dart';
 import 'package:spend_wise/core/util/widget/filled_text_field.dart';
-
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/widget/loading_filled_button.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/domain/model/category_model.dart';
-import '../../../budget/domain/model/transaction_model.dart';
-import '../../../budget/presentation/bloc/budget_bloc.dart';
-import '../../../budget/presentation/bloc/category_bloc.dart';
-import '../../../home/presentation/bloc/home_transaction_bloc.dart';
 import '../../../home/presentation/widgets/bottom_category_sheet.dart';
 import '../../../home/presentation/widgets/xFile_image_view.dart';
+import '../../domain/model/transaction_model.dart';
 
 /// @author : Jibin K John
 /// @date   : 18/12/2024
@@ -51,7 +47,9 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
     } else {
       _date = ValueNotifier(widget.transactionModel!.date);
 
-      final categories = context.read<CategoryBloc>().state.categories;
+      final categories =
+          (context.read<CategoryViewBloc>().state as CategorySubscribed)
+              .categories;
       final index = categories.indexWhere(
         (item) => item.id == widget.transactionModel!.categoryId,
       );
@@ -310,14 +308,13 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
             ),
             const SizedBox(height: 5.0),
             // Button
-            BlocListener<HomeTransactionBloc, HomeTransactionState>(
-              listener: (BuildContext context, HomeTransactionState state) {
-                _loading.value =
-                    state.status == HomeTransactionStatus.inserting;
-                if (state.error != null) {
-                  state.error!.showSnackBar(context);
+            BlocListener<TransactionEditBloc, TransactionEditState>(
+              listener: (BuildContext context, TransactionEditState state) {
+                _loading.value = state is AddingTransaction;
+                if (state is TransactionErrorOccurred) {
+                  state.error.showSnackBar(context);
                 }
-                if (state.status == HomeTransactionStatus.inserted) {
+                if (state is TransactionAdded) {
                   Navigator.pop(context);
                 }
               },
@@ -397,13 +394,13 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
         categoryId: _category.value?.id ?? "",
         createdUserId: admin,
       );
-      context.read<HomeTransactionBloc>().add(
-            InsertTransaction(
-              budgetId: context.read<BudgetBloc>().state.budgetDetail?.id ?? "",
-              transaction: transactionModel,
-              doc: _document.value,
-            ),
-          );
+      // context.read<HomeTransactionBloc>().add(
+      //       InsertTransaction(
+      //         budgetId: context.read<BudgetBloc>().state.budgetDetail?.id ?? "",
+      //         transaction: transactionModel,
+      //         doc: _document.value,
+      //       ),
+      //     );
     }
   }
 }
