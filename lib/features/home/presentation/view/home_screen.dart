@@ -43,16 +43,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocBuilder<BudgetViewBloc, BudgetViewState>(
       builder: (ctc, state) {
         if (state is BudgetSubscribing) {
-          return Text("Loading");
           return CustomLoading(appLaunch: true);
         }
         if (state is BudgetViewError) {
           return Scaffold(
-            body: Center(
-              child: Text(
-                state.error.message ?? "Error Occurred",
-              ),
-            ),
+            body: Center(child: Text(state.error.message)),
           );
         }
         final currentBudget = (state as BudgetSubscribed).budget;

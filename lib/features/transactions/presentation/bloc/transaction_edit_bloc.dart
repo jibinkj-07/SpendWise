@@ -19,10 +19,8 @@ class TransactionEditBloc
   final TransactionRepo _transactionRepo;
 
   TransactionEditBloc(this._transactionRepo) : super(IdleTransactionState()) {
-    on<TransactionEditEvent>((event, emit) {
-      on<AddTransaction>(_onAdd);
-      on<DeleteTransaction>(_onDelete);
-    });
+    on<AddTransaction>(_onAdd);
+    on<DeleteTransaction>(_onDelete);
   }
 
   @override

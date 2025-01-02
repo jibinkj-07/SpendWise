@@ -47,15 +47,15 @@ void loadBudget(BuildContext context, [String? budgetId]) {
   context
       .read<BudgetViewBloc>()
       .add(SubscribeBudget(budgetId: currentBudget ?? ""));
-  // context
-  //     .read<CategoryViewBloc>()
-  //     .add(SubscribeCategory(budgetId: currentBudget ?? ""));
-  // context.read<MonthTransViewBloc>().add(
-  //       SubscribeMonthView(
-  //         budgetId: currentBudget ?? "",
-  //         date: DateTime.now(),
-  //       ),
-  //     );
+  context
+      .read<CategoryViewBloc>()
+      .add(SubscribeCategory(budgetId: currentBudget ?? ""));
+  context.read<MonthTransViewBloc>().add(
+        SubscribeMonthView(
+          budgetId: currentBudget ?? "",
+          date: DateTime.now(),
+        ),
+      );
 }
 
 List<WeeklyChartData> generateWeekChartData(

@@ -20,11 +20,9 @@ class MonthTransViewBloc
 
   MonthTransViewBloc(this._transactionRepo)
       : super(SubscribingMonthTransState()) {
-    on<MonthTransViewEvent>((event, emit) {
-      on<SubscribeMonthView>(_onSubscribe);
-      on<SubscribedMonthView>(_onSubscribed);
-      on<ErrorMonthView>(_onError);
-    });
+    on<SubscribeMonthView>(_onSubscribe);
+    on<SubscribedMonthView>(_onSubscribed);
+    on<ErrorMonthView>(_onError);
   }
 
   @override
