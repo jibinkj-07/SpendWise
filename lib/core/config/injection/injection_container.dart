@@ -5,7 +5,7 @@ final sl = GetIt.instance;
 
 Future<void> initDependencies() async {
   // **************************************** Class ****************************************
-  sl.registerLazySingleton<AccountHelper>(() => AccountHelper(sl(), sl()));
+  sl.registerLazySingleton<AccountHelper>(() => AccountHelper(sl()));
   sl.registerLazySingleton<HomeHelper>(() => HomeHelper(sl()));
 
   // **************************************** Externals ****************************************

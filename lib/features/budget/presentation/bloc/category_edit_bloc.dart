@@ -16,10 +16,8 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
   final BudgetRepo _budgetRepo;
 
   CategoryEditBloc(this._budgetRepo) : super(IdleCategoryState()) {
-    on<CategoryEditEvent>((event, emit) {
-      on<AddCategory>(_onAdd);
-      on<DeleteCategory>(_onDelete);
-    });
+    on<AddCategory>(_onAdd);
+    on<DeleteCategory>(_onDelete);
   }
 
   @override

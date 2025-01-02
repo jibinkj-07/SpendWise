@@ -11,7 +11,10 @@ import '../../../../core/util/helper/chart_helpers.dart';
 import '../../../../core/util/helper/firebase_path.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/domain/model/budget_model.dart';
+import '../../../budget/presentation/bloc/budget_view_bloc.dart';
+import '../../../budget/presentation/bloc/category_view_bloc.dart';
 import '../../../transactions/domain/model/transaction_model.dart';
+import '../../../transactions/presentation/bloc/month_trans_view_bloc.dart';
 import '../../../transactions/presentation/helper/transaction_helper.dart';
 
 class HomeHelper {
@@ -33,25 +36,24 @@ class HomeHelper {
   }
 }
 
-void initBudgetData(BuildContext context, [String? budgetId]) {
-  String currentBudget = "";
+void loadBudget(BuildContext context, [String? budgetId]) {
+  String? currentBudget = budgetId;
   final authBloc = context.read<AuthBloc>();
-  if (authBloc.state is Authenticated) {
+  if (currentBudget == null && authBloc.state is Authenticated) {
     currentBudget = (authBloc.state as Authenticated).user.selectedBudget;
   }
 
   // this only subscribe to budget basic details node
+  context
+      .read<BudgetViewBloc>()
+      .add(SubscribeBudget(budgetId: currentBudget ?? ""));
   // context
-  //     .read<BudgetBloc>()
-  //     .add(SubscribeBudget(budgetId: budgetId ?? currentBudget));
-  // context
-  //     .read<CategoryBloc>()
-  //     .add(SubscribeCategory(budgetId: budgetId ?? currentBudget));
-  // context.read<HomeTransactionBloc>().add(
-  //       SubscribeTransaction(
-  //         budgetId: budgetId ?? currentBudget,
-  //         // startDate: DateTime(date.year, date.month, 1),
-  //         // endDate: DateTime(date.year, date.month + 1, 0), // End of the month
+  //     .read<CategoryViewBloc>()
+  //     .add(SubscribeCategory(budgetId: currentBudget ?? ""));
+  // context.read<MonthTransViewBloc>().add(
+  //       SubscribeMonthView(
+  //         budgetId: currentBudget ?? "",
+  //         date: DateTime.now(),
   //       ),
   //     );
 }

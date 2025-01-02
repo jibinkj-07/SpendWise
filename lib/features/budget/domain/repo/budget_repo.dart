@@ -1,17 +1,15 @@
 import 'package:currency_picker/currency_picker.dart';
 import 'package:either_dart/either.dart';
-import 'package:image_picker/image_picker.dart';
-
 import '../../../../core/util/error/failure.dart';
 import '../../../account/domain/model/user.dart';
-import '../../../transactions/domain/model/transaction_model.dart';
 import '../model/budget_model.dart';
 import '../model/category_model.dart';
 
 abstract class BudgetRepo {
   /// Category
-  Stream<Either<Failure, List<CategoryModel>>> subscribeCategory(
-      {required String budgetId});
+  Stream<Either<Failure, List<CategoryModel>>> subscribeCategory({
+    required String budgetId,
+  });
 
   Future<Either<Failure, bool>> addCategory({
     required String budgetId,
@@ -24,8 +22,9 @@ abstract class BudgetRepo {
   });
 
   /// Budget
-  Stream<Either<Failure, BudgetModel>> subscribeBudget(
-      {required String budgetId});
+  Stream<Either<Failure, BudgetModel>> subscribeBudget({
+    required String budgetId,
+  });
 
   Future<Either<Failure, bool>> addBudget({
     required String name,

@@ -18,11 +18,9 @@ class CategoryViewBloc extends Bloc<CategoryViewEvent, CategoryViewState> {
   StreamSubscription? _categorySubscription;
 
   CategoryViewBloc(this._budgetRepo) : super(CategorySubscribing()) {
-    on<CategoryViewEvent>((event, emit) {
-      on<SubscribeCategory>(_onSubscribe);
-      on<CategoryLoaded>(_onLoaded);
-      on<CategoryViewErrorOccurred>(_onError);
-    });
+    on<SubscribeCategory>(_onSubscribe);
+    on<CategoryLoaded>(_onLoaded);
+    on<CategoryViewErrorOccurred>(_onError);
   }
 
   @override

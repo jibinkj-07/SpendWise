@@ -18,11 +18,9 @@ class BudgetViewBloc extends Bloc<BudgetViewEvent, BudgetViewState> {
   StreamSubscription? _budgetSubscription;
 
   BudgetViewBloc(this._budgetRepo) : super(BudgetSubscribing()) {
-    on<BudgetViewEvent>((event, emit) {
-      on<SubscribeBudget>(_onSubscribe);
-      on<BudgetLoaded>(_onLoaded);
-      on<BudgetViewErrorOccurred>(_onError);
-    });
+    on<SubscribeBudget>(_onSubscribe);
+    on<BudgetLoaded>(_onLoaded);
+    on<BudgetViewErrorOccurred>(_onError);
   }
 
   @override
@@ -44,7 +42,7 @@ class BudgetViewBloc extends Bloc<BudgetViewEvent, BudgetViewState> {
     await _budgetSubscription?.cancel();
     emit(BudgetSubscribing());
     _budgetSubscription =
-        _budgetRepo.subscribeBudget(budgetId: event.budgetId).listen((event) {
+    _budgetRepo.subscribeBudget(budgetId: event.budgetId).listen((event) {
       if (event.isRight) add(BudgetLoaded(budget: event.right));
       if (event.isLeft) add(BudgetViewErrorOccurred(error: event.left));
     });

@@ -75,8 +75,9 @@ class BudgetRepoImpl implements BudgetRepo {
   }
 
   @override
-  Stream<Either<Failure, BudgetModel>> subscribeBudget(
-      {required String budgetId}) async* {
+  Stream<Either<Failure, BudgetModel>> subscribeBudget({
+    required String budgetId,
+  }) async* {
     if (await InternetConnection().hasInternetAccess) {
       yield* _expenseFbDataSource.subscribeBudget(budgetId: budgetId);
     } else {

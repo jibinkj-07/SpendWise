@@ -80,11 +80,12 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
   }
 
   @override
-  Stream<Either<Failure, BudgetModel>> subscribeBudget(
-      {required String budgetId}) async* {
+  Stream<Either<Failure, BudgetModel>> subscribeBudget({
+    required String budgetId,
+  }) async* {
     try {
       yield* _firebaseDatabase
-          .ref(FirebasePath.budgetPath(budgetId))
+          .ref(FirebasePath.budgetDetailPath(budgetId))
           .onValue
           .map<Either<Failure, BudgetModel>>((event) {
         if (event.snapshot.exists) {

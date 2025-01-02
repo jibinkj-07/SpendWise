@@ -21,8 +21,9 @@ abstract class BudgetFbDataSource {
   });
 
   /// Budget
-  Stream<Either<Failure, BudgetModel>> subscribeBudget(
-      {required String budgetId});
+  Stream<Either<Failure, BudgetModel>> subscribeBudget({
+    required String budgetId,
+  });
 
   Future<Either<Failure, bool>> addBudget({
     required String name,

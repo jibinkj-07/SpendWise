@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     final context = this.context;
-    initBudgetData(context);
+    loadBudget(context);
   }
 
   @override
@@ -43,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocBuilder<BudgetViewBloc, BudgetViewState>(
       builder: (ctc, state) {
         if (state is BudgetSubscribing) {
+          return Text("Loading");
           return CustomLoading(appLaunch: true);
         }
         if (state is BudgetViewError) {

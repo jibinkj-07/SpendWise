@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/config/injection/injection_container.dart';
 import '../../../account/presentation/helper/account_helper.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/domain/model/budget_model.dart';
 import '../helper/home_helper.dart';
 import 'package:shimmer/shimmer.dart';
@@ -46,11 +48,13 @@ class _BudgetSwitcherTileState extends State<BudgetSwitcherTile> {
               ? ListTile(
                   onTap: () {
                     Navigator.pop(context);
-                    // _accountHelper.updateSelectedBudget(
-                    //   id: context.read<AuthBloc>().state.currentUser?.uid ?? "",
-                    //   budgetId: budget.id,
-                    // );
-                    initBudgetData(context, budget.id);
+                    _accountHelper.updateSelectedBudget(
+                      id: (context.read<AuthBloc>().state as Authenticated)
+                          .user
+                          .uid,
+                      budgetId: budget.id,
+                    );
+                    loadBudget(context, budget.id);
                   },
                   tileColor: Colors.grey.withOpacity(.15),
                   shape: RoundedRectangleBorder(

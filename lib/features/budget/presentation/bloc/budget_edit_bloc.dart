@@ -19,10 +19,8 @@ class BudgetEditBloc extends Bloc<BudgetEditEvent, BudgetEditState> {
   final BudgetRepo _budgetRepo;
 
   BudgetEditBloc(this._budgetRepo) : super(IdleBudgetState()) {
-    on<BudgetEditEvent>((event, emit) {
-      on<AddBudget>(_onAdd);
-      on<DeleteBudget>(_onDelete);
-    });
+    on<AddBudget>(_onAdd);
+    on<DeleteBudget>(_onDelete);
   }
 
   @override
