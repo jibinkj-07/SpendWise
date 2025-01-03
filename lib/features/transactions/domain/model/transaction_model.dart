@@ -9,6 +9,7 @@ class TransactionModel {
   final String docUrl;
   final String categoryId;
   final String createdUserId;
+  final DateTime createdDatetime;
 
   TransactionModel({
     required this.id,
@@ -19,10 +20,12 @@ class TransactionModel {
     required this.description,
     required this.categoryId,
     required this.createdUserId,
+    required this.createdDatetime,
   });
 
   TransactionModel copyWith({
     DateTime? date,
+    DateTime? createdDatetime,
     double? amount,
     String? title,
     String? description,
@@ -38,6 +41,7 @@ class TransactionModel {
         docUrl: docUrl ?? this.docUrl,
         description: description ?? this.description,
         categoryId: categoryId ?? this.categoryId,
+        createdDatetime: createdDatetime ?? this.createdDatetime,
         createdUserId: createdUserId ?? this.createdUserId,
       );
 
@@ -49,6 +53,9 @@ class TransactionModel {
       date: DateTime.fromMillisecondsSinceEpoch(
         int.parse(transData.child("date").value.toString()),
       ),
+      createdDatetime: DateTime.fromMillisecondsSinceEpoch(
+        int.parse(transData.child("created_date").value.toString()),
+      ),
       description: transData.child("description").value.toString(),
       docUrl: transData.child("doc_url").value.toString(),
       categoryId: transData.child("category_id").value.toString(),
@@ -57,12 +64,13 @@ class TransactionModel {
   }
 
   Map<String, dynamic> toJson(String url) => {
-    "title": title,
-    "amount": amount,
-    "date": date.millisecondsSinceEpoch,
-    "doc_url": url,
-    "description": description,
-    "category_id": categoryId,
-    "created_userid": createdUserId,
-  };
+        "title": title,
+        "amount": amount,
+        "date": date.millisecondsSinceEpoch,
+        "doc_url": url,
+        "description": description,
+        "category_id": categoryId,
+        "created_userid": createdUserId,
+        "created_date": createdDatetime.millisecondsSinceEpoch,
+      };
 }

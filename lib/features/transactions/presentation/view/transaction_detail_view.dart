@@ -196,13 +196,18 @@ class _TransactionDetailViewState extends State<TransactionDetailView> {
                           children: [
                             _listTile("Category", widget.category.name),
                             _listTile(
-                              "Date",
+                              "Transaction Date",
                               DateFormat.yMMMEd()
                                   .format(widget.transaction.date),
                             ),
                             _listTile(
-                              "Time",
-                              DateFormat.jm().format(widget.transaction.date),
+                              "Created Date",
+                              DateFormat.yMMMEd()
+                                  .format(widget.transaction.createdDatetime),
+                            ),
+                            _listTile(
+                              "Created Time",
+                              DateFormat.jm().format(widget.transaction.createdDatetime),
                             ),
                             ValueListenableBuilder(
                                 valueListenable: _createdUser,

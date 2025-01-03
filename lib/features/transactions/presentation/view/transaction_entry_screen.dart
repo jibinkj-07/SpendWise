@@ -380,12 +380,14 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
       if (authBloc.state is Authenticated) {
         admin = (authBloc.state as Authenticated).user.uid;
       }
+      final today = DateTime.now();
       final transactionModel = TransactionModel(
         id: widget.transactionModel?.id ??
-            DateTime.now().millisecondsSinceEpoch.toString(),
+            today.millisecondsSinceEpoch.toString(),
         date: _date.value,
         amount: _amount,
         title: _title,
+        createdDatetime: today,
         docUrl: widget.transactionModel?.docUrl ?? "",
         description: _description,
         categoryId: _category.value?.id ?? "",
