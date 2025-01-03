@@ -32,13 +32,13 @@ class TransactionRepoImpl implements TransactionRepo {
   Future<Either<Failure, void>> deleteTransaction({
     required String budgetId,
     required String transactionId,
-    required DateTime createdDate,
+    required DateTime transactionDate,
   }) async {
     if (await InternetConnection().hasInternetAccess) {
       return await _dataSource.deleteTransaction(
         budgetId: budgetId,
         transactionId: transactionId,
-        createdDate: createdDate,
+        transactionDate: transactionDate,
       );
     } else {
       return Left(NetworkError());

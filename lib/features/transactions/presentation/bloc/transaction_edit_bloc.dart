@@ -20,6 +20,7 @@ class TransactionEditBloc
 
   TransactionEditBloc(this._transactionRepo) : super(IdleTransactionState()) {
     on<AddTransaction>(_onAdd);
+    on<UpdateTransaction>(_onUpdate);
     on<DeleteTransaction>(_onDelete);
   }
 
@@ -46,6 +47,28 @@ class TransactionEditBloc
         );
   }
 
+  Future<void> _onUpdate(
+    UpdateTransaction event,
+    Emitter<TransactionEditState> emit,
+  ) async {
+    emit(AddingTransaction());
+    await _transactionRepo.deleteTransaction(
+      budgetId: event.budgetId,
+      transactionId: event.transaction.id,
+      transactionDate: event.oldTransactionDate,
+    );
+    await _transactionRepo
+        .addTransaction(
+          budgetId: event.budgetId,
+          transaction: event.transaction,
+          doc: event.doc,
+        )
+        .fold(
+          (error) => emit(TransactionErrorOccurred(error: error)),
+          (_) => emit(TransactionAdded()),
+        );
+  }
+
   Future<void> _onDelete(
     DeleteTransaction event,
     Emitter<TransactionEditState> emit,
@@ -54,7 +77,7 @@ class TransactionEditBloc
     await _transactionRepo
         .deleteTransaction(
           budgetId: event.budgetId,
-          createdDate: event.createdDate,
+          transactionDate: event.createdDate,
           transactionId: event.transactionId,
         )
         .fold(

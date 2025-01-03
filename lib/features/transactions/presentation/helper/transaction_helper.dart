@@ -55,6 +55,13 @@ sealed class TransactionHelper {
     final sortedKeys = items.keys.toList();
     // Most recent dates first
     sortedKeys.sort((a, b) => b.compareTo(a));
+
+    // Sort the values within each date group by the recent addition (assuming `TransactionModel` has a `createdAt` field)
+    for (final key in items.keys) {
+      items[key]!
+          .sort((a, b) => b.createdDatetime.compareTo(a.createdDatetime));
+    }
+
     // switch (filter) {
     //   case TransactionFilter.recent:
     //     sortedKeys.sort((a, b) => b.compareTo(a)); // Most recent dates first

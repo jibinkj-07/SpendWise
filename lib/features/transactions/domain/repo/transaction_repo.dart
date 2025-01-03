@@ -19,6 +19,6 @@ abstract class TransactionRepo {
   Future<Either<Failure, void>> deleteTransaction({
     required String budgetId,
     required String transactionId,
-    required DateTime createdDate,
+    required DateTime transactionDate,
   });
 }

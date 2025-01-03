@@ -94,16 +94,38 @@ class _TransactionDetailViewState extends State<TransactionDetailView> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    IconButton(
+                    PopupMenuButton(
+                      surfaceTintColor: Colors.transparent,
+                      position: PopupMenuPosition.under,
+                      color: Colors.blue.shade50,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
                       icon: const Icon(Icons.edit_note_rounded),
-                      onPressed: () => Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (_) => TransactionEntryScreen(
-                            transactionModel: widget.transaction,
+                      itemBuilder: (ctx) => [
+                        PopupMenuItem(
+                          child: Text("Edit"),
+                          onTap: () => Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (_) => TransactionEntryScreen(
+                                transactionModel: widget.transaction,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    )
+                        PopupMenuItem(
+                          child: Text("Duplicate"),
+                          onTap: () => Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (_) => TransactionEntryScreen(
+                                transactionModel: widget.transaction,
+                                isDuplicate: true,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
                 // Body
@@ -207,7 +229,8 @@ class _TransactionDetailViewState extends State<TransactionDetailView> {
                             ),
                             _listTile(
                               "Created Time",
-                              DateFormat.jm().format(widget.transaction.createdDatetime),
+                              DateFormat.jm()
+                                  .format(widget.transaction.createdDatetime),
                             ),
                             ValueListenableBuilder(
                                 valueListenable: _createdUser,

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,8 +19,13 @@ import '../../domain/model/transaction_model.dart';
 
 class TransactionEntryScreen extends StatefulWidget {
   final TransactionModel? transactionModel;
+  final bool isDuplicate;
 
-  const TransactionEntryScreen({super.key, this.transactionModel});
+  const TransactionEntryScreen({
+    super.key,
+    this.transactionModel,
+    this.isDuplicate = false,
+  });
 
   @override
   State<TransactionEntryScreen> createState() => _TransactionEntryScreenState();
@@ -382,8 +389,9 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
       }
       final today = DateTime.now();
       final transactionModel = TransactionModel(
-        id: widget.transactionModel?.id ??
-            today.millisecondsSinceEpoch.toString(),
+        id: widget.isDuplicate || widget.transactionModel == null
+            ? today.millisecondsSinceEpoch.toString()
+            : widget.transactionModel!.id,
         date: _date.value,
         amount: _amount,
         title: _title,
@@ -393,16 +401,29 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
         categoryId: _category.value?.id ?? "",
         createdUserId: admin,
       );
-      context.read<TransactionEditBloc>().add(
-            AddTransaction(
-              budgetId:
-                  (context.read<BudgetViewBloc>().state as BudgetSubscribed)
-                      .budget
-                      .id,
-              transaction: transactionModel,
-              doc: _document.value,
-            ),
-          );
+      final transBloc = context.read<TransactionEditBloc>();
+      final budgetBloc =
+          (context.read<BudgetViewBloc>().state as BudgetSubscribed);
+
+      // for duplication and creating new one adding id as current datetime stamp
+      if (widget.transactionModel == null || widget.isDuplicate) {
+        transBloc.add(
+          AddTransaction(
+            budgetId: budgetBloc.budget.id,
+            transaction: transactionModel,
+            doc: _document.value,
+          ),
+        );
+      } else {
+        transBloc.add(
+          UpdateTransaction(
+            budgetId: budgetBloc.budget.id,
+            transaction: transactionModel,
+            doc: _document.value,
+            oldTransactionDate: widget.transactionModel!.createdDatetime,
+          ),
+        );
+      }
     }
   }
 }

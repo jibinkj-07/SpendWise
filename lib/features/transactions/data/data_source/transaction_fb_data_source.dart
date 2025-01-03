@@ -24,7 +24,7 @@ abstract class TransactionFbDataSource {
   Future<Either<Failure, void>> deleteTransaction({
     required String budgetId,
     required String transactionId,
-    required DateTime createdDate,
+    required DateTime transactionDate,
   });
 }
 
@@ -68,7 +68,7 @@ class TransactionFbDataSourceImpl implements TransactionFbDataSource {
   Future<Either<Failure, void>> deleteTransaction({
     required String budgetId,
     required String transactionId,
-    required DateTime createdDate,
+    required DateTime transactionDate,
   }) async {
     try {
       try {
@@ -83,8 +83,8 @@ class TransactionFbDataSourceImpl implements TransactionFbDataSource {
 
       await _firebaseDatabase
           .ref(FirebasePath.transactionPath(budgetId))
-          .child("${createdDate.year}")
-          .child("${createdDate.month}")
+          .child("${transactionDate.year}")
+          .child("${transactionDate.month}")
           .child(transactionId)
           .remove();
 

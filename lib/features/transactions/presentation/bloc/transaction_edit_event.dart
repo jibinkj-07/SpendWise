@@ -19,6 +19,24 @@ final class AddTransaction extends TransactionEditEvent {
   List<Object?> get props => [budgetId, transaction, doc];
 }
 
+
+final class UpdateTransaction extends TransactionEditEvent {
+  final String budgetId;
+  final TransactionModel transaction;
+  final DateTime oldTransactionDate;
+  final XFile? doc;
+
+  const UpdateTransaction({
+    required this.budgetId,
+    required this.transaction,
+    required this.oldTransactionDate,
+    required this.doc,
+  });
+
+  @override
+  List<Object?> get props => [budgetId, transaction, doc];
+}
+
 final class DeleteTransaction extends TransactionEditEvent {
   final String budgetId;
   final String transactionId;
@@ -33,5 +51,3 @@ final class DeleteTransaction extends TransactionEditEvent {
   @override
   List<Object?> get props => [budgetId, transactionId, createdDate];
 }
-
-
