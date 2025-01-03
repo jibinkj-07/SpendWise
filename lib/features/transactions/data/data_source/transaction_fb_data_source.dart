@@ -40,7 +40,7 @@ class TransactionFbDataSourceImpl implements TransactionFbDataSource {
     required TransactionModel transaction,
     XFile? doc,
   }) async {
-    String url = "";
+    String url = transaction.docUrl;
     try {
       if (doc != null) {
         url = await _uploadImage(

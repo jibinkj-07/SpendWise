@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +8,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../../../core/config/app_config.dart';
 import '../../../../core/util/helper/chart_helpers.dart';
 import '../../../budget/presentation/bloc/budget_view_bloc.dart';
+import '../helper/home_helper.dart';
 
 class WeeklyBarChart extends StatefulWidget {
   final List<WeeklyChartData> chartData;
@@ -63,10 +66,20 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
         plotAreaBorderWidth: 0,
         enableSideBySideSeriesPlacement: false,
         primaryXAxis: CategoryAxis(
-          labelStyle: TextStyle(
-            fontFamily: AppConfig.fontFamily,
-            fontWeight: FontWeight.w500,
-          ),
+          axisLabelFormatter: (AxisLabelRenderDetails details) {
+            // Check if the label corresponds to today
+            String today = formatChartDate(DateTime.now());
+            return ChartAxisLabel(
+              details.text,
+              TextStyle(
+                fontFamily: AppConfig.fontFamily,
+                fontWeight:
+                    details.text == today ? FontWeight.w900 : FontWeight.w500,
+                fontSize: 11.0,
+                color: details.text == today ? AppConfig.focusColor : null,
+              ),
+            );
+          },
           majorGridLines: MajorGridLines(color: Colors.transparent),
           majorTickLines: MajorTickLines(width: 0.0),
           isVisible: true,

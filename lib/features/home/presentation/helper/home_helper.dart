@@ -64,14 +64,22 @@ List<WeeklyChartData> generateWeekChartData(
     List.generate(
       7,
       (index) {
-        final day = DateTime.now().subtract(
-            Duration(days: 6 - index)); // Generate 7 days ending with today
+        final today = DateTime.now();
+        DateTime day;
+
+        if (today.day < 8) {
+          // Generate dates from the 1st to the 7th of the current month
+          day = DateTime(today.year, today.month, index + 1);
+        } else {
+          // Generate dates for the last 7 days, including today
+          day = today.subtract(Duration(days: 6 - index));
+        }
 
         return WeeklyChartData(
-          "${DateFormat.E().format(day)}\n${DateFormat.d().format(day)}",
+          formatChartDate(day),
           TransactionHelper.findDayWiseTotal(transactions, day),
-          index == 6 ? AppConfig.focusColor : AppConfig.primaryColor,
-          index == 6,
+          isToday(day) ? AppConfig.focusColor : AppConfig.primaryColor,
+          isToday(day),
         );
       },
     );
@@ -94,14 +102,34 @@ List<TransactionModel> generateWeekTransactions(
   List<TransactionModel> data = [];
   DateTime now = DateTime.now();
 
-  for (int i = 6; i >= 0; i--) {
-    DateTime day = now.subtract(Duration(days: i));
-    String key = '${day.year}-${day.month}-${day.day}';
-
-    if (transactionMap.containsKey(key)) {
-      data.addAll(transactionMap[key]!);
+  if (now.day < 8) {
+    // Collect transactions from the 1st to the 7th of the current month
+    for (int day = 1; day <= 7; day++) {
+      String key = '${now.year}-${now.month}-$day';
+      if (transactionMap.containsKey(key)) {
+        data.addAll(transactionMap[key]!);
+      }
+    }
+  } else {
+    // Collect transactions from the past 7 days, including today
+    for (int i = 6; i >= 0; i--) {
+      DateTime day = now.subtract(Duration(days: i));
+      String key = '${day.year}-${day.month}-${day.day}';
+      if (transactionMap.containsKey(key)) {
+        data.addAll(transactionMap[key]!);
+      }
     }
   }
 
   return data;
 }
+
+bool isToday(DateTime date) {
+  final today = DateTime.now();
+  return date.year == today.year &&
+      date.month == today.month &&
+      date.day == today.day;
+}
+
+String formatChartDate(DateTime date) =>
+    "${DateFormat.E().format(date)}\n${DateFormat.d().format(date)}";

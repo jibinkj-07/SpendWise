@@ -26,6 +26,14 @@ sealed class Light {
     ),
     fontFamily: AppConfig.fontFamily,
     useMaterial3: true,
+    appBarTheme: AppBarTheme(
+      titleTextStyle: TextStyle(
+        fontFamily: AppConfig.fontFamily,
+        fontSize: 18.0,
+        fontWeight: FontWeight.w500,
+        color: Colors.black,
+      ),
+    ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         side: BorderSide(color: AppConfig.primaryColor),

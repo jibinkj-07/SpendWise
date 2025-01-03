@@ -41,12 +41,11 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.transactionModel == null) {
-      _date = ValueNotifier(DateTime.now());
-      _category = ValueNotifier(null);
-    } else {
-      _date = ValueNotifier(widget.transactionModel!.date);
 
+    _category = ValueNotifier(null);
+    _date = ValueNotifier(DateTime.now());
+    if (widget.transactionModel != null) {
+      _date = ValueNotifier(widget.transactionModel!.date);
       final categories =
           (context.read<CategoryViewBloc>().state as CategorySubscribed)
               .categories;
@@ -56,11 +55,9 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
       if (index > -1) {
         _categoryController.text = categories[index].name;
         _category = ValueNotifier(categories[index]);
-      } else {
-        _category = ValueNotifier(null);
       }
     }
-    _dateController.text = DateFormat.yMMMMEEEEd().format(_date.value);
+    _dateController.text = DateFormat("dd MMM, y").format(_date.value);
   }
 
   @override
@@ -118,7 +115,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                           if (date != null) {
                             _date.value = date;
                             _dateController.text =
-                                DateFormat.yMMMMEEEEd().format(_date.value);
+                                DateFormat("dd MMM, y").format(_date.value);
                           }
                         },
                         readOnly: true,
@@ -227,7 +224,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                         textCapitalization: TextCapitalization.sentences,
                         onSaved: (value) =>
                             _description = value.toString().trim(),
-                        initialValue: widget.transactionModel?.title,
+                        initialValue: widget.transactionModel?.description,
                       ),
                       color: Colors.deepPurple,
                     ),
@@ -389,18 +386,21 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
         date: _date.value,
         amount: _amount,
         title: _title,
-        docUrl: "",
+        docUrl: widget.transactionModel?.docUrl ?? "",
         description: _description,
         categoryId: _category.value?.id ?? "",
         createdUserId: admin,
       );
-      // context.read<HomeTransactionBloc>().add(
-      //       InsertTransaction(
-      //         budgetId: context.read<BudgetBloc>().state.budgetDetail?.id ?? "",
-      //         transaction: transactionModel,
-      //         doc: _document.value,
-      //       ),
-      //     );
+      context.read<TransactionEditBloc>().add(
+            AddTransaction(
+              budgetId:
+                  (context.read<BudgetViewBloc>().state as BudgetSubscribed)
+                      .budget
+                      .id,
+              transaction: transactionModel,
+              doc: _document.value,
+            ),
+          );
     }
   }
 }

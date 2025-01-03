@@ -53,6 +53,8 @@ sealed class TransactionHelper {
 
     // Sort the map by keys (dates) based on filter
     final sortedKeys = items.keys.toList();
+    // Most recent dates first
+    sortedKeys.sort((a, b) => b.compareTo(a));
     // switch (filter) {
     //   case TransactionFilter.recent:
     //     sortedKeys.sort((a, b) => b.compareTo(a)); // Most recent dates first

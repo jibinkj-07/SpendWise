@@ -40,14 +40,14 @@ class TransactionListTile extends StatelessWidget {
                 ),
               );
             },
-            leading: CircleAvatar(
-              backgroundColor: category.color,
-              child: Center(
-                child: Text(
-                  category.name.substring(0, 1),
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 17.0,
+            leading: Hero(
+              tag: transaction.id,
+              child: CircleAvatar(
+                backgroundColor: category.color,
+                child: Center(
+                  child: Icon(
+                    AppHelper.getIconFromString(category.icon),
+                    size: 20.0,
                     color: category.color.computeLuminance() < .5
                         ? Colors.white
                         : Colors.black,
