@@ -34,12 +34,15 @@ Future<void> initDependencies() async {
       () => AccountFbDataSourceImpl(sl()));
   sl.registerLazySingleton<TransactionFbDataSource>(
       () => TransactionFbDataSourceImpl(sl(), sl()));
+  sl.registerLazySingleton<AnalysisFbDataSource>(
+      () => AnalysisFbDataSourceImpl(sl()));
 
   // **************************************** Repos ****************************************
   sl.registerLazySingleton<AuthRepo>(() => AuthRepoImpl(sl()));
   sl.registerLazySingleton<BudgetRepo>(() => BudgetRepoImpl(sl()));
   sl.registerLazySingleton<AccountRepo>(() => AccountRepoImpl(sl()));
   sl.registerLazySingleton<TransactionRepo>(() => TransactionRepoImpl(sl()));
+  sl.registerLazySingleton<AnalysisRepo>(() => AnalysisRepoImpl(sl()));
 
   // **************************************** Bloc ****************************************
   sl.registerSingleton<AuthBloc>(AuthBloc(sl()));
@@ -49,4 +52,5 @@ Future<void> initDependencies() async {
   sl.registerSingleton<CategoryEditBloc>(CategoryEditBloc(sl()));
   sl.registerSingleton<MonthTransViewBloc>(MonthTransViewBloc(sl()));
   sl.registerSingleton<TransactionEditBloc>(TransactionEditBloc(sl()));
+  sl.registerSingleton<AnalysisBloc>(AnalysisBloc(sl()));
 }

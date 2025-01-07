@@ -111,11 +111,9 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
             dataSource: widget.chartData,
             borderRadius: BorderRadius.circular(20.0),
             width: 0.4,
-            pointColorMapper: (data, _) => data.amount == 0
-                ? Colors.transparent
-                : data.isToday
-                    ? data.color.withOpacity(.4)
-                    : data.color.withOpacity(.1),
+            pointColorMapper: (data, _) => data.isToday
+                ? data.color.withOpacity(.2)
+                : data.color.withOpacity(.08),
             xValueMapper: (data, _) => data.day,
             yValueMapper: (data, _) => maxAmount,
           ),

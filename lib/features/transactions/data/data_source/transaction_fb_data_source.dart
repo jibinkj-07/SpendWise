@@ -111,7 +111,7 @@ class TransactionFbDataSourceImpl implements TransactionFbDataSource {
           try {
             // Parse the transaction snapshot into a TransactionModel
             final List<TransactionModel> transactions = event.snapshot.children
-                .map((category) => TransactionModel.fromFirebase(category))
+                .map((item) => TransactionModel.fromFirebase(item))
                 .toList();
             return Right(transactions); // Emit the parsed TransactionModel
           } catch (e) {

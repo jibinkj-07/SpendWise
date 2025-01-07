@@ -26,6 +26,7 @@ class Empty extends StatelessWidget {
           Text(
             message,
             style: TextStyle(fontWeight: FontWeight.w500),
+            textAlign: TextAlign.center,
           ),
         ],
       ),

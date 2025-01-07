@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:spend_wise/features/auth/presentation/view/create_account_screen.dart';
 import 'package:spend_wise/features/auth/presentation/view/password_reset_screen.dart';
@@ -15,7 +17,7 @@ import 'error_route.dart';
 
 /// class for adding page route name entry
 sealed class RouteName {
-  static const String root = "/root";
+  static const String root = "/";
   static const String login = "/login-screen";
   static const String createAccount = "/create-account-screen";
   static const String passwordReset = "/password-reset-screen";
@@ -37,6 +39,8 @@ sealed class AppRoutes {
 
     /// for get parameters that are passed via navigator
     // OnboardScreen(isDataFetched: args == null ? false : args as bool),
+
+    log("route is ${settings.name}");
     switch (settings.name) {
       case RouteName.root:
         return MaterialPageRoute(builder: (_) => const Root());

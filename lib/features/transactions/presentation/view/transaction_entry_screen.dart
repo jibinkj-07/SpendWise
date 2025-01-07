@@ -117,7 +117,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                             context: context,
                             initialDate: _date.value,
                             firstDate: DateTime(1800),
-                            lastDate: DateTime.now(),
+                            lastDate: DateTime(3000),
                           );
                           if (date != null) {
                             _date.value = date;
@@ -329,7 +329,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                     onPressed: _onAddOrUpdate,
                     loading: loading,
                     child: Text(
-                        "${widget.transactionModel == null ? "Add" : "Update"}"
+                        "${widget.isDuplicate ? "Duplicate" : widget.transactionModel == null ? "Add" : "Update"}"
                         " Transaction"),
                   );
                 },
@@ -358,22 +358,13 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
             color: color,
           ),
         ),
-        title: Row(
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 14.0,
-                color: Colors.black54,
-              ),
-            ),
-            Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: Colors.black54,
-              size: 20.0,
-            ),
-          ],
+        title: Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 13.0,
+            color: Colors.black54,
+          ),
         ),
         subtitle: child,
       );

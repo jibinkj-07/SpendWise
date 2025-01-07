@@ -59,10 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPopInvokedWithResult: (_, __) => _index.value = 0,
               child: Scaffold(
                 backgroundColor: index == 0 ? Colors.white : null,
-                appBar: MyAppBar(
-                  index: index,
-                  budgetName: currentBudget.name ?? "Budget",
-                ),
+                appBar: MyAppBar(index: index, budgetName: currentBudget.name),
                 body: _views[index],
                 bottomNavigationBar: NavBar(index: _index, currentIndex: index),
               ),

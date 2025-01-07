@@ -22,8 +22,8 @@ class NavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(
-        left: 30.0,
-        right: 30.0,
+        left: 15.0,
+        right: 15.0,
         bottom: 20.0,
         top: 5.0,
       ),
@@ -67,11 +67,11 @@ class NavBar extends StatelessWidget {
                   ),
                   GButton(
                     icon: Icons.query_stats_rounded,
-                    text: 'Analysis',
+                    text: 'Analytics',
                   ),
                   GButton(
                     icon: Icons.article_rounded,
-                    text: 'Transaction',
+                    text: 'Transactions',
                   ),
                 ],
               ),
