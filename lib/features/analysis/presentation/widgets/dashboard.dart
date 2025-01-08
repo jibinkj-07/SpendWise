@@ -46,11 +46,6 @@ class Dashboard extends StatelessWidget {
       return CustomLoading();
     }
 
-    if (analysisState.transactions.isEmpty) {
-      return Empty(
-        message: "Please add transactions\n to view analytics",
-      );
-    }
     return ListView(
       padding: EdgeInsets.symmetric(
         horizontal: AppHelper.horizontalPadding(size),

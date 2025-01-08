@@ -1,8 +1,9 @@
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import '../../../../core/config/app_config.dart';
 import '../../../../core/config/route/app_routes.dart';
+import '../../../analysis/presentation/widgets/bottom_date_picker.dart';
 
 /// @author : Jibin K John
 /// @date   : 12/12/2024
@@ -78,14 +79,20 @@ class NavBar extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 15.0),
-          IconButton.filled(
-            onPressed: () {
-              Navigator.of(context).pushNamed(
-                RouteName.transactionEntry,
-              );
-            },
-            icon: Icon(Icons.add_rounded),
-          ),
+          if (currentIndex == 0)
+            IconButton.filled(
+              onPressed: () {
+                Navigator.of(context).pushNamed(
+                  RouteName.transactionEntry,
+                );
+              },
+              icon: Icon(Icons.add_rounded),
+            )
+          else
+            IconButton.filled(
+              onPressed: () => BottomDatePicker.showDialog(context),
+              icon: Icon(Icons.edit_calendar_rounded),
+            )
         ],
       ),
     );

@@ -82,7 +82,8 @@ sealed class AppHelper {
   static double horizontalPadding(Size size) => size.width * .05;
 
   /// Function to format price
-  static String formatAmount(BuildContext context, double amount) {
+  static String formatAmount(BuildContext context, double amount,
+      {int? decimalDigits}) {
     final budgetState = context.read<BudgetViewBloc>().state;
     BudgetModel? budget;
     if (budgetState is BudgetSubscribed) {
@@ -91,6 +92,7 @@ sealed class AppHelper {
     return NumberFormat.currency(
       name: budget?.currency,
       symbol: budget?.currencySymbol,
+      decimalDigits: decimalDigits,
     ).format(amount);
   }
 }

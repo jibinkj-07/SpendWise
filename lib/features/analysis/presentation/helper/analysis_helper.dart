@@ -1,6 +1,7 @@
+import 'dart:developer';
+
 import 'package:intl/intl.dart';
 
-import '../../../budget/domain/model/category_model.dart';
 import '../../../transactions/domain/model/transaction_model.dart';
 
 sealed class AnalysisHelper {
@@ -14,8 +15,8 @@ sealed class AnalysisHelper {
     for (int day = 1; day <= daysInMonth; day++) {
       DateTime date = DateTime(year, month, day);
 
-      // Get the week number
-      int weekNumber = int.parse(DateFormat("w").format(date));
+      // Calculate the ISO week number
+      int weekNumber = ((date.day - date.weekday + 10) ~/ 7);
       weekNumbers.add(weekNumber);
     }
 
@@ -30,7 +31,7 @@ sealed class AnalysisHelper {
     // Find the first Monday of the month
     DateTime firstMondayOfMonth = firstDayOfMonth;
     while (firstMondayOfMonth.weekday != DateTime.monday) {
-      firstMondayOfMonth = firstMondayOfMonth.add(const Duration(days: 1));
+      firstMondayOfMonth = firstMondayOfMonth.subtract(const Duration(days: 1));
     }
 
     // Calculate the first day of the desired week (weekNumber)
@@ -47,8 +48,14 @@ sealed class AnalysisHelper {
     return startOfWeek.add(const Duration(days: 6));
   }
 
+  static int getWeekNumber(DateTime date) {
+    int dayOfYear = int.parse(DateFormat("D").format(date)); // Day of the year
+    return ((dayOfYear - date.weekday + 10) / 7).floor();
+  }
+
   static List<MapEntry<dynamic, double>> getSummary(
-      List<TransactionModel> transactions) {
+    List<TransactionModel> transactions,
+  ) {
     double topItemPrice = 0.0;
     String topItemId = "";
     Map<DateTime, double> dayTrans = {};
@@ -75,7 +82,10 @@ sealed class AnalysisHelper {
     }
 
     // Get top item transaction directly by id lookup
-    final item = transactions.firstWhere((item) => item.id == topItemId);
+    final item = transactions.firstWhere(
+      (item) => item.id == topItemId,
+      orElse: () => TransactionModel.dummy(),
+    );
 
     final day = _findHighestByDateTime(dayTrans);
     final month = _findHighestByDateTime(monthTrans);
@@ -92,8 +102,9 @@ sealed class AnalysisHelper {
   static MapEntry<DateTime, double> _findHighestByDateTime(
     Map<DateTime, double> data,
   ) {
-    DateTime highestDate = data.entries.first.key;
-    double highestAmount = data.entries.first.value;
+    DateTime highestDate =
+        data.isNotEmpty ? data.entries.first.key : DateTime.now();
+    double highestAmount = data.isNotEmpty ? data.entries.first.value : 0.0;
 
     data.forEach((date, totalAmount) {
       if (totalAmount > highestAmount) {
@@ -108,8 +119,8 @@ sealed class AnalysisHelper {
 // Optimized to work directly with Map<String, double> to avoid redundant iteration
   static MapEntry<String, double> _findHighestByString(
       Map<String, double> data) {
-    String highestCategory = data.entries.first.key;
-    double highestAmount = data.entries.first.value;
+    String highestCategory = data.isNotEmpty ? data.entries.first.key : "";
+    double highestAmount = data.isNotEmpty ? data.entries.first.value : 0.0;
 
     data.forEach((category, totalAmount) {
       if (totalAmount > highestAmount) {

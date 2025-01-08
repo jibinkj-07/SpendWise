@@ -45,6 +45,18 @@ class TransactionModel {
         createdUserId: createdUserId ?? this.createdUserId,
       );
 
+  factory TransactionModel.dummy() => TransactionModel(
+        id: "dummy",
+        date: DateTime.now(),
+        amount: 0.0,
+        title: "",
+        docUrl: "",
+        description: "",
+        categoryId: "",
+        createdUserId: "",
+        createdDatetime: DateTime.now(),
+      );
+
   factory TransactionModel.fromFirebase(DataSnapshot transData) {
     return TransactionModel(
       id: transData.key.toString(),

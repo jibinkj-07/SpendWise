@@ -72,6 +72,7 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
     } else {
       emit(state.copyWith(
         date: event.date,
+        weekNumber: event.weekNumber,
         transactions: _filterTransactions(
           state.filter,
           event.date,
@@ -99,7 +100,11 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
     Emitter<AnalysisState> emit,
   ) async {
     emit(state.copyWith(
-      transactions: _filterTransactions(event.analyticsFilter, state.date, 1),
+      transactions: _filterTransactions(
+        event.analyticsFilter,
+        state.date,
+        state.weekNumber,
+      ),
       filter: event.analyticsFilter,
     ));
   }
@@ -141,10 +146,16 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
   }
 
   List<TransactionModel> _filterTransactionsByWeek(DateTime date, int week) {
-    final startDate =
-        AnalysisHelper.getStartOfWeek(date.year, date.month, week);
-    final endDate = AnalysisHelper.getEndOfWeek(date.year, date.month, week);
-
+    final startDate = AnalysisHelper.getStartOfWeek(
+      date.year,
+      date.month,
+      week,
+    );
+    final endDate = AnalysisHelper.getEndOfWeek(
+      date.year,
+      date.month,
+      week,
+    );
     return _transactions.where((transaction) {
       return transaction.date
               .isAfter(startDate.subtract(const Duration(seconds: 1))) &&

@@ -17,12 +17,16 @@ class AnalysisState extends Equatable {
     this.filter = AnalyticsFilter.month,
     this.status = AnalysisStatus.loading,
     required this.date,
-    this.weekNumber = 1,
+    required this.weekNumber,
     this.transactions = const [],
     this.error,
   });
 
-  AnalysisState.initial() : this._(date: DateTime.now());
+  AnalysisState.initial()
+      : this._(
+          date: DateTime.now(),
+          weekNumber: AnalysisHelper.getWeekNumber(DateTime.now()),
+        );
 
   AnalysisState copyWith({
     AnalyticsFilter? filter,
@@ -40,8 +44,6 @@ class AnalysisState extends Equatable {
         transactions: transactions ?? this.transactions,
         error: error,
       );
-
-
 
   @override
   List<Object?> get props => [

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:spend_wise/core/util/extension/string_ext.dart';
 
 import '../../../../core/config/app_config.dart';
 import '../../../../core/util/helper/app_helper.dart';
@@ -63,14 +62,17 @@ class Summary extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "${analysisState.filter.name.firstLetterToUpperCase()}ly Summary",
-                    style: TextStyle(fontWeight: FontWeight.w500),
+                    "Spending Summary",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15.0,
+                    ),
                   ),
                   const SizedBox(height: 5.0),
                   Text(
                     _getSubtitle(),
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       color: Colors.black54,
                     ),
                   ),
@@ -81,7 +83,7 @@ class Summary extends StatelessWidget {
                   AppHelper.formatAmount(context, total),
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
-                    fontSize: 16.0,
+                    fontSize: 18.0,
                   ),
                   textAlign: TextAlign.right,
                   overflow: TextOverflow.ellipsis,
@@ -89,19 +91,29 @@ class Summary extends StatelessWidget {
               ),
             ],
           ),
+
           // Bottom
           const SizedBox(height: 20.0),
           // Text(summary.toString()),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _container(
-                "Day",
-                DateFormat("dd E").format(topDayEntry.key),
-                topDayEntry.value,
-                total,
-                context,
-              ),
+              if (analysisState.filter == AnalyticsFilter.year)
+                _container(
+                  "Month",
+                  DateFormat.MMMM().format(topMonthEntry.key),
+                  topMonthEntry.value,
+                  total,
+                  context,
+                )
+              else
+                _container(
+                  "Day",
+                  DateFormat("dd EEEE").format(topDayEntry.key),
+                  topDayEntry.value,
+                  total,
+                  context,
+                ),
               const SizedBox(width: 10.0),
               _container(
                 "Category",
@@ -130,19 +142,24 @@ class Summary extends StatelessWidget {
   Widget _container(String title, String subtitle, double amount, double total,
       BuildContext context,
       [Color? color]) {
-    final boxColor =
-        color == null ? Colors.blue.shade200 : color.withOpacity(.5);
-    final value = AppHelper.formatAmount(context, amount);
+    final bgColor =
+        color == null ? Colors.blue.shade200 : color.withOpacity(.3);
+    final value = AppHelper.formatAmount(
+      context,
+      amount,
+      decimalDigits: amount > 1000 ? 0 : 2,
+    );
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          CustomSnackBar.showInfoSnackBar(context, "$subtitle ${value}");
+          CustomSnackBar.showInfoSnackBar(context, "$subtitle $value");
         },
         child: Container(
           padding: const EdgeInsets.all(10.0),
           decoration: BoxDecoration(
+            border: Border.all(width: .5, color: bgColor),
             borderRadius: BorderRadius.circular(15.0),
-            color: boxColor.withOpacity(.2),
+            color: bgColor.withOpacity(.2),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,32 +168,40 @@ class Summary extends StatelessWidget {
                 title,
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
-                  fontSize: 11.0,
+                  fontSize: 10.5,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
               Text(
-                subtitle,
+                analysisState.transactions.isNotEmpty ? subtitle : "",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 12.0,
+                  fontSize: 11.5,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 10.0),
               Row(
                 children: [
-                  CircularProgressIndicator(
-                    value: amount / total,
-                    color: color,
-                    backgroundColor: boxColor,
+                  SizedBox(
+                    height: 28.0,
+                    width: 28.0,
+                    child: CircularProgressIndicator(
+                      value: analysisState.transactions.isNotEmpty
+                          ? (amount / total)
+                          : 0,
+                      color: color,
+                      backgroundColor: bgColor,
+                    ),
                   ),
                   const SizedBox(width: 5.0),
                   Expanded(
                     child: Text(
-                      value,
+                      analysisState.transactions.isNotEmpty
+                          ? value
+                          : AppHelper.formatAmount(context, 0),
                       style: TextStyle(
-                        fontSize: 10.0,
+                        fontSize: 11,
                         fontWeight: FontWeight.w500,
                       ),
                       textAlign: TextAlign.right,
@@ -184,7 +209,7 @@ class Summary extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
+              )
             ],
           ),
         ),
@@ -210,7 +235,7 @@ class Summary extends StatelessWidget {
         }
 
       case AnalyticsFilter.month:
-        return DateFormat.MMMM().format(analysisState.date);
+        return DateFormat.yMMMM().format(analysisState.date);
       case AnalyticsFilter.year:
         return "${analysisState.date.year}";
     }
