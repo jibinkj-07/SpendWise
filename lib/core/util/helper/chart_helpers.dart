@@ -13,3 +13,13 @@ class WeeklyChartData {
     this.isToday,
   );
 }
+
+class WeekWiseChartData {
+  final DateTime date;
+  final double amount;
+
+  WeekWiseChartData({
+    required this.date,
+    required this.amount,
+  });
+}

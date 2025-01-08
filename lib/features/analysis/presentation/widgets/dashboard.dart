@@ -5,6 +5,7 @@ import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/widget/empty.dart';
 import '../bloc/analysis_bloc.dart';
 import 'summary.dart';
+import 'transaction_chart.dart';
 
 /// @author : Jibin K John
 /// @date   : 07/01/2025
@@ -53,6 +54,7 @@ class Dashboard extends StatelessWidget {
       ),
       children: [
         Summary(analysisState: analysisState),
+        TransactionChart(analysisState: analysisState, size: size),
       ],
     );
   }

@@ -42,6 +42,7 @@ class Summary extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(15.0),
+      margin: const EdgeInsets.only(bottom: 25.0),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
