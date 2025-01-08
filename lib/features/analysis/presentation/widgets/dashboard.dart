@@ -4,6 +4,7 @@ import 'package:spend_wise/core/util/widget/custom_loading.dart';
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/widget/empty.dart';
 import '../bloc/analysis_bloc.dart';
+import 'category_chart.dart';
 import 'summary.dart';
 import 'transaction_chart.dart';
 
@@ -55,6 +56,7 @@ class Dashboard extends StatelessWidget {
       children: [
         Summary(analysisState: analysisState),
         TransactionChart(analysisState: analysisState, size: size),
+        CategoryChart(analysisState: analysisState)
       ],
     );
   }

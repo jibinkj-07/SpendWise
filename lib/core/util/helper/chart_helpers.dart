@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import '../../../features/budget/domain/model/category_model.dart';
+
 class WeeklyChartData {
   final String day;
   final double amount;
@@ -20,6 +22,16 @@ class WeekWiseChartData {
 
   WeekWiseChartData({
     required this.date,
+    required this.amount,
+  });
+}
+
+class CategoryChartData {
+  final CategoryModel category;
+  final double amount;
+
+  CategoryChartData({
+    required this.category,
     required this.amount,
   });
 }

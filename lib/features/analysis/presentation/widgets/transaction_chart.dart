@@ -49,7 +49,7 @@ class TransactionChart extends StatelessWidget {
               fontSize: 15.0,
             ),
           ),
-          const SizedBox(height: 30.0),
+          const SizedBox(height: 20.0),
           _getChart(context),
         ],
       ),
@@ -109,14 +109,14 @@ class TransactionChart extends StatelessWidget {
 
     maxAmount = maxAmount == 0 ? 50 : maxAmount;
     return SizedBox(
-      height: size.height * .25,
+      height: size.height * .23,
       child: SfCartesianChart(
-        zoomPanBehavior: ZoomPanBehavior(
-          enablePinching: true,
-          enablePanning: true,
-          maximumZoomLevel: .5,
-          zoomMode: ZoomMode.xy,
-        ),
+        // zoomPanBehavior: ZoomPanBehavior(
+        //   enablePinching: true,
+        //   enablePanning: true,
+        //   maximumZoomLevel: .5,
+        //   zoomMode: ZoomMode.xy,
+        // ),
         tooltipBehavior: tooltipBehavior,
         margin: EdgeInsets.zero,
         plotAreaBackgroundColor: Colors.transparent,
