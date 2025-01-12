@@ -4,6 +4,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import '../../../../core/config/app_config.dart';
 import '../../../../core/config/route/app_routes.dart';
 import '../../../analysis/presentation/widgets/bottom_date_picker.dart';
+import '../../../transactions/presentation/widget/trans_bottom_date_picker.dart';
 
 /// @author : Jibin K John
 /// @date   : 12/12/2024
@@ -90,7 +91,9 @@ class NavBar extends StatelessWidget {
             )
           else
             IconButton.filled(
-              onPressed: () => BottomDatePicker.showDialog(context),
+              onPressed: () => currentIndex == 1
+                  ? BottomDatePicker.showDialog(context)
+                  : TransBottomDatePicker.showDialog(context),
               icon: Icon(Icons.edit_calendar_rounded),
             )
         ],

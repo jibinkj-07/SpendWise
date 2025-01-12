@@ -1,3 +1,4 @@
+
 import './imports.dart';
 
 final sl = GetIt.instance;
@@ -52,4 +53,5 @@ Future<void> initDependencies() async {
   sl.registerSingleton<MonthTransViewBloc>(MonthTransViewBloc(sl()));
   sl.registerSingleton<TransactionEditBloc>(TransactionEditBloc(sl()));
   sl.registerSingleton<AnalysisBloc>(AnalysisBloc(sl()));
+  sl.registerSingleton<TransactionBloc>(TransactionBloc(sl()));
 }

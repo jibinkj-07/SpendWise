@@ -17,7 +17,7 @@ part 'analysis_state.dart';
 class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
   final AnalysisRepo _analysisRepo;
 
-  late List<TransactionModel> _transactions; // `late` to initialize lazily
+  late List<TransactionModel> _transactions;
   StreamSubscription? _analysisSubscription;
 
   AnalysisBloc(this._analysisRepo) : super(AnalysisState.initial()) {

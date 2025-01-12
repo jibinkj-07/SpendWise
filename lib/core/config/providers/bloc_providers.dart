@@ -7,6 +7,7 @@ import '../../../features/budget/presentation/bloc/budget_view_bloc.dart';
 import '../../../features/budget/presentation/bloc/category_edit_bloc.dart';
 import '../../../features/budget/presentation/bloc/category_view_bloc.dart';
 import '../../../features/transactions/presentation/bloc/month_trans_view_bloc.dart';
+import '../../../features/transactions/presentation/bloc/transaction_bloc.dart';
 import '../../../features/transactions/presentation/bloc/transaction_edit_bloc.dart';
 import '../injection/injection_container.dart';
 
@@ -22,5 +23,6 @@ sealed class BlocProviders {
         BlocProvider<CategoryViewBloc>(create: (_) => sl<CategoryViewBloc>()),
         BlocProvider<CategoryEditBloc>(create: (_) => sl<CategoryEditBloc>()),
         BlocProvider<AnalysisBloc>(create: (_) => sl<AnalysisBloc>()),
+        BlocProvider<TransactionBloc>(create: (_) => sl<TransactionBloc>()),
       ];
 }
