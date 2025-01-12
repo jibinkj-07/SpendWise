@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-
 import '../../../../core/config/app_config.dart';
 import '../../../../core/util/helper/chart_helpers.dart';
 import '../../../budget/presentation/bloc/budget_view_bloc.dart';
 import '../bloc/analysis_bloc.dart';
-import '../helper/analysis_helper.dart';
-import '../helper/analytics_chart_helper.dart';
 
 /// @author : Jibin K John
 /// @date   : 08/01/2025
@@ -16,12 +13,14 @@ import '../helper/analytics_chart_helper.dart';
 
 class TransactionChart extends StatelessWidget {
   final AnalysisState analysisState;
+  final List<WeekWiseChartData> chartData;
   final Size size;
 
   const TransactionChart({
     super.key,
     required this.analysisState,
     required this.size,
+    required this.chartData,
   });
 
   @override
@@ -79,27 +78,6 @@ class TransactionChart extends StatelessWidget {
       ),
     );
 
-    List<WeekWiseChartData> chartData;
-    if (analysisState.filter == AnalyticsFilter.week) {
-      chartData = AnalyticsChartHelper.getWeekChartData(
-        transactions: analysisState.transactions,
-        startDate: AnalysisHelper.getStartOfWeek(
-          analysisState.date.year,
-          analysisState.date.month,
-          analysisState.weekNumber,
-        ),
-      );
-    } else if (analysisState.filter == AnalyticsFilter.month) {
-      chartData = AnalyticsChartHelper.getMonthChartData(
-        transactions: analysisState.transactions,
-        month: analysisState.date,
-      );
-    } else {
-      chartData = AnalyticsChartHelper.getYearChartData(
-        transactions: analysisState.transactions,
-        year: analysisState.date,
-      );
-    }
 // Find the maximum amount in the current data
     double maxAmount = chartData.isNotEmpty
         ? chartData.map((data) => data.amount).reduce(

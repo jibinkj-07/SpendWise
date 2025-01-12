@@ -40,7 +40,6 @@ sealed class AppRoutes {
     /// for get parameters that are passed via navigator
     // OnboardScreen(isDataFetched: args == null ? false : args as bool),
 
-    log("route is ${settings.name}");
     switch (settings.name) {
       case RouteName.root:
         return MaterialPageRoute(builder: (_) => const Root());

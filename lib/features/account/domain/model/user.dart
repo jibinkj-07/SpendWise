@@ -1,11 +1,11 @@
-enum UserStatus { accepted, pending }
+
 
 class User {
   final String uid;
   final String name;
   final String email;
   final String imageUrl;
-  final UserStatus userStatus;
+  final String userStatus;
   final DateTime date;
 
   User({
@@ -19,7 +19,7 @@ class User {
 
   User copyWith({
     DateTime? date,
-    UserStatus? userStatus,
+    String? userStatus,
   }) =>
       User(
         uid: uid,

@@ -1,5 +1,6 @@
 import 'package:either_dart/either.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:spend_wise/features/account/domain/model/user.dart';
 import '../../../../core/util/error/failure.dart';
 import '../../../transactions/domain/model/transaction_model.dart';
 import '../../domain/repo/analysis_repo.dart';
@@ -22,6 +23,16 @@ class AnalysisRepoImpl implements AnalysisRepo {
       );
     } else {
       yield Left(NetworkError());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<User>>> getMembers(
+      {required String budgetId}) async {
+    if (await InternetConnection().hasInternetAccess) {
+      return await _dataSource.getMembers(budgetId: budgetId);
+    } else {
+      return Left(NetworkError());
     }
   }
 }

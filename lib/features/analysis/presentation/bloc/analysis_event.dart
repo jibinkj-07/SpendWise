@@ -15,11 +15,24 @@ final class SubscribeAnalysisData extends AnalysisEvent {
 
 final class SubscribedAnalysis extends AnalysisEvent {
   final List<TransactionModel> transactions;
+  final String budgetId;
 
-  const SubscribedAnalysis({required this.transactions});
+  const SubscribedAnalysis({
+    required this.transactions,
+    required this.budgetId,
+  });
 
   @override
-  List<Object?> get props => [transactions];
+  List<Object?> get props => [transactions, budgetId];
+}
+
+final class GetMembers extends AnalysisEvent {
+  final String budgetId;
+
+  const GetMembers({required this.budgetId});
+
+  @override
+  List<Object?> get props => [budgetId];
 }
 
 final class Error extends AnalysisEvent {

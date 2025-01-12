@@ -1,4 +1,3 @@
-
 import './imports.dart';
 
 final sl = GetIt.instance;
@@ -35,7 +34,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<TransactionFbDataSource>(
       () => TransactionFbDataSourceImpl(sl(), sl()));
   sl.registerLazySingleton<AnalysisFbDataSource>(
-      () => AnalysisFbDataSourceImpl(sl()));
+      () => AnalysisFbDataSourceImpl(sl(), sl()));
 
   // **************************************** Repos ****************************************
   sl.registerLazySingleton<AuthRepo>(() => AuthRepoImpl(sl()));

@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../../core/util/error/failure.dart';
+import '../../../account/domain/model/user.dart';
 import '../../../transactions/domain/model/transaction_model.dart';
 import '../../domain/repo/analysis_repo.dart';
 import '../helper/analysis_helper.dart';
@@ -24,6 +25,7 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
     on<SubscribedAnalysis>(_onSubscribed);
     on<Error>(_onError);
     on<UpdateAnalysisFilter>(_onUpdateFilter);
+    on<GetMembers>(_onGetMembers);
     on<UpdateDate>(_onUpdateDate);
   }
 
@@ -48,10 +50,13 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
       _analysisSubscription = _analysisRepo
           .getTransactionsPerYear(
               budgetId: event.budgetId, year: state.date.year.toString())
-          .listen((event) {
-        event.fold(
+          .listen((result) {
+        result.fold(
           (failure) => add(Error(error: failure)),
-          (transactions) => add(SubscribedAnalysis(transactions: transactions)),
+          (transactions) => add(SubscribedAnalysis(
+            transactions: transactions,
+            budgetId: event.budgetId,
+          )),
         );
       });
     }
@@ -90,7 +95,10 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
         .listen((event) {
       event.fold(
         (failure) => add(Error(error: failure)),
-        (transactions) => add(SubscribedAnalysis(transactions: transactions)),
+        (transactions) => add(SubscribedAnalysis(
+          transactions: transactions,
+          budgetId: budgetId,
+        )),
       );
     });
   }
@@ -113,16 +121,28 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
     SubscribedAnalysis event,
     Emitter<AnalysisState> emit,
   ) async {
-    _transactions =
-        event.transactions; // Update transactions with the latest data
-    emit(state.copyWith(
-      status: AnalysisStatus.loaded,
-      transactions: _filterTransactions(
-        state.filter,
-        state.date,
-        state.weekNumber,
+    _transactions = event.transactions;
+    add(GetMembers(budgetId: event.budgetId));
+    emit(
+      state.copyWith(
+        status: AnalysisStatus.loaded,
+        transactions: _filterTransactions(
+          state.filter,
+          state.date,
+          state.weekNumber,
+        ),
       ),
-    ));
+    );
+  }
+
+  FutureOr<void> _onGetMembers(
+    GetMembers event,
+    Emitter<AnalysisState> emit,
+  ) async {
+    final members = await _analysisRepo.getMembers(budgetId: event.budgetId);
+    if (members.isRight) {
+      emit(state.copyWith(budgetMembers: members.right));
+    }
   }
 
   Future<void> _onError(Error event, Emitter<AnalysisState> emit) async {

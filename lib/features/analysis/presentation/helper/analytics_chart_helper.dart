@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/helper/chart_helpers.dart';
+import '../../../account/domain/model/user.dart';
 import '../../../budget/presentation/bloc/category_view_bloc.dart';
 import '../../../transactions/domain/model/transaction_model.dart';
 
@@ -119,6 +123,31 @@ sealed class AnalyticsChartHelper {
     // Sort by date
     chartData.sort((a, b) => b.amount.compareTo(a.amount));
 
+    return chartData;
+  }
+
+  static List<MembersChartData> getMembersSpendingChartData({
+    required List<TransactionModel> transactions,
+    required List<User> budgetMembers,
+  }) {
+    // Group transactions by their date
+    Map<String, double> membersMap = {};
+    for (var transaction in transactions) {
+      membersMap[transaction.createdUserId] =
+          (membersMap[transaction.createdUserId] ?? 0.0) + transaction.amount;
+    }
+
+    // Prepare the chart data for the members
+    List<MembersChartData> chartData = [];
+    for (final member in budgetMembers) {
+      chartData.add(MembersChartData(
+        user: member,
+        color: AppHelper.getColorForLetter(member.name.substring(0, 1)),
+        amount: membersMap[member.uid] ?? 0.0,
+      ));
+    }
+    // Sort by amount
+    chartData.sort((a, b) => b.amount.compareTo(a.amount));
     return chartData;
   }
 }

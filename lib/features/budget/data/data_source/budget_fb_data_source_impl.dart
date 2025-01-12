@@ -142,7 +142,14 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
         "currency_symbol": currency.symbol,
         "created_on": date,
       });
-
+      // Adding owner id into member node of budget
+      await _firebaseDatabase
+          .ref(FirebasePath.budgetPath(id))
+          .child("members/$admin")
+          .set({
+        "status": "joined",
+        "date": date,
+      });
       // Add Categories
       for (final item in categories) {
         await _firebaseDatabase
@@ -160,6 +167,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
           "date": date,
         });
 
+        // Adding invitation to members node
         await _firebaseDatabase
             .ref(FirebasePath.invitationPath(user.uid))
             .child(id)
@@ -183,6 +191,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
           .ref(FirebasePath.joinedBudgetPath(admin))
           .child(id)
           .set({"date": date});
+
       // Call the account class function to update selection to current budget to admin node
       return await _accountFbDataSource.updateSelectedBudget(
         id: admin,

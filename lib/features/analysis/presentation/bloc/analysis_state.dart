@@ -11,6 +11,7 @@ class AnalysisState extends Equatable {
   final int weekNumber;
 
   final List<TransactionModel> transactions;
+  final List<User> budgetMembers;
   final Failure? error;
 
   const AnalysisState._({
@@ -19,6 +20,7 @@ class AnalysisState extends Equatable {
     required this.date,
     required this.weekNumber,
     this.transactions = const [],
+    this.budgetMembers = const [],
     this.error,
   });
 
@@ -34,6 +36,7 @@ class AnalysisState extends Equatable {
     DateTime? date,
     int? weekNumber,
     List<TransactionModel>? transactions,
+    List<User>? budgetMembers,
     Failure? error,
   }) =>
       AnalysisState._(
@@ -42,6 +45,7 @@ class AnalysisState extends Equatable {
         date: date ?? this.date,
         weekNumber: weekNumber ?? this.weekNumber,
         transactions: transactions ?? this.transactions,
+        budgetMembers: budgetMembers ?? this.budgetMembers,
         error: error,
       );
 
@@ -52,6 +56,7 @@ class AnalysisState extends Equatable {
         transactions,
         weekNumber,
         error,
+        budgetMembers,
         status,
       ];
 }

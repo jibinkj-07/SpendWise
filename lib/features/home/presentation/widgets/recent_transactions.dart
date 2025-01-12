@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sliver_tools/sliver_tools.dart';
@@ -109,7 +108,6 @@ class Section extends MultiSliver {
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
-                        fontSize: 15.5,
                       ),
                     ),
                     Text(
@@ -117,7 +115,6 @@ class Section extends MultiSliver {
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
-                        fontSize: 15.5,
                       ),
                     ),
                   ],

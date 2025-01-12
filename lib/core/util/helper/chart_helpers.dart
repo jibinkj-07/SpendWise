@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import '../../../features/account/domain/model/user.dart';
 import '../../../features/budget/domain/model/category_model.dart';
 
 class WeeklyChartData {
@@ -32,6 +33,18 @@ class CategoryChartData {
 
   CategoryChartData({
     required this.category,
+    required this.amount,
+  });
+}
+
+class MembersChartData {
+  final User user;
+  final Color color;
+  final double amount;
+
+  MembersChartData({
+    required this.user,
+    required this.color,
     required this.amount,
   });
 }

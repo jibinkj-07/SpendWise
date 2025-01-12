@@ -8,7 +8,6 @@ import '../../../../core/util/widget/custom_snackbar.dart';
 import '../../../budget/domain/model/category_model.dart';
 import '../../../budget/presentation/bloc/category_view_bloc.dart';
 import '../../../transactions/domain/model/transaction_model.dart';
-import '../../../transactions/presentation/helper/transaction_helper.dart';
 import '../bloc/analysis_bloc.dart';
 import '../helper/analysis_helper.dart';
 
@@ -18,16 +17,18 @@ import '../helper/analysis_helper.dart';
 
 class Summary extends StatelessWidget {
   final AnalysisState analysisState;
+  final List<MapEntry<dynamic, double>> summary;
+  final double total;
 
-  const Summary({super.key, required this.analysisState});
+  const Summary({
+    super.key,
+    required this.analysisState,
+    required this.summary,
+    required this.total,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final total = TransactionHelper.findTotal(analysisState.transactions);
-    final List<MapEntry<dynamic, double>> summary = AnalysisHelper.getSummary(
-      analysisState.transactions,
-    );
-
     final topDayEntry = summary.first;
     final topMonthEntry = summary[1];
     final topCategoryEntry = summary[2];

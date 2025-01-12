@@ -36,7 +36,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
             uid: result.key.toString(),
             email: result.child("email").value.toString(),
             name: result.child("name").value.toString(),
-            userStatus: UserStatus.pending,
+            userStatus: "",
           ),
         );
       }
@@ -63,7 +63,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
                 uid: user.key.toString(),
                 email: user.child("email").value.toString(),
                 name: user.child("name").value.toString(),
-                userStatus: UserStatus.pending,
+                userStatus: "",
               ),
             );
           }
