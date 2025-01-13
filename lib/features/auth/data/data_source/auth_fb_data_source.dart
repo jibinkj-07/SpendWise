@@ -60,8 +60,9 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
         uid: userCredential.user?.uid ?? _unknown,
         name: name,
         email: email,
-        profileUrl: "",
+        profileUrl: "profile_1",
         selectedBudget: "",
+        notificationStatus: false,
         createdOn: createdOn,
       );
 
@@ -130,7 +131,8 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
           .update({
         "name": userCredential.user?.displayName ?? "User",
         "email": userCredential.user?.email ?? "user@gmail.com",
-        "profile_url": userCredential.user?.photoURL ?? "",
+        "profile_url": userCredential.user?.photoURL ?? "profile_1",
+        "notification_status": false,
         "created_on":
             userCredential.user?.metadata.creationTime ?? DateTime.now(),
       });

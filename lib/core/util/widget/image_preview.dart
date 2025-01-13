@@ -12,11 +12,13 @@ class ImagePreview extends StatelessWidget {
   final String name;
   final String? tag;
   final String url;
+  final String? profileImage;
 
   const ImagePreview({
     super.key,
     required this.name,
     this.tag,
+    this.profileImage,
     required this.url,
   });
 
@@ -48,8 +50,11 @@ class ImagePreview extends StatelessWidget {
               child: SizedBox(
                 height: size.height * .5,
                 width: size.width,
-                child: url.isEmpty
-                    ? const Image(image: AssetImage(AssetMapper.profileImage))
+                child: profileImage != null
+                    ? Image(
+                        image: AssetImage(
+                            AssetMapper.getProfileImage(profileImage!)),
+                      )
                     : CachedNetworkImage(
                         imageUrl: url,
                         fit: BoxFit.cover,

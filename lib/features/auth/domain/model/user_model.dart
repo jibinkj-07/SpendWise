@@ -6,6 +6,7 @@ class UserModel {
   final String email;
   final String profileUrl;
   final String selectedBudget;
+  final bool notificationStatus;
   final DateTime createdOn;
 
   UserModel({
@@ -14,21 +15,9 @@ class UserModel {
     required this.email,
     required this.profileUrl,
     required this.selectedBudget,
+    required this.notificationStatus,
     required this.createdOn,
   });
-
-  UserModel copyWith({
-    String? profileUrl,
-    String? selectedBudget,
-  }) =>
-      UserModel(
-        uid: uid,
-        name: name,
-        email: email,
-        profileUrl: profileUrl ?? this.profileUrl,
-        selectedBudget: selectedBudget ?? this.selectedBudget,
-        createdOn: createdOn,
-      );
 
   factory UserModel.fromFirebase(DataSnapshot userData) {
     // If user logging with google there might be a chance to
@@ -41,6 +30,8 @@ class UserModel {
       name: userData.child("name").value.toString(),
       email: userData.child("email").value.toString(),
       profileUrl: userData.child("profile_url").value.toString(),
+      notificationStatus:
+          userData.child("notification_status").value.toString() == "true",
       selectedBudget: budget,
       createdOn: DateTime.fromMillisecondsSinceEpoch(
         int.parse(userData.child("created_on").value.toString()),
@@ -48,22 +39,12 @@ class UserModel {
     );
   }
 
-  factory UserModel.fromSharedPrefMap(Map<String, String> map) => UserModel(
-        uid: map["uid"]!,
-        name: map["name"]!,
-        email: map["email"]!,
-        profileUrl: map["profile_url"]!,
-        selectedBudget: map["selected_budget"]!,
-        createdOn: DateTime.fromMillisecondsSinceEpoch(
-          int.parse(map["created_on"]!),
-        ),
-      );
-
   Map<String, dynamic> toJson() => {
         "name": name,
         "email": email,
         "profile_url": profileUrl,
         "selected": selectedBudget,
+        "notification_status": notificationStatus,
         "created_on": createdOn.millisecondsSinceEpoch.toString(),
       };
 

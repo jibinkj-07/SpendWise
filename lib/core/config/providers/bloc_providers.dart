@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/single_child_widget.dart';
+import '../../../features/account/presentation/bloc/account_bloc.dart';
 import '../../../features/analysis/presentation/bloc/analysis_bloc.dart';
 import '../../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../../features/budget/presentation/bloc/budget_edit_bloc.dart';
@@ -24,5 +25,6 @@ sealed class BlocProviders {
         BlocProvider<CategoryEditBloc>(create: (_) => sl<CategoryEditBloc>()),
         BlocProvider<AnalysisBloc>(create: (_) => sl<AnalysisBloc>()),
         BlocProvider<TransactionBloc>(create: (_) => sl<TransactionBloc>()),
+        BlocProvider<AccountBloc>(create: (_) => sl<AccountBloc>()),
       ];
 }

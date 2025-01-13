@@ -32,3 +32,4 @@ export '../../../features/analysis/data/repo/analysis_repo_impl.dart';
 export '../../../features/analysis/domain/repo/analysis_repo.dart';
 export '../../../features/analysis/presentation/bloc/analysis_bloc.dart';
 export '../../../features/transactions/presentation/bloc/transaction_bloc.dart';
+export '../../../features/account/presentation/bloc/account_bloc.dart';

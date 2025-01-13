@@ -16,6 +16,11 @@ abstract class AccountFbDataSource {
     required String id,
     required String budgetId,
   });
+
+  Future<Either<Failure, bool>> updateUserImage({
+    required String userId,
+    required String profileName,
+  });
 }
 
 class AccountFbDataSourceImpl implements AccountFbDataSource {
@@ -88,6 +93,22 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
       return const Right(true);
     } catch (e) {
       log("er:[account_fb_data_source.dart][updateSelectedBudget] $e");
+      return Left(Failure(message: "Something went wrong. Try again"));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> updateUserImage({
+    required String userId,
+    required String profileName,
+  }) async {
+    try {
+      await _firebaseDatabase.ref(FirebasePath.userPath(userId)).update(
+        {"profile_url": profileName},
+      );
+      return const Right(true);
+    } catch (e) {
+      log("er:[account_fb_data_source.dart][updateUserImage] $e");
       return Left(Failure(message: "Something went wrong. Try again"));
     }
   }

@@ -54,4 +54,5 @@ Future<void> initDependencies() async {
   sl.registerSingleton<TransactionEditBloc>(TransactionEditBloc(sl()));
   sl.registerSingleton<AnalysisBloc>(AnalysisBloc(sl()));
   sl.registerSingleton<TransactionBloc>(TransactionBloc(sl()));
+  sl.registerSingleton<AccountBloc>(AccountBloc(sl()));
 }

@@ -45,4 +45,17 @@ class AccountRepoImpl implements AccountRepo {
       return Left(NetworkError());
     }
   }
+
+  @override
+  Future<Either<Failure, bool>> updateUserImage({
+    required String userId,
+    required String profileName,
+  }) async {
+    if (await InternetConnection().hasInternetAccess) {
+      return await _accountFbDataSource.updateUserImage(
+          userId: userId, profileName: profileName);
+    } else {
+      return Left(NetworkError());
+    }
+  }
 }

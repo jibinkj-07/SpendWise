@@ -17,51 +17,24 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      surfaceTintColor: Colors.transparent,
-      automaticallyImplyLeading: false,
-      title: BlocBuilder<AuthBloc, AuthState>(
-        builder: (ctx, state) {
-          if (state is Authenticated) {
-            return ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: GestureDetector(
-                onTap: () => Navigator.of(context).pushNamed(RouteName.account),
-                child: DisplayImage(
-                  imageUrl: state.user.profileUrl,
-                  width: 45.0,
-                  height: 45.0,
-                ),
-              ),
-              title: Text(
-                state.user.name,
-                style: TextStyle(
-                  fontSize: 15.0,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-              subtitle: Text(
-                budgetName,
-                style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            );
-          }
-          return ListTile(
+    return BlocBuilder<AuthBloc, AuthState>(builder: (ctx, state) {
+      if (state is Authenticated) {
+        return AppBar(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          automaticallyImplyLeading: false,
+          title: ListTile(
             contentPadding: EdgeInsets.zero,
             leading: GestureDetector(
               onTap: () => Navigator.of(context).pushNamed(RouteName.account),
               child: DisplayImage(
-                imageUrl: "",
+                imageUrl: state.user.profileUrl,
                 width: 45.0,
                 height: 45.0,
               ),
             ),
             title: Text(
-              "User",
+              state.user.name,
               style: TextStyle(
                 fontSize: 15.0,
                 fontWeight: FontWeight.normal,
@@ -74,26 +47,37 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-          );
-        },
-      ),
-      actions: [
-        IconButton(
-          onPressed: () => _showBudgetSwitcher(context),
-          style: IconButton.styleFrom(
-            foregroundColor: Colors.black,
           ),
-          icon: Icon(Icons.swap_vertical_circle_outlined),
-        ),
-        IconButton(
-          onPressed: () {},
-          style: IconButton.styleFrom(
-            foregroundColor: Colors.black,
-          ),
-          icon: Icon(Icons.notifications_none_rounded),
-        ),
-      ],
-    );
+          actions: [
+            IconButton(
+              onPressed: () => _showBudgetSwitcher(context),
+              style: IconButton.styleFrom(
+                foregroundColor: Colors.black,
+              ),
+              icon: Icon(Icons.swap_vertical_circle_outlined),
+            ),
+            IconButton(
+              onPressed: () {},
+              style: IconButton.styleFrom(
+                foregroundColor: Colors.black,
+              ),
+              icon: state.user.notificationStatus
+                  ? Icon(
+                      Icons.notifications_active_outlined,
+                      color: Colors.red,
+                    )
+                  : Icon(Icons.notifications_none_rounded),
+            ),
+          ],
+        );
+      }
+      return AppBar(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        automaticallyImplyLeading: false,
+        title: Text("Authentication Error"),
+      );
+    });
   }
 
   Future _showBudgetSwitcher(BuildContext context) {

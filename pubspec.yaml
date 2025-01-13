@@ -33,7 +33,6 @@ dependencies:
   shimmer: # for loading animation
   syncfusion_flutter_charts: # for chart view
   sliver_tools: # for showing pinned heading in transaction history
-  shared_preferences: # for local storage
 
 
 

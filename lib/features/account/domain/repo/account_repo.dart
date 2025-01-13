@@ -12,4 +12,9 @@ abstract class AccountRepo {
     required String id,
     required String budgetId,
   });
+
+  Future<Either<Failure, bool>> updateUserImage({
+    required String userId,
+    required String profileName,
+  });
 }
