@@ -56,3 +56,9 @@ final class ErrorTransaction extends TransactionEvent {
   @override
   List<Object?> get props => [error];
 }
+
+final class CancelTransactionSubscription extends TransactionEvent {
+  @override
+  List<Object?> get props => [];
+}
+

@@ -32,8 +32,8 @@ class MonthTransViewBloc
   }
 
   @override
-  Future<void> close() {
-    _transactionSubscription?.cancel();
+  Future<void> close() async {
+    await _cancelSubscription();
     return super.close();
   }
 
@@ -41,7 +41,7 @@ class MonthTransViewBloc
     SubscribeMonthView event,
     Emitter<MonthTransViewState> emit,
   ) async {
-    await _transactionSubscription?.cancel();
+    await _cancelSubscription();
     emit(SubscribingMonthTransState());
     _transactionSubscription = _transactionRepo
         .subscribeMonthlyTransactions(
@@ -64,5 +64,12 @@ class MonthTransViewBloc
     Emitter<MonthTransViewState> emit,
   ) {
     emit(ErrorOccurredMonthTransState(error: event.error));
+  }
+
+  Future<void> _cancelSubscription() async {
+    if (_transactionSubscription != null) {
+      await _transactionSubscription!.cancel();
+      _transactionSubscription = null;
+    }
   }
 }

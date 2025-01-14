@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spend_wise/core/util/widget/custom_loading.dart';
 import '../../../analysis/presentation/view/analysis_view.dart';
 import '../../../budget/presentation/bloc/budget_view_bloc.dart';
+import '../../../budget/presentation/bloc/category_view_bloc.dart';
 import '../../../transactions/presentation/view/transaction_view.dart';
 import '../helper/home_helper.dart';
 import '../widgets/my_app_bar.dart';
@@ -28,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     final context = this.context;
-    loadBudget(context);
+    loadBudget(context, _index.value);
   }
 
   @override
@@ -39,7 +42,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
     return BlocBuilder<BudgetViewBloc, BudgetViewState>(
       builder: (ctc, state) {
         if (state is BudgetSubscribing) {
@@ -59,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPopInvokedWithResult: (_, __) => _index.value = 0,
               child: Scaffold(
                 backgroundColor: index == 0 ? Colors.white : null,
-                appBar: MyAppBar(index: index, budgetName: currentBudget.name),
+                appBar: MyAppBar(index: index, budgetDetail: currentBudget),
                 body: _views[index],
                 bottomNavigationBar: NavBar(index: _index, currentIndex: index),
               ),

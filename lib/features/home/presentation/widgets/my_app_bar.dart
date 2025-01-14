@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/config/route/app_routes.dart';
 import '../../../account/presentation/widget/display_image.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../budget/domain/model/budget_model.dart';
 import 'budget_switcher.dart';
 
 /// @author : Jibin K John
@@ -11,9 +12,13 @@ import 'budget_switcher.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   final int index;
-  final String budgetName;
+  final BudgetModel budgetDetail;
 
-  const MyAppBar({super.key, required this.index, required this.budgetName});
+  const MyAppBar({
+    super.key,
+    required this.index,
+    required this.budgetDetail,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +46,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
             subtitle: Text(
-              budgetName,
+              budgetDetail.name,
               style: TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.w500,
@@ -51,9 +56,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
           actions: [
             IconButton(
               onPressed: () => _showBudgetSwitcher(context),
-              style: IconButton.styleFrom(
-                foregroundColor: Colors.black,
-              ),
+              style: IconButton.styleFrom(foregroundColor: Colors.black),
               icon: Icon(Icons.swap_vertical_circle_outlined),
             ),
             IconButton(
@@ -84,7 +87,10 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
     return showModalBottomSheet(
       backgroundColor: Colors.transparent,
       context: context,
-      builder: (ctx) => const BudgetSwitcher(),
+      builder: (ctx) => BudgetSwitcher(
+        currentIndex: index,
+        budgetDetail: budgetDetail,
+      ),
     );
   }
 

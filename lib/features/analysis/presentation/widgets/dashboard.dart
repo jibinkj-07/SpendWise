@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spend_wise/core/util/widget/custom_loading.dart';
 
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/helper/chart_helpers.dart';
+import '../../../budget/presentation/bloc/category_view_bloc.dart';
 import '../../../transactions/presentation/helper/transaction_helper.dart';
 import '../bloc/analysis_bloc.dart';
 import '../helper/analysis_helper.dart';
@@ -68,42 +70,49 @@ class _DashboardState extends State<Dashboard> {
     final total = TransactionHelper.findTotal(
       widget.analysisState.transactions,
     );
-    return ListView(
-      padding: EdgeInsets.symmetric(
-        horizontal: AppHelper.horizontalPadding(widget.size),
-        vertical: 10.0,
-      ),
-      children: [
-        Summary(
-          analysisState: widget.analysisState,
-          summary: AnalysisHelper.getSummary(
-            widget.analysisState.transactions,
+    return BlocBuilder<CategoryViewBloc, CategoryViewState>(
+      builder: (ctx, cateState) {
+        if (cateState is CategorySubscribing) {
+          return CustomLoading();
+        }
+        return ListView(
+          padding: EdgeInsets.symmetric(
+            horizontal: AppHelper.horizontalPadding(widget.size),
+            vertical: 10.0,
           ),
-          total: total,
-        ),
-        TransactionChart(
-          chartData: _getTransactionChartData(),
-          analysisState: widget.analysisState,
-          size: widget.size,
-        ),
-        CategoryChart(
-          analysisState: widget.analysisState,
-          viewAllCategory: _viewAllCategory,
-          chartData: AnalyticsChartHelper.getCategoryChartData(
-            context: context,
-            transactions: widget.analysisState.transactions,
-          ),
-          total: total,
-        ),
-        UserSpendingChart(
-          analysisState: widget.analysisState,
-          total: total,
-          chartData: AnalyticsChartHelper.getMembersSpendingChartData(
-            transactions: widget.analysisState.transactions,
-            budgetMembers: widget.analysisState.budgetMembers,
-          ),
-        ),
-      ],
+          children: [
+            Summary(
+              analysisState: widget.analysisState,
+              summary: AnalysisHelper.getSummary(
+                widget.analysisState.transactions,
+              ),
+              total: total,
+            ),
+            TransactionChart(
+              chartData: _getTransactionChartData(),
+              analysisState: widget.analysisState,
+              size: widget.size,
+            ),
+            CategoryChart(
+              analysisState: widget.analysisState,
+              viewAllCategory: _viewAllCategory,
+              chartData: AnalyticsChartHelper.getCategoryChartData(
+                context: context,
+                transactions: widget.analysisState.transactions,
+              ),
+              total: total,
+            ),
+            UserSpendingChart(
+              analysisState: widget.analysisState,
+              total: total,
+              chartData: AnalyticsChartHelper.getMembersSpendingChartData(
+                transactions: widget.analysisState.transactions,
+                budgetMembers: widget.analysisState.budgetMembers,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

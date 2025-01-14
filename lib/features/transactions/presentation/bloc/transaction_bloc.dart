@@ -23,12 +23,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     on<SubscribedTransaction>(_onSubscribed);
     on<UpdateCategory>(_onUpdateCategory);
     on<UpdateTransactionDate>(_onUpdateDate);
+    on<CancelTransactionSubscription>(_onCancelSubscription);
     on<ErrorTransaction>(_onError);
   }
 
   @override
-  Future<void> close() {
-    _transactionSubscription?.cancel();
+  Future<void> close() async {
+    await _cancelSubscription();
     return super.close();
   }
 
@@ -98,7 +99,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     UpdateTransactionDate event,
     Emitter<TransactionState> emit,
   ) async {
-    await _transactionSubscription!.cancel();
+    await _cancelSubscription();
     _transactions = [];
     emit(
       state.copyWith(
@@ -122,11 +123,21 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     });
   }
 
+  Future<void> _onCancelSubscription(
+    CancelTransactionSubscription event,
+    Emitter<TransactionState> emit,
+  ) async {
+    await _cancelSubscription();
+    emit(TransactionState.initial());
+  }
+
   Future<void> _onError(
     ErrorTransaction event,
     Emitter<TransactionState> emit,
   ) async {
-    await _transactionSubscription!.cancel();
+    if (_transactionSubscription != null) {
+      await _transactionSubscription!.cancel();
+    }
     emit(state.copyWith(error: event.error));
   }
 
@@ -135,4 +146,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           .isEmpty
       ? List.from(_transactions)
       : _transactions.where((item) => item.categoryId == categoryId).toList();
+
+  Future<void> _cancelSubscription() async {
+    if (_transactionSubscription != null) {
+      await _transactionSubscription!.cancel();
+      _transactionSubscription = null;
+    }
+  }
 }

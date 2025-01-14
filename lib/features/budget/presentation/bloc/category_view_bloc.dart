@@ -30,8 +30,8 @@ class CategoryViewBloc extends Bloc<CategoryViewEvent, CategoryViewState> {
   }
 
   @override
-  Future<void> close() {
-    _categorySubscription?.cancel();
+  Future<void> close() async {
+    await _cancelSubscription();
     return super.close();
   }
 
@@ -39,7 +39,7 @@ class CategoryViewBloc extends Bloc<CategoryViewEvent, CategoryViewState> {
     SubscribeCategory event,
     Emitter<CategoryViewState> emit,
   ) async {
-    await _categorySubscription?.cancel();
+    await _cancelSubscription();
     emit(CategorySubscribing());
     _categorySubscription =
         _budgetRepo.subscribeCategory(budgetId: event.budgetId).listen((event) {
@@ -60,5 +60,12 @@ class CategoryViewBloc extends Bloc<CategoryViewEvent, CategoryViewState> {
     Emitter<CategoryViewState> emit,
   ) {
     emit(CategoryViewError(error: event.error));
+  }
+
+  Future<void> _cancelSubscription() async {
+    if (_categorySubscription != null) {
+      await _categorySubscription!.cancel();
+      _categorySubscription = null;
+    }
   }
 }

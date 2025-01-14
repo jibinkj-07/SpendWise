@@ -27,11 +27,12 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
     on<UpdateAnalysisFilter>(_onUpdateFilter);
     on<GetMembers>(_onGetMembers);
     on<UpdateDate>(_onUpdateDate);
+    on<CancelAnalysisSubscription>(_onCancelSubscription);
   }
 
   @override
-  Future<void> close() {
-    _analysisSubscription?.cancel();
+  Future<void> close() async {
+    await _cancelSubscription();
     return super.close();
   }
 
@@ -88,7 +89,7 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
   }
 
   Future<void> _subscribeToYearData(String budgetId, String year) async {
-    await _analysisSubscription?.cancel();
+    await _cancelSubscription();
 
     _analysisSubscription = _analysisRepo
         .getTransactionsPerYear(budgetId: budgetId, year: year)
@@ -146,7 +147,7 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
   }
 
   Future<void> _onError(Error event, Emitter<AnalysisState> emit) async {
-    await _analysisSubscription!.cancel();
+    await _cancelSubscription();
     emit(state.copyWith(error: event.error));
   }
 
@@ -194,5 +195,20 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
     return _transactions.where((transaction) {
       return transaction.date.year == date.year;
     }).toList();
+  }
+
+  Future<void> _onCancelSubscription(
+    CancelAnalysisSubscription event,
+    Emitter<AnalysisState> emit,
+  ) async {
+    await _cancelSubscription();
+    emit(AnalysisState.initial());
+  }
+
+  Future<void> _cancelSubscription() async {
+    if (_analysisSubscription != null) {
+      await _analysisSubscription!.cancel();
+      _analysisSubscription = null;
+    }
   }
 }

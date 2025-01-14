@@ -9,12 +9,14 @@ import 'package:intl/intl.dart';
 import '../../../../core/config/app_config.dart';
 import '../../../../core/util/helper/chart_helpers.dart';
 import '../../../../core/util/helper/firebase_path.dart';
+import '../../../analysis/presentation/bloc/analysis_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/domain/model/budget_model.dart';
 import '../../../budget/presentation/bloc/budget_view_bloc.dart';
 import '../../../budget/presentation/bloc/category_view_bloc.dart';
 import '../../../transactions/domain/model/transaction_model.dart';
 import '../../../transactions/presentation/bloc/month_trans_view_bloc.dart';
+import '../../../transactions/presentation/bloc/transaction_bloc.dart';
 import '../../../transactions/presentation/helper/transaction_helper.dart';
 
 class HomeHelper {
@@ -36,12 +38,16 @@ class HomeHelper {
   }
 }
 
-void loadBudget(BuildContext context, [String? budgetId]) {
+void loadBudget(BuildContext context, int currentIndex, [String? budgetId]) {
   String? currentBudget = budgetId;
   final authBloc = context.read<AuthBloc>();
   if (currentBudget == null && authBloc.state is Authenticated) {
     currentBudget = (authBloc.state as Authenticated).user.selectedBudget;
   }
+
+  // cancel and subscribe to bloc if necessary depends on current index value
+  context.read<AnalysisBloc>().add(CancelAnalysisSubscription());
+  context.read<TransactionBloc>().add(CancelTransactionSubscription());
 
   // this only subscribe to budget basic details node
   context
@@ -56,6 +62,17 @@ void loadBudget(BuildContext context, [String? budgetId]) {
           date: DateTime.now(),
         ),
       );
+
+  if (currentIndex == 1) {
+    context
+        .read<AnalysisBloc>()
+        .add(SubscribeAnalysisData(budgetId: currentBudget ?? ""));
+  }
+  if (currentIndex == 2) {
+    context
+        .read<TransactionBloc>()
+        .add(SubscribeTransaction(budgetId: currentBudget ?? ""));
+  }
 }
 
 List<WeeklyChartData> generateWeekChartData(

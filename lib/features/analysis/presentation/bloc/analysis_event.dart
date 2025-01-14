@@ -67,3 +67,8 @@ final class UpdateDate extends AnalysisEvent {
   @override
   List<Object?> get props => [date, weekNumber, budgetId];
 }
+
+final class CancelAnalysisSubscription extends AnalysisEvent {
+  @override
+  List<Object?> get props => [];
+}

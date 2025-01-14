@@ -66,14 +66,28 @@ class TransactionChart extends StatelessWidget {
       color: AppConfig.primaryColor,
       builder: (data, _, __, ___, ____) => Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Text(
-          data.amount.toString(),
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 12.0,
-            fontFamily: AppConfig.fontFamily,
-            fontWeight: FontWeight.w500,
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              formatChartDate(data.date),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 10.0,
+                fontFamily: AppConfig.fontFamily,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              data.amount.toString(),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 11.0,
+                fontFamily: AppConfig.fontFamily,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
       ),
     );

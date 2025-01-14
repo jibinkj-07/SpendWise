@@ -67,7 +67,6 @@ class UserSpendingChart extends StatelessWidget {
     );
 
     if (analysisState.budgetMembers.isNotEmpty) {
-
       return Container(
         padding: const EdgeInsets.all(15.0),
         margin: const EdgeInsets.only(bottom: 25.0),
@@ -91,21 +90,22 @@ class UserSpendingChart extends StatelessWidget {
                 fontSize: 15.0,
               ),
             ),
-            SfCircularChart(
-              margin: EdgeInsets.zero,
-              tooltipBehavior: tooltipBehavior,
-              series: <CircularSeries>[
-                DoughnutSeries<MembersChartData, String>(
-                  dataSource: chartData,
-                  xValueMapper: (data, _) => data.user.name,
-                  pointColorMapper: (data, _) => data.color,
-                  yValueMapper: (data, _) => data.amount,
-                  enableTooltip: true,
-                  innerRadius: "80",
-                  explode: true,
-                ),
-              ],
-            ),
+            if (total > 0)
+              SfCircularChart(
+                margin: EdgeInsets.zero,
+                tooltipBehavior: tooltipBehavior,
+                series: <CircularSeries>[
+                  DoughnutSeries<MembersChartData, String>(
+                    dataSource: chartData,
+                    xValueMapper: (data, _) => data.user.name,
+                    pointColorMapper: (data, _) => data.color,
+                    yValueMapper: (data, _) => data.amount,
+                    enableTooltip: true,
+                    innerRadius: "80",
+                    explode: true,
+                  ),
+                ],
+              ),
             Column(
               children: List.generate(
                 chartData.length,

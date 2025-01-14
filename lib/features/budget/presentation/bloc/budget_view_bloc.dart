@@ -30,8 +30,8 @@ class BudgetViewBloc extends Bloc<BudgetViewEvent, BudgetViewState> {
   }
 
   @override
-  Future<void> close() {
-    _budgetSubscription?.cancel();
+  Future<void> close() async {
+    await _cancelSubscription();
     return super.close();
   }
 
@@ -39,10 +39,10 @@ class BudgetViewBloc extends Bloc<BudgetViewEvent, BudgetViewState> {
     SubscribeBudget event,
     Emitter<BudgetViewState> emit,
   ) async {
-    await _budgetSubscription?.cancel();
+    await _cancelSubscription();
     emit(BudgetSubscribing());
     _budgetSubscription =
-    _budgetRepo.subscribeBudget(budgetId: event.budgetId).listen((event) {
+        _budgetRepo.subscribeBudget(budgetId: event.budgetId).listen((event) {
       if (event.isRight) add(BudgetLoaded(budget: event.right));
       if (event.isLeft) add(BudgetViewErrorOccurred(error: event.left));
     });
@@ -60,5 +60,12 @@ class BudgetViewBloc extends Bloc<BudgetViewEvent, BudgetViewState> {
     Emitter<BudgetViewState> emit,
   ) {
     emit(BudgetViewError(error: event.error));
+  }
+
+  Future<void> _cancelSubscription() async {
+    if (_budgetSubscription != null) {
+      await _budgetSubscription!.cancel();
+      _budgetSubscription = null;
+    }
   }
 }
