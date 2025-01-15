@@ -87,8 +87,20 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
     required String budgetId,
   }) async {
     try {
+      String budget = budgetId;
+      if (budgetId.trim().isEmpty) {
+        await _firebaseDatabase
+            .ref(FirebasePath.joinedBudgetPath(id))
+            .once()
+            .then((event) {
+          if (event.snapshot.exists) {
+            budget = event.snapshot.children.first.key.toString();
+          }
+        });
+      }
+
       await _firebaseDatabase.ref(FirebasePath.userPath(id)).update(
-        {"selected": budgetId},
+        {"selected": budget},
       );
       return const Right(true);
     } catch (e) {

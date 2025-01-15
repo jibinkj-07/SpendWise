@@ -184,6 +184,11 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
           "body": "You have a new invitation to join the budget \"$name\"",
           "time": date,
         });
+
+        // Toggle notification status to true
+        await _firebaseDatabase
+            .ref(FirebasePath.userPath(user.uid))
+            .update({"notification_status": true});
       }
 
       // Adding current budget to joined budget node for owner
@@ -224,7 +229,46 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
     required String budgetId,
   }) async {
     try {
+      final date = DateTime.now().millisecondsSinceEpoch.toString();
       await _deleteAllImagesInFolder("Images/$budgetId");
+      // Get all budget members
+      await _firebaseDatabase
+          .ref(FirebasePath.budgetPath(budgetId))
+          .once()
+          .then((event) async {
+        if (event.snapshot.exists) {
+          final budgetDetail = event.snapshot.child("details");
+          final budgetMembers = event.snapshot.child("members");
+          for (final member in budgetMembers.children) {
+            final memberId = member.key.toString();
+            // Add Notification to all members
+            await _firebaseDatabase
+                .ref(FirebasePath.notificationPath(memberId))
+                .child(date)
+                .set({
+              "title": "Budget Deleted",
+              "body":
+                  "\"${budgetDetail.child("name").value}\" has been deleted.",
+              "time": date,
+            });
+
+            // Toggle notification status to true
+            await _firebaseDatabase
+                .ref(FirebasePath.userPath(memberId))
+                .update({"notification_status": true});
+            // Remove budget from members node
+            await _firebaseDatabase
+                .ref(FirebasePath.invitationPath(memberId))
+                .child(budgetId)
+                .remove();
+            await _firebaseDatabase
+                .ref(FirebasePath.joinedBudgetPath(memberId))
+                .child(budgetId)
+                .remove();
+          }
+        }
+      });
+
       await _firebaseDatabase.ref(FirebasePath.budgetPath(budgetId)).remove();
       return const Right(true);
     } catch (e) {

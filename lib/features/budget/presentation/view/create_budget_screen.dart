@@ -52,13 +52,8 @@ class _CreateBudgetScreenState extends State<CreateBudgetScreen> {
           onPressed: () => Navigator.pop(context),
           icon: Icon(Icons.arrow_back_ios_new_rounded),
         ),
-        title: Text(
-          "New Budget",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 26.0,
-          ),
-        ),
+        title: Text("New Budget"),
+        centerTitle: true,
       ),
       body: Form(
         key: _formKey,

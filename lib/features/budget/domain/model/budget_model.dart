@@ -17,7 +17,7 @@ class BudgetModel {
     required this.createdOn,
   });
 
-  factory BudgetModel.fromFirebase(DataSnapshot data,String id) {
+  factory BudgetModel.fromFirebase(DataSnapshot data, String id) {
     return BudgetModel(
       id: id,
       name: data.child("name").value.toString(),
@@ -27,6 +27,17 @@ class BudgetModel {
       createdOn: DateTime.fromMillisecondsSinceEpoch(
         int.parse(data.child("created_on").value.toString()),
       ),
+    );
+  }
+
+  factory BudgetModel.dummy() {
+    return BudgetModel(
+      id: "",
+      name: "",
+      currencySymbol: "",
+      currency: "",
+      admin: "",
+      createdOn: DateTime.now(),
     );
   }
 }

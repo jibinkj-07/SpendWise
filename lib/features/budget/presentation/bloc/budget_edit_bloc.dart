@@ -46,6 +46,8 @@ class BudgetEditBloc extends Bloc<BudgetEditEvent, BudgetEditState> {
           (failure) => emit(BudgetErrorOccurred(error: failure)),
           (_) => emit(BudgetAdded()),
         );
+
+    await Future.delayed(Duration(seconds: 1), () => emit(IdleBudgetState()));
   }
 
   Future<void> _onDelete(
@@ -57,5 +59,6 @@ class BudgetEditBloc extends Bloc<BudgetEditEvent, BudgetEditState> {
           (failure) => emit(BudgetErrorOccurred(error: failure)),
           (_) => emit(BudgetDeleted()),
         );
+    await Future.delayed(Duration(seconds: 2), () => emit(IdleBudgetState()));
   }
 }

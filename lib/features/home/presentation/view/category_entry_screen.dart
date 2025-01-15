@@ -10,6 +10,7 @@ import '../../../budget/domain/model/category_model.dart';
 import '../../../budget/presentation/bloc/budget_view_bloc.dart';
 import '../../../budget/presentation/bloc/category_edit_bloc.dart';
 import '../helper/category_helper.dart';
+import '../widgets/category_delete_dialog.dart';
 
 /// @author : Jibin K John
 /// @date   : 14/11/2024
@@ -43,6 +44,7 @@ class _CategoryEntryScreenState extends State<CategoryEntryScreen> {
     if (widget.category != null) {
       _iconName = ValueNotifier(widget.category!.icon);
       _color = ValueNotifier(widget.category!.color);
+      _textEditingController.text = widget.category!.name;
     } else {
       _iconName = ValueNotifier(
         AppHelper.categoryIconMap.keys.first,
@@ -75,11 +77,25 @@ class _CategoryEntryScreenState extends State<CategoryEntryScreen> {
         ),
         title: Text(
           "${widget.category == null ? "New" : "Update"} Category",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 26.0,
-          ),
         ),
+        centerTitle: true,
+        actions: [
+          if (widget.category != null)
+            TextButton(
+              onPressed: () {
+                showDialog(
+                  barrierDismissible: false,
+
+                  context: context,
+                  builder: (ctx) => CategoryDeleteDialog(
+                    categoryId: widget.category?.id ?? "",
+                  ),
+                );
+              },
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: Text("Delete"),
+            ),
+        ],
       ),
       body: ListView(
         children: [
@@ -378,7 +394,7 @@ class _CategoryEntryScreenState extends State<CategoryEntryScreen> {
         admin = (authBloc.state as Authenticated).user.uid;
       }
       final CategoryModel categoryModel = CategoryModel(
-        id: _name.toLowerCase().split(" ").first,
+        id: widget.category?.id ?? _name.toLowerCase().split(" ").first,
         name: _name,
         color: _color.value,
         icon: _iconName.value,

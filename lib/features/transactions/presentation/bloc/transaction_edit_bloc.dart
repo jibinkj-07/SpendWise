@@ -45,6 +45,8 @@ class TransactionEditBloc
           (error) => emit(TransactionErrorOccurred(error: error)),
           (_) => emit(TransactionAdded()),
         );
+    await Future.delayed(
+        Duration(seconds: 1), () => emit(IdleTransactionState()));
   }
 
   Future<void> _onUpdate(
@@ -67,6 +69,8 @@ class TransactionEditBloc
           (error) => emit(TransactionErrorOccurred(error: error)),
           (_) => emit(TransactionAdded()),
         );
+    await Future.delayed(
+        Duration(seconds: 1), () => emit(IdleTransactionState()));
   }
 
   Future<void> _onDelete(
@@ -84,5 +88,7 @@ class TransactionEditBloc
           (error) => emit(TransactionErrorOccurred(error: error)),
           (_) => emit(TransactionDeleted()),
         );
+    await Future.delayed(
+        Duration(seconds: 1), () => emit(IdleTransactionState()));
   }
 }

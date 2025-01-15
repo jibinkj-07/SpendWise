@@ -3,8 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/config/app_config.dart';
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../widget/display_image.dart';
+import '../../../budget/presentation/bloc/budget_view_bloc.dart';
 import '../widget/profile_info.dart';
+import 'budget_detail_screen.dart';
 
 /// @author : Jibin K John
 /// @date   : 12/12/2024
@@ -43,100 +44,116 @@ class AccountScreen extends StatelessWidget {
                   ),
                   child: Material(
                     color: Colors.transparent,
-                    child: Column(
-                      children: [
-                        ListTile(
-                          onTap: () {},
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20.0),
+                    child: BlocBuilder<BudgetViewBloc, BudgetViewState>(
+                        builder: (ctx, budgetState) {
+                      return Column(
+                        children: [
+                          if (budgetState is BudgetSubscribed)
+                            ListTile(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => BudgetDetailScreen(
+                                      userId: state.user.uid,
+                                      budget: budgetState.budget,
+                                    ),
+                                  ),
+                                );
+                              },
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20.0),
+                                ),
+                              ),
+                              leading: Icon(Icons.account_balance_rounded),
+                              title: Text("Budget"),
+                              subtitle: Text(
+                                  "Find more details about current budget"),
+                              trailing: Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 15.0,
+                                color: AppConfig.primaryColor,
+                              ),
+                            ),
+                          ListTile(
+                            onTap: () {},
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(20.0),
+                              ),
+                            ),
+                            leading: Icon(Icons.edit_document),
+                            title: Text("Generate Report"),
+                            subtitle:
+                                Text("Generate report for a specific month"),
+                            trailing: Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 15.0,
+                              color: AppConfig.primaryColor,
                             ),
                           ),
-                          leading: Icon(Icons.account_balance_rounded),
-                          title: Text("My Budget"),
-                          subtitle:
-                              Text("Find more details about current budget"),
-                          trailing: Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            size: 15.0,
-                            color: AppConfig.primaryColor,
-                          ),
-                        ),
-                        ListTile(
-                          onTap: () {},
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20.0),
+                          if (budgetState is BudgetSubscribed &&
+                              budgetState.budget.admin == state.user.uid)
+                            ListTile(
+                              onTap: () {},
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20.0),
+                                ),
+                              ),
+                              leading: Icon(Icons.people_alt_rounded),
+                              title: Text("Members"),
+                              subtitle:
+                                  Text("Edit or view your budget members"),
+                              trailing: Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 15.0,
+                                color: AppConfig.primaryColor,
+                              ),
+                            ),
+                          ListTile(
+                            onTap: () {},
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(20.0),
+                              ),
+                            ),
+                            leading: Icon(Icons.link_rounded),
+                            title: Text("Invitations"),
+                            subtitle:
+                                Text("Manage or view your budget invitations"),
+                            trailing: Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 15.0,
+                              color: AppConfig.primaryColor,
                             ),
                           ),
-                          leading: Icon(Icons.edit_document),
-                          title: Text("Generate Report"),
-                          subtitle:
-                              Text("Generate report for a specific month"),
-                          trailing: Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            size: 15.0,
-                            color: AppConfig.primaryColor,
-                          ),
-                        ),
-                        ListTile(
-                          onTap: () {},
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20.0),
+                          ListTile(
+                            onTap: () {},
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                bottom: Radius.circular(20.0),
+                              ),
                             ),
-                          ),
-                          leading: Icon(Icons.people_alt_rounded),
-                          title: Text("Members"),
-                          subtitle: Text("Edit or view your budget members"),
-                          trailing: Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            size: 15.0,
-                            color: AppConfig.primaryColor,
-                          ),
-                        ),
-                        ListTile(
-                          onTap: () {},
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20.0),
+                            leading: Icon(
+                              Icons.logout_rounded,
+                              color: AppConfig.errorColor,
                             ),
-                          ),
-                          leading: Icon(Icons.link_rounded),
-                          title: Text("Invitations"),
-                          subtitle:
-                              Text("Manage or view your budget invitations"),
-                          trailing: Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            size: 15.0,
-                            color: AppConfig.primaryColor,
-                          ),
-                        ),
-                        ListTile(
-                          onTap: () {},
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                              bottom: Radius.circular(20.0),
+                            title: Text(
+                              "Sign Out",
+                              style: TextStyle(
+                                color: AppConfig.errorColor,
+                              ),
                             ),
-                          ),
-                          leading: Icon(
-                            Icons.logout_rounded,
-                            color: AppConfig.errorColor,
-                          ),
-                          title: Text(
-                            "Sign Out",
-                            style: TextStyle(
+                            trailing: Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 15.0,
                               color: AppConfig.errorColor,
                             ),
                           ),
-                          trailing: Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            size: 15.0,
-                            color: AppConfig.errorColor,
-                          ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      );
+                    }),
                   ),
                 ),
                 Center(

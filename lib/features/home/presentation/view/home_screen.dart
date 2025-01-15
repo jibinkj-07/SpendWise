@@ -10,6 +10,7 @@ import '../../../transactions/presentation/view/transaction_view.dart';
 import '../helper/home_helper.dart';
 import '../widgets/my_app_bar.dart';
 import '../widgets/nav_bar.dart';
+import 'error_screen.dart';
 import 'home_view.dart';
 
 /// @author : Jibin K John
@@ -44,14 +45,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<BudgetViewBloc, BudgetViewState>(
       builder: (ctc, state) {
+        if (state is BudgetViewError) {
+          return ErrorScreen(error: state.error);
+        }
         if (state is BudgetSubscribing) {
           return CustomLoading(appLaunch: true);
         }
-        if (state is BudgetViewError) {
-          return Scaffold(
-            body: Center(child: Text(state.error.message)),
-          );
-        }
+
         final currentBudget = (state as BudgetSubscribed).budget;
         return ValueListenableBuilder(
           valueListenable: _index,

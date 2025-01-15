@@ -37,6 +37,7 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
           (failure) => emit(CategoryErrorOccurred(error: failure)),
           (_) => emit(CategoryAdded()),
         );
+    await Future.delayed(Duration(seconds: 1), () => emit(IdleCategoryState()));
   }
 
   Future<void> _onDelete(
@@ -53,5 +54,6 @@ class CategoryEditBloc extends Bloc<CategoryEditEvent, CategoryEditState> {
           (failure) => emit(CategoryErrorOccurred(error: failure)),
           (_) => emit(CategoryDeleted()),
         );
+    await Future.delayed(Duration(seconds: 1), () => emit(IdleCategoryState()));
   }
 }
