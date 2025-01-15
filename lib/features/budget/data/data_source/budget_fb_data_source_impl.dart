@@ -10,6 +10,7 @@ import 'package:spend_wise/features/budget/domain/model/budget_model.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/util/error/failure.dart';
+import '../../../../core/util/helper/notification.dart';
 import '../../../account/data/data_source/account_fb_data_source.dart';
 import '../../domain/model/category_model.dart';
 import 'budget_fb_data_source.dart';
@@ -180,7 +181,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
             .ref(FirebasePath.notificationPath(user.uid))
             .child(date)
             .set({
-          "title": "Budget Invitation",
+          "title": Notification.budgetInvitation,
           "body": "You have a new invitation to join the budget \"$name\"",
           "time": date,
         });
@@ -246,7 +247,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
                 .ref(FirebasePath.notificationPath(memberId))
                 .child(date)
                 .set({
-              "title": "Budget Deleted",
+              "title": Notification.budgetDeleted,
               "body":
                   "\"${budgetDetail.child("name").value}\" has been deleted.",
               "time": date,
