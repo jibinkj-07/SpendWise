@@ -95,7 +95,7 @@ class _BudgetDetailScreenState extends State<BudgetDetailScreen> {
                       return _listTile("Admin", admin);
                     }),
                 _listTile("Created On",
-                    DateFormat.yMd().add_jm().format(widget.budget.createdOn)),
+                    DateFormat("dd-MM-y,").add_jm().format(widget.budget.createdOn)),
               ],
             ),
           ),
