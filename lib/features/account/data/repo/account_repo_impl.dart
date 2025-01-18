@@ -58,4 +58,38 @@ class AccountRepoImpl implements AccountRepo {
       return Left(NetworkError());
     }
   }
+
+  @override
+  Future<Either<Failure, bool>> deleteMember({
+    required String memberId,
+    required String budgetId,
+    required String budgetName,
+  }) async {
+    if (await InternetConnection().hasInternetAccess) {
+      return await _accountFbDataSource.deleteMember(
+        memberId: memberId,
+        budgetId: budgetId,
+        budgetName: budgetName,
+      );
+    } else {
+      return Left(NetworkError());
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> inviteMember({
+    required String memberId,
+    required String budgetId,
+    required String budgetName,
+  }) async {
+    if (await InternetConnection().hasInternetAccess) {
+      return await _accountFbDataSource.inviteMember(
+        memberId: memberId,
+        budgetId: budgetId,
+        budgetName: budgetName,
+      );
+    } else {
+      return Left(NetworkError());
+    }
+  }
 }

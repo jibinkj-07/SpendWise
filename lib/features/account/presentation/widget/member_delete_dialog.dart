@@ -1,38 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../core/util/widget/custom_loading.dart';
-import '../../../../root.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../budget/presentation/bloc/budget_edit_bloc.dart';
+import '../bloc/account_bloc.dart';
 
 /// @author : Jibin K John
-/// @date   : 15/01/2025
-/// @time   : 11:35:55
+/// @date   : 18/01/2025
+/// @time   : 17:44:01
 
-class BudgetDeleteDialog extends StatelessWidget {
+class MemberDeleteDialog extends StatelessWidget {
+  final String memberId;
   final String budgetId;
+  final String budgetName;
 
-  const BudgetDeleteDialog({
+  const MemberDeleteDialog({
     super.key,
+    required this.memberId,
     required this.budgetId,
+    required this.budgetName,
   });
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      child: BlocConsumer<BudgetEditBloc, BudgetEditState>(
+      child: BlocConsumer<AccountBloc, AccountState>(
         builder: (ctx, state) {
-          final isDeleting = state is DeletingBudget;
+          final isDeleting = state is DeletingMember;
           return AlertDialog(
-            title: Text(isDeleting ? "Deleting" : "Delete Budget"),
+            title: Text(isDeleting ? "Deleting" : "Delete Member"),
             content: isDeleting
                 ? SizedBox(
                     height: 60.0,
                     width: double.infinity,
                     child: CustomLoading(),
                   )
-                : Text("Are you sure you want to delete this budget?"),
+                : Text("Are you sure you want to delete this member?"),
             actions: isDeleting
                 ? null
                 : [
@@ -43,30 +46,25 @@ class BudgetDeleteDialog extends StatelessWidget {
                       child: Text("Cancel"),
                     ),
                     TextButton(
-                      onPressed: () => context.read<BudgetEditBloc>().add(
-                            DeleteBudget(budgetId: budgetId),
+                      onPressed: () => context.read<AccountBloc>().add(
+                            DeleteMember(
+                              budgetName: budgetName,
+                              budgetId: budgetId,
+                              memberId: memberId,
+                            ),
                           ),
                       child: Text("Delete"),
                     ),
                   ],
           );
         },
-        listener: (BuildContext context, BudgetEditState state) {
-          if (state is BudgetErrorOccurred) {
+        listener: (BuildContext context, AccountState state) {
+          if (state is AccountStateError) {
             Navigator.pop(context);
             state.error.showSnackBar(context);
           }
-          if (state is BudgetDeleted) {
+          if (state is DeletedMember) {
             Navigator.pop(context);
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                  builder: (_) => Root(
-                    userId: (context.read<AuthBloc>().state as Authenticated)
-                        .user
-                        .uid,
-                  ),
-                ),
-                (_) => false);
           }
         },
       ),

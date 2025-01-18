@@ -19,6 +19,26 @@ final class UpdatedProfileImage extends AccountState {
   List<Object?> get props => [];
 }
 
+final class InvitingMember extends AccountState {
+  @override
+  List<Object?> get props => [];
+}
+
+final class InvitedMember extends AccountState {
+  @override
+  List<Object?> get props => [];
+}
+
+final class DeletingMember extends AccountState {
+  @override
+  List<Object?> get props => [];
+}
+
+final class DeletedMember extends AccountState {
+  @override
+  List<Object?> get props => [];
+}
+
 final class AccountStateError extends AccountState {
   final Failure error;
 

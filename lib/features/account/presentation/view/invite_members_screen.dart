@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import '../../../../core/config/injection/injection_container.dart';
 import '../../../../core/util/helper/app_helper.dart';
+import '../../../../core/util/helper/asset_mapper.dart';
 import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../../core/util/widget/outlined_text_field.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../budget/presentation/bloc/budget_view_bloc.dart';
 import '../../domain/model/user.dart';
+import '../bloc/account_bloc.dart';
 import '../helper/account_helper.dart';
 
 /// @author : Jibin K John
@@ -42,13 +46,8 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
           onPressed: () => Navigator.pop(context),
           icon: Icon(Icons.arrow_back_ios_new_rounded),
         ),
-        title: Text(
-          "Invite Member",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 26.0,
-          ),
-        ),
+        title: Text("Invite Member"),
+        centerTitle: true,
       ),
       body: ListView(
         padding: EdgeInsets.symmetric(
@@ -56,8 +55,12 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
           vertical: 20.0,
         ),
         children: [
-          //todo
           // Add invite svg file here
+          SvgPicture.asset(
+            AssetMapper.inviteSVG,
+            height: MediaQuery.sizeOf(context).height * .15,
+          ),
+          const SizedBox(height: 20.0),
           Form(
             key: _formKey,
             child: OutlinedTextField(
@@ -69,7 +72,8 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                 final authBloc = context.read<AuthBloc>();
                 String currentUserEmail = "";
                 if (authBloc.state is Authenticated) {
-                  currentUserEmail = (authBloc.state as Authenticated).user.email;
+                  currentUserEmail =
+                      (authBloc.state as Authenticated).user.email;
                 }
                 if (email.toString().trim().isEmpty) {
                   return 'Email is empty';
@@ -85,15 +89,28 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
             ),
           ),
           const SizedBox(height: 30.0),
-          ValueListenableBuilder(
-            valueListenable: _loading,
-            builder: (ctx, loading, _) {
-              return LoadingFilledButton(
-                onPressed: _onInvite,
-                loading: loading,
-                child: Text("Invite"),
-              );
+          BlocListener<AccountBloc, AccountState>(
+            listener: (ctx, state) {
+              _loading.value = state is InvitingMember;
+
+              if (state is AccountStateError) {
+                state.error.showSnackBar(context);
+              }
+
+              if (state is InvitedMember) {
+                Navigator.pop(context);
+              }
             },
+            child: ValueListenableBuilder(
+              valueListenable: _loading,
+              builder: (ctx, loading, _) {
+                return LoadingFilledButton(
+                  onPressed: _onInvite,
+                  loading: loading,
+                  child: Text("Invite"),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -114,10 +131,18 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
           widget.members!.value = List.from(
             widget.members!.value..add(result.right),
           );
+          Navigator.pop(context);
         } else {
-          // call invite member function
+          final budgetState =
+              (context.read<BudgetViewBloc>().state as BudgetSubscribed);
+          context.read<AccountBloc>().add(
+                InviteMember(
+                  memberId: result.right.uid,
+                  budgetId: budgetState.budget.id,
+                  budgetName: budgetState.budget.name,
+                ),
+              );
         }
-        Navigator.pop(context);
       }
     }
   }

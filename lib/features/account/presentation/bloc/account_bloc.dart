@@ -16,6 +16,8 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
 
   AccountBloc(this._accountRepo) : super(AccountInitial()) {
     on<UpdateProfileImage>(_onUpdate);
+    on<InviteMember>(_onInvite);
+    on<DeleteMember>(_onDelete);
   }
 
   Future<void> _onUpdate(
@@ -27,5 +29,39 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
         .updateUserImage(userId: event.userId, profileName: event.profileName)
         .fold((error) => emit(AccountStateError(error: error)),
             (success) => emit(UpdatedProfileImage()));
+
+    await Future.delayed(
+        const Duration(seconds: 2), () => emit(AccountInitial()));
+  }
+
+  Future<void> _onInvite(
+    InviteMember event,
+    Emitter<AccountState> emit,
+  ) async {
+    emit(InvitingMember());
+    await _accountRepo
+        .inviteMember(
+            memberId: event.memberId,
+            budgetId: event.budgetId,
+            budgetName: event.budgetName)
+        .fold((error) => emit(AccountStateError(error: error)),
+            (success) => emit(InvitedMember()));
+
+    await Future.delayed(
+        const Duration(seconds: 2), () => emit(AccountInitial()));
+  }
+
+  Future<void> _onDelete(DeleteMember event, Emitter<AccountState> emit) async {
+    emit(DeletingMember());
+    await _accountRepo
+        .deleteMember(
+            memberId: event.memberId,
+            budgetId: event.budgetId,
+            budgetName: event.budgetName)
+        .fold((error) => emit(AccountStateError(error: error)),
+            (success) => emit(DeletedMember()));
+
+    await Future.delayed(
+        const Duration(seconds: 2), () => emit(AccountInitial()));
   }
 }

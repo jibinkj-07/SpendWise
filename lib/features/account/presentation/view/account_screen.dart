@@ -6,6 +6,7 @@ import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/presentation/bloc/budget_view_bloc.dart';
 import '../widget/profile_info.dart';
 import 'budget_detail_screen.dart';
+import 'members_screen.dart';
 
 /// @author : Jibin K John
 /// @date   : 12/12/2024
@@ -48,7 +49,7 @@ class AccountScreen extends StatelessWidget {
                         builder: (ctx, budgetState) {
                       return Column(
                         children: [
-                          if (budgetState is BudgetSubscribed)
+                          if (budgetState is BudgetSubscribed) ...[
                             ListTile(
                               onTap: () {
                                 Navigator.of(context).push(
@@ -75,49 +76,43 @@ class AccountScreen extends StatelessWidget {
                                 color: AppConfig.primaryColor,
                               ),
                             ),
-                          ListTile(
-                            onTap: () {},
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(20.0),
-                              ),
-                            ),
-                            leading: Icon(Icons.edit_document),
-                            title: Text("Generate Report"),
-                            subtitle:
-                                Text("Generate report for a specific month"),
-                            trailing: Icon(
-                              Icons.arrow_forward_ios_rounded,
-                              size: 15.0,
-                              color: AppConfig.primaryColor,
-                            ),
-                          ),
-                          if (budgetState is BudgetSubscribed &&
-                              budgetState.budget.admin == state.user.uid)
                             ListTile(
                               onTap: () {},
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20.0),
-                                ),
-                              ),
-                              leading: Icon(Icons.people_alt_rounded),
-                              title: Text("Members"),
+                              leading: Icon(Icons.edit_document),
+                              title: Text("Generate Report"),
                               subtitle:
-                                  Text("Edit or view your budget members"),
+                                  Text("Generate report for a specific month"),
                               trailing: Icon(
                                 Icons.arrow_forward_ios_rounded,
                                 size: 15.0,
                                 color: AppConfig.primaryColor,
                               ),
                             ),
+                            if (budgetState.budget.admin == state.user.uid)
+                              ListTile(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => MembersScreen(
+                                        budgetName: budgetState.budget.name,
+                                        budgetId: budgetState.budget.id,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                leading: Icon(Icons.people_alt_rounded),
+                                title: Text("Members"),
+                                subtitle:
+                                    Text("Manage your budget members"),
+                                trailing: Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  size: 15.0,
+                                  color: AppConfig.primaryColor,
+                                ),
+                              ),
+                          ],
                           ListTile(
                             onTap: () {},
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(20.0),
-                              ),
-                            ),
                             leading: Icon(Icons.link_rounded),
                             title: Text("Invitations"),
                             subtitle:

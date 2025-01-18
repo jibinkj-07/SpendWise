@@ -48,11 +48,13 @@ class TransactionFbDataSourceImpl implements TransactionFbDataSource {
           image: doc,
         );
       }
+      final transId =
+          "${transaction.id}-${transaction.createdUserId.substring(0, 5)}";
       await _firebaseDatabase
           .ref(FirebasePath.transactionPath(budgetId))
           .child("${transaction.date.year}")
           .child("${transaction.date.month}")
-          .child(transaction.id)
+          .child(transId)
           .set(transaction.toJson(url));
 
       return const Right(null);

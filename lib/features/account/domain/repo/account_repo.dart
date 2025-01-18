@@ -17,4 +17,16 @@ abstract class AccountRepo {
     required String userId,
     required String profileName,
   });
+
+  Future<Either<Failure, bool>> inviteMember({
+    required String memberId,
+    required String budgetId,
+    required String budgetName,
+  });
+
+  Future<Either<Failure, bool>> deleteMember({
+    required String memberId,
+    required String budgetId,
+    required String budgetName,
+  });
 }

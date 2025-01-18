@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 
 import '../../../../core/util/error/failure.dart';
 import '../../../../core/util/helper/firebase_path.dart';
+import '../../../../core/util/helper/notification.dart';
 import '../../domain/model/user.dart';
 
 abstract class AccountFbDataSource {
@@ -20,6 +21,18 @@ abstract class AccountFbDataSource {
   Future<Either<Failure, bool>> updateUserImage({
     required String userId,
     required String profileName,
+  });
+
+  Future<Either<Failure, bool>> inviteMember({
+    required String memberId,
+    required String budgetId,
+    required String budgetName,
+  });
+
+  Future<Either<Failure, bool>> deleteMember({
+    required String memberId,
+    required String budgetId,
+    required String budgetName,
   });
 }
 
@@ -121,6 +134,88 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
       return const Right(true);
     } catch (e) {
       log("er:[account_fb_data_source.dart][updateUserImage] $e");
+      return Left(Failure(message: "Something went wrong. Try again"));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> deleteMember({
+    required String memberId,
+    required String budgetId,
+    required String budgetName,
+  }) async {
+    try {
+      // Remove from user joined and invitation node
+      await _firebaseDatabase
+          .ref(FirebasePath.joinedBudgetPath(memberId))
+          .child(budgetId)
+          .remove();
+      await _firebaseDatabase
+          .ref(FirebasePath.invitationPath(memberId))
+          .child(budgetId)
+          .remove();
+      // Remove user from budget node
+      await _firebaseDatabase
+          .ref(FirebasePath.membersPath(budgetId))
+          .child(memberId)
+          .remove();
+
+      // Add notification to user
+      final date = DateTime.now().millisecondsSinceEpoch.toString();
+      await _firebaseDatabase
+          .ref(FirebasePath.notificationPath(memberId))
+          .child(date)
+          .set({
+        "title": Notification.accessRevoked,
+        "body":
+            "Your access to the budget \"$budgetName\" has been revoked by admin",
+        "time": date,
+      });
+      return const Right(true);
+    } catch (e) {
+      log("er:[account_fb_data_source.dart][deleteMember] $e");
+      return Left(Failure(message: "Something went wrong. Try again"));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> inviteMember({
+    required String memberId,
+    required String budgetId,
+    required String budgetName,
+  }) async {
+    try {
+      final date = DateTime.now().millisecondsSinceEpoch.toString();
+      // Add user into budget node
+      await _firebaseDatabase
+          .ref(FirebasePath.membersPath(budgetId))
+          .child(memberId)
+          .set({
+        "status": "pending",
+        "date": date,
+      });
+
+      // Add budget into member invitation node
+
+      await _firebaseDatabase
+          .ref(FirebasePath.invitationPath(memberId))
+          .child(budgetId)
+          .set({
+        "date": date,
+      });
+
+      // Add notification to user
+      await _firebaseDatabase
+          .ref(FirebasePath.notificationPath(memberId))
+          .child(date)
+          .set({
+        "title": Notification.budgetInvitation,
+        "body": "You have a new invitation to join the budget \"$budgetName\"",
+        "time": date,
+      });
+      return const Right(true);
+    } catch (e) {
+      log("er:[account_fb_data_source.dart][inviteMember] $e");
       return Left(Failure(message: "Something went wrong. Try again"));
     }
   }
