@@ -6,6 +6,8 @@ import 'package:firebase_database/firebase_database.dart';
 import '../../../../core/util/error/failure.dart';
 import '../../../../core/util/helper/firebase_path.dart';
 import '../../../../core/util/helper/notification.dart';
+import '../../../budget/domain/model/budget_model.dart';
+import '../../domain/model/budget_info.dart';
 import '../../domain/model/user.dart';
 
 abstract class AccountFbDataSource {
@@ -34,6 +36,9 @@ abstract class AccountFbDataSource {
     required String budgetId,
     required String budgetName,
   });
+
+  Future<Either<Failure, BudgetInfo?>> getBudgetInfo(
+      {required String budgetId});
 }
 
 class AccountFbDataSourceImpl implements AccountFbDataSource {
@@ -171,6 +176,11 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
             "Your access to the budget \"$budgetName\" has been revoked by admin",
         "time": date,
       });
+
+      // Toggle notification status to true
+      await _firebaseDatabase
+          .ref(FirebasePath.userPath(memberId))
+          .update({"notification_status": true});
       return const Right(true);
     } catch (e) {
       log("er:[account_fb_data_source.dart][deleteMember] $e");
@@ -213,7 +223,38 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
         "body": "You have a new invitation to join the budget \"$budgetName\"",
         "time": date,
       });
+      // Toggle notification status to true
+      await _firebaseDatabase
+          .ref(FirebasePath.userPath(memberId))
+          .update({"notification_status": true});
       return const Right(true);
+    } catch (e) {
+      log("er:[account_fb_data_source.dart][inviteMember] $e");
+      return Left(Failure(message: "Something went wrong. Try again"));
+    }
+  }
+
+  @override
+  Future<Either<Failure, BudgetInfo?>> getBudgetInfo({
+    required String budgetId,
+  }) async {
+    BudgetInfo? budget;
+    try {
+      await _firebaseDatabase
+          .ref(FirebasePath.budgetDetailPath(budgetId))
+          .once()
+          .then((event) async {
+        if (event.snapshot.exists) {
+          final admin = await getUserInfoByID(
+              id: event.snapshot.child("admin").value.toString());
+          if (admin.isRight) {
+            final budgetModel =
+                BudgetModel.fromFirebase(event.snapshot, budgetId);
+            budget = BudgetInfo(budget: budgetModel, admin: admin.right);
+          }
+        }
+      });
+      return Right(budget);
     } catch (e) {
       log("er:[account_fb_data_source.dart][inviteMember] $e");
       return Left(Failure(message: "Something went wrong. Try again"));

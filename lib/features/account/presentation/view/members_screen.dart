@@ -37,7 +37,7 @@ class _MembersScreenState extends State<MembersScreen> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text("All Members"),
+        title: const Text("Members"),
         centerTitle: true,
         actions: [
           TextButton(

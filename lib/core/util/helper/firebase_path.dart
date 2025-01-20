@@ -12,6 +12,7 @@ sealed class FirebasePath {
       "$budgetNode/$budgetId/$memberNode";
 
   static String userPath(String userId) => "$userNode/$userId";
+  static String userRequestPath(String userId) => "$userNode/$userId/requests";
 
   static String joinedBudgetPath(String userId) => "$userNode/$userId/joined";
 
@@ -20,6 +21,9 @@ sealed class FirebasePath {
 
   static String transactionPath(String budgetId) =>
       "$budgetNode/$budgetId/$transactionNode";
+
+  static String budgetRequestPath(String budgetId) =>
+      "$budgetNode/$budgetId/requests";
 
   static String budgetPath(String budgetId) => "$budgetNode/$budgetId";
 

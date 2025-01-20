@@ -7,6 +7,7 @@ import '../../../budget/presentation/bloc/budget_view_bloc.dart';
 import '../widget/profile_info.dart';
 import 'budget_detail_screen.dart';
 import 'members_screen.dart';
+import 'my_invitation_screen.dart';
 
 /// @author : Jibin K John
 /// @date   : 12/12/2024
@@ -102,8 +103,7 @@ class AccountScreen extends StatelessWidget {
                                 },
                                 leading: Icon(Icons.people_alt_rounded),
                                 title: Text("Members"),
-                                subtitle:
-                                    Text("Manage your budget members"),
+                                subtitle: Text("Manage your budget members"),
                                 trailing: Icon(
                                   Icons.arrow_forward_ios_rounded,
                                   size: 15.0,
@@ -112,11 +112,18 @@ class AccountScreen extends StatelessWidget {
                               ),
                           ],
                           ListTile(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => MyInvitationScreen(
+                                    userId: state.user.uid,
+                                  ),
+                                ),
+                              );
+                            },
                             leading: Icon(Icons.link_rounded),
                             title: Text("Invitations"),
-                            subtitle:
-                                Text("Manage or view your budget invitations"),
+                            subtitle: Text("Manage your budget invitations"),
                             trailing: Icon(
                               Icons.arrow_forward_ios_rounded,
                               size: 15.0,

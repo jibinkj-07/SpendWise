@@ -1,6 +1,7 @@
 import 'package:either_dart/either.dart';
 
 import '../../../../core/util/error/failure.dart';
+import '../../domain/model/budget_info.dart';
 import '../../domain/model/user.dart';
 import '../../domain/repo/account_repo.dart';
 
@@ -27,4 +28,9 @@ class AccountHelper {
         id: id,
         budgetId: budgetId,
       );
+
+  Future<Either<Failure, BudgetInfo?>> getBudgetInfo({
+    required String budgetId,
+  }) async =>
+      await _accountRepo.getBudgetInfo(budgetId: budgetId);
 }

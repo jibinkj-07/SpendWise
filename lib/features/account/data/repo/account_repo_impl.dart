@@ -1,5 +1,6 @@
 import 'package:either_dart/either.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:spend_wise/features/account/domain/model/budget_info.dart';
 
 import '../../../../core/util/error/failure.dart';
 import '../../domain/model/user.dart';
@@ -92,4 +93,14 @@ class AccountRepoImpl implements AccountRepo {
       return Left(NetworkError());
     }
   }
+
+  @override
+  Future<Either<Failure, BudgetInfo?>> getBudgetInfo({
+    required String budgetId,
+  })async {
+    if (await InternetConnection().hasInternetAccess) {
+      return await _accountFbDataSource.getBudgetInfo(budgetId: budgetId);
+    } else {
+      return Left(NetworkError());
+    }}
 }

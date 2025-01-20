@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 
+import '../../../../core/config/app_config.dart';
 import '../../../../core/config/injection/injection_container.dart';
 import '../../../../core/util/helper/app_helper.dart';
+import '../../../../core/util/helper/asset_mapper.dart';
 import '../../../../core/util/widget/empty.dart';
 import '../../../budget/domain/model/budget_model.dart';
 import '../../../budget/presentation/bloc/category_view_bloc.dart';
@@ -55,8 +58,7 @@ class _BudgetDetailScreenState extends State<BudgetDetailScreen> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () => Navigator.pop(context),
         ),
-        backgroundColor: Colors.white,
-        title: Text("Budget Detail"),
+        title: Text("Detail"),
         centerTitle: true,
         actions: [
           if (widget.budget.admin == widget.userId)
@@ -75,120 +77,149 @@ class _BudgetDetailScreenState extends State<BudgetDetailScreen> {
             ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: ListView(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppHelper.horizontalPadding(size),
+        ),
         children: [
           Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: AppHelper.horizontalPadding(size),
+            padding: const EdgeInsets.all(15.0),
+            margin: EdgeInsets.symmetric(vertical: 15.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.shade300,
+                  blurRadius: 5.0,
+                ),
+              ],
             ),
-            margin: const EdgeInsets.only(bottom: 15.0),
-            color: Colors.white,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _listTile("Name", widget.budget.name),
-                _listTile("Currency",
-                    "${widget.budget.currencySymbol} - ${widget.budget.currency}"),
-                ValueListenableBuilder(
-                    valueListenable: _admin,
-                    builder: (ctx, admin, _) {
-                      return _listTile("Admin", admin);
-                    }),
-                _listTile("Created On",
-                    DateFormat("dd-MM-y,").add_jm().format(widget.budget.createdOn)),
+                Text(
+                  widget.budget.name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0,
+                  ),
+                ),
+                Text(
+                  "${widget.budget.currencySymbol} - ${widget.budget.currency}",
+                ),
+                Divider(
+                  thickness: .4,
+                  color: Colors.grey,
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    "Admin",
+                    style: TextStyle(fontSize: 13.0),
+                  ),
+                  trailing: ValueListenableBuilder(
+                      valueListenable: _admin,
+                      builder: (ctx, admin, _) {
+                        return Text(
+                          admin,
+                          style: TextStyle(fontSize: 14.0),
+                        );
+                      }),
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    "Created",
+                    style: TextStyle(fontSize: 13.0),
+                  ),
+                  trailing: Text(
+                    DateFormat("dd-MM-y,")
+                        .add_jm()
+                        .format(widget.budget.createdOn),
+                    style: TextStyle(fontSize: 14.0),
+                  ),
+                ),
+                Theme(
+                  data: Theme.of(context).copyWith(
+                    dividerColor: Colors.transparent,
+                  ),
+                  child: BlocBuilder<CategoryViewBloc, CategoryViewState>(
+                      builder: (ctx, state) {
+                    return ExpansionTile(
+                      tilePadding: EdgeInsets.zero,
+                      title: Text(
+                        "Categories",
+                        style: TextStyle(fontSize: 13.0),
+                      ),
+                      children: (state is CategorySubscribed &&
+                              state.categories.isNotEmpty)
+                          ? List.generate(
+                              state.categories.length,
+                              (index) => ListTile(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => CategoryEntryScreen(
+                                        category: state.categories[index],
+                                      ),
+                                    ),
+                                  );
+                                },
+                                leading: CircleAvatar(
+                                  backgroundColor: state.categories[index].color
+                                      .withOpacity(.15),
+                                  child: Icon(
+                                    AppHelper.getIconFromString(
+                                      state.categories[index].icon,
+                                    ),
+                                    color: state.categories[index].color,
+                                  ),
+                                ),
+                                title: Text(state.categories[index].name),
+                                trailing: Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  size: 15.0,
+                                ),
+                              ),
+                            )
+                          : [
+                              SizedBox(
+                                height: size.height * .2,
+                                child: Empty(message: "No Categories"),
+                              )
+                            ],
+                    );
+                  }),
+                )
               ],
             ),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: AppHelper.horizontalPadding(size),
-            ),
-            child: Text(
-              "Categories",
-              style: TextStyle(fontWeight: FontWeight.w500),
+          Text(
+            "Share your budget",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
             ),
           ),
-          Expanded(
-            child: BlocBuilder<CategoryViewBloc, CategoryViewState>(
-              builder: (ctx, state) {
-                if (state is CategorySubscribed &&
-                    state.categories.isNotEmpty) {
-                  return Material(
-                    color: Colors.transparent,
-                    child: ListView.builder(
-                      itemCount: state.categories.length,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: AppHelper.horizontalPadding(size),
-                        vertical: 10.0,
-                      ),
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5.0),
-                          child: ListTile(
-                            tileColor: Colors.grey.withOpacity(.1),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => CategoryEntryScreen(
-                                    category: state.categories[index],
-                                  ),
-                                ),
-                              );
-                            },
-                            leading: CircleAvatar(
-                              backgroundColor: state.categories[index].color
-                                  .withOpacity(.15),
-                              child: Icon(
-                                AppHelper.getIconFromString(
-                                  state.categories[index].icon,
-                                ),
-                                color: state.categories[index].color,
-                              ),
-                            ),
-                            title: Text(state.categories[index].name),
-                            trailing: Icon(
-                              Icons.arrow_forward_ios_rounded,
-                              size: 15.0,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                }
-                return Empty(
-                  message: "No Categories",
+          const SizedBox(height: 10.0),
+          Text(
+            "Share this budget with your family, friends, or close relatives to join and manage it together. Please keep this information private, as it is confidential. Click the share button to send an invitation.",
+            style: TextStyle(fontSize: 13.0),
+          ),
+          const SizedBox(height: 15.0),
+          FilledButton(
+              onPressed: () {
+                Share.share(
+                  "Let’s join ${AppConfig.name} to manage your budget effortlessly and stay on top of your expenses!\n\n"
+                  "Join the ${widget.budget.name} budget by copying the Budget ID below and pasting it in the 'Join Budget' section of the ${AppConfig.name} app.\n\nStart collaborating today!\n\n\n"
+                  "ID - ${widget.budget.id}",
                 );
               },
-            ),
-          )
+              child: Text("Share Now"))
         ],
       ),
     );
   }
-
-  Widget _listTile(String title, String child) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12.0),
-        child: Row(
-          children: [
-            Text(
-              title,
-              style: TextStyle(fontSize: 13.0, color: Colors.black54),
-            ),
-            const SizedBox(width: 8.0),
-            Expanded(
-              child: Text(
-                child,
-                style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500),
-                textAlign: TextAlign.end,
-              ),
-            ),
-          ],
-        ),
-      );
 
   Future<void> _getAdminName() async {
     final result = await _accountHelper.getUserInfoByID(

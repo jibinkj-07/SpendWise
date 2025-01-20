@@ -1,6 +1,7 @@
 import 'package:either_dart/either.dart';
 
 import '../../../../core/util/error/failure.dart';
+import '../model/budget_info.dart';
 import '../model/user.dart';
 
 abstract class AccountRepo {
@@ -29,4 +30,6 @@ abstract class AccountRepo {
     required String budgetId,
     required String budgetName,
   });
+  Future<Either<Failure, BudgetInfo?>> getBudgetInfo(
+      {required String budgetId});
 }
