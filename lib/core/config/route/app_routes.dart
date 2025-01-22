@@ -6,6 +6,7 @@ import 'package:spend_wise/features/home/presentation/view/category_entry_screen
 import 'package:spend_wise/features/budget/presentation/view/create_budget_screen.dart';
 import 'package:spend_wise/features/home/presentation/view/decision_screen.dart';
 import 'package:spend_wise/features/home/presentation/view/home_screen.dart';
+import 'package:spend_wise/features/home/presentation/view/notification_screen.dart';
 import '../../../features/account/presentation/view/account_screen.dart';
 import '../../../features/account/presentation/view/invite_members_screen.dart';
 import '../../../features/auth/presentation/view/login_screen.dart';
@@ -31,6 +32,7 @@ sealed class RouteName {
   static const String networkError = "/network-error-screen";
   static const String requestJoin = "/request-join-screen";
   static const String requested = "/requested-screen";
+  static const String notification = "/notification-screen";
 }
 
 /// class for declaring app page navigation screens
@@ -72,6 +74,8 @@ sealed class AppRoutes {
         return MaterialPageRoute(builder: (_) => const RequestBudgetJoin());
       case RouteName.requested:
         return MaterialPageRoute(builder: (_) => const RequestedScreen());
+      case RouteName.notification:
+        return MaterialPageRoute(builder: (_) => const NotificationScreen());
       default:
         return MaterialPageRoute(builder: (_) => const ErrorRoute());
     }

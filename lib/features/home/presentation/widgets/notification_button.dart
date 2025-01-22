@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/config/route/app_routes.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 
 /// @author : Jibin K John
@@ -14,7 +15,7 @@ class NotificationButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: () {},
+      onPressed: () => Navigator.of(context).pushNamed(RouteName.notification),
       style: IconButton.styleFrom(
         foregroundColor: Colors.black,
       ),

@@ -7,6 +7,7 @@ Future<void> initDependencies() async {
   // **************************************** Class ****************************************
   sl.registerLazySingleton<AccountHelper>(() => AccountHelper(sl()));
   sl.registerLazySingleton<HomeHelper>(() => HomeHelper(sl()));
+  sl.registerLazySingleton<NotificationHelper>(() => NotificationHelper(sl()));
 
   // **************************************** Externals ****************************************
   final auth = FirebaseAuth.instance;
@@ -22,20 +23,24 @@ Future<void> initDependencies() async {
   // **************************************** Data Sources ****************************************
 
   sl.registerLazySingleton<AuthFbDataSource>(
-    () => AuthFbDataSourceImpl(
-      sl(),
-      sl(),
-      sl(),
-    ),
+        () =>
+        AuthFbDataSourceImpl(
+          sl(),
+          sl(),
+          sl(),
+        ),
   );
   sl.registerLazySingleton<BudgetFbDataSource>(
-      () => BudgetFbDataSourceImpl(sl(), sl(), sl()));
+          () => BudgetFbDataSourceImpl(sl(), sl(), sl()));
   sl.registerLazySingleton<AccountFbDataSource>(
-      () => AccountFbDataSourceImpl(sl()));
+          () => AccountFbDataSourceImpl(sl()));
   sl.registerLazySingleton<TransactionFbDataSource>(
-      () => TransactionFbDataSourceImpl(sl(), sl()));
+          () => TransactionFbDataSourceImpl(sl(), sl()));
   sl.registerLazySingleton<AnalysisFbDataSource>(
-      () => AnalysisFbDataSourceImpl(sl(), sl()));
+          () => AnalysisFbDataSourceImpl(sl(), sl()));
+  sl.registerLazySingleton<NotificationDataSource>(
+          () => NotificationDataSourceImpl(sl())
+  );
 
   // **************************************** Repos ****************************************
   sl.registerLazySingleton<AuthRepo>(() => AuthRepoImpl(sl()));
@@ -43,6 +48,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<AccountRepo>(() => AccountRepoImpl(sl()));
   sl.registerLazySingleton<TransactionRepo>(() => TransactionRepoImpl(sl()));
   sl.registerLazySingleton<AnalysisRepo>(() => AnalysisRepoImpl(sl()));
+  sl.registerLazySingleton<NotificationRepo>(() => NotificationRepoImpl(sl()));
 
   // **************************************** Bloc ****************************************
   sl.registerSingleton<AuthBloc>(AuthBloc(sl()));
