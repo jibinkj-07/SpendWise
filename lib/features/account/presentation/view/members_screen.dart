@@ -1,12 +1,10 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-
+import '../../../../core/config/app_config.dart';
 import '../../../../core/config/injection/injection_container.dart';
 import '../../../../core/config/route/app_routes.dart';
-import '../../../../core/util/helper/firebase_path.dart';
-import '../../../../core/util/widget/custom_loading.dart';
-import '../../../../core/util/widget/empty.dart';
-import '../widget/member_list_tile.dart';
+import '../helper/account_helper.dart';
+import '../widget/invited_members.dart';
+import '../widget/requested_members.dart';
 
 /// @author : Jibin K John
 /// @date   : 18/01/2025
@@ -27,63 +25,57 @@ class MembersScreen extends StatefulWidget {
 }
 
 class _MembersScreenState extends State<MembersScreen> {
-  final FirebaseDatabase _firebaseDatabase = sl<FirebaseDatabase>();
+  final AccountHelper _accountHelper = sl<AccountHelper>();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          onPressed: () => Navigator.pop(context),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: const Text("Members"),
+          centerTitle: true,
+          bottom: TabBar(
+            dividerHeight: 0,
+            unselectedLabelColor: Colors.black54,
+            indicatorSize: TabBarIndicatorSize.tab,
+            tabs: [
+              Tab(text: "Invited"),
+              Tab(text: "Requests"),
+            ],
+          ),
         ),
-        title: const Text("Members"),
-        centerTitle: true,
-        actions: [
-          TextButton(
-            onPressed: () =>
-                Navigator.of(context).pushNamed(RouteName.inviteMembers),
-            child: Text("Invite"),
-          )
-        ],
+        body: TabBarView(
+          children: [
+            InvitedMembers(
+              budgetName: widget.budgetName,
+              budgetId: widget.budgetId,
+              accountHelper: _accountHelper,
+            ),
+            RequestedMembers(
+              budgetName: widget.budgetName,
+              budgetId: widget.budgetId,
+              accountHelper: _accountHelper,
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          backgroundColor: AppConfig.primaryColor,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100.0),
+          ),
+          onPressed: () =>
+              Navigator.of(context).pushNamed(RouteName.inviteMembers),
+          icon: Icon(Icons.add_rounded),
+          label: Text("Invite"),
+        ),
       ),
-      body: StreamBuilder(
-          stream: _firebaseDatabase
-              .ref(FirebasePath.membersPath(widget.budgetId))
-              .onValue,
-          builder: (ctx, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CustomLoading();
-            }
-
-            if (snapshot.hasData &&
-                snapshot.data!.snapshot.children.isNotEmpty) {
-              final membersData = snapshot.data!.snapshot.children.toList();
-
-              return ListView.builder(
-                itemCount: membersData.length,
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                itemBuilder: (ctx, index) {
-                  final memberStatus = membersData[index].child("status").value;
-                  final memberDate = DateTime.fromMillisecondsSinceEpoch(
-                    int.parse(
-                        membersData[index].child("date").value.toString()),
-                  );
-
-                  return MemberListTile(
-                    memberId: membersData[index].key.toString(),
-                    budgetId: widget.budgetId,
-                    budgetName: widget.budgetName,
-                    status: memberStatus.toString(),
-                    date: memberDate,
-                  );
-                },
-              );
-            }
-            return Empty(
-              message: "No members joined this budget yet!",
-            );
-          }),
     );
   }
 }

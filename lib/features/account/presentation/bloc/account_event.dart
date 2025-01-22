@@ -36,11 +36,13 @@ final class DeleteMember extends AccountEvent {
   final String memberId;
   final String budgetId;
   final String budgetName;
+  final bool fromRequest;
 
   const DeleteMember({
     required this.memberId,
     required this.budgetId,
     required this.budgetName,
+    required this.fromRequest,
   });
 
   @override

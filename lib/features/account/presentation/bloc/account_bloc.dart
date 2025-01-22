@@ -57,6 +57,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
         .deleteMember(
             memberId: event.memberId,
             budgetId: event.budgetId,
+            fromRequest: event.fromRequest,
             budgetName: event.budgetName)
         .fold((error) => emit(AccountStateError(error: error)),
             (success) => emit(DeletedMember()));

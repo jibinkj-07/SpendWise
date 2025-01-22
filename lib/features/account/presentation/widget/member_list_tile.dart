@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:spend_wise/core/util/extension/string_ext.dart';
-
-import '../../../../core/config/injection/injection_container.dart';
+import '../../../../core/config/app_config.dart';
+import '../../../../core/util/helper/app_helper.dart';
 import '../../domain/model/user.dart';
-import '../helper/account_helper.dart';
 import 'display_image.dart';
 import 'member_delete_dialog.dart';
 
@@ -13,126 +11,130 @@ import 'member_delete_dialog.dart';
 /// @date   : 18/01/2025
 /// @time   : 16:57:02
 
-class MemberListTile extends StatefulWidget {
-  final String memberId;
+class MemberListTile extends StatelessWidget {
+  final User member;
   final String budgetId;
   final String budgetName;
-  final String status;
-  final DateTime date;
+  final bool isRequest;
 
   const MemberListTile({
     super.key,
-    required this.memberId,
+    required this.member,
     required this.budgetId,
     required this.budgetName,
-    required this.status,
-    required this.date,
+    this.isRequest = false,
   });
 
   @override
-  State<MemberListTile> createState() => _MemberListTileState();
-}
-
-class _MemberListTileState extends State<MemberListTile> {
-  final AccountHelper _accountHelper = sl<AccountHelper>();
-  final ValueNotifier<User?> _user = ValueNotifier(null);
-
-  @override
-  void initState() {
-    _getUserInfo();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
-      child: ValueListenableBuilder(
-        valueListenable: _user,
-        builder: (ctx, user, child) {
-          if (user == null) return child!;
-          return ListTile(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            tileColor: Colors.grey.shade200,
-            leading: DisplayImage(
-              imageUrl: user.imageUrl,
-              height: 50.0,
-              width: 50.0,
-            ),
-            title: Text(user.name),
-            subtitle: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+    final size = MediaQuery.sizeOf(context);
+    return Container(
+      margin: EdgeInsets.symmetric(
+        horizontal: AppHelper.horizontalPadding(size),
+        vertical: 8.0,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade300,
+            blurRadius: 8.0,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Row(
               children: [
-                Text(user.email),
-                Text(DateFormat.yMMMd().add_jm().format(widget.date)),
-                Text(widget.status.firstLetterToUpperCase()),
+                DisplayImage(
+                  imageUrl: member.imageUrl,
+                  height: 85.0,
+                  width: 85.0,
+                ),
+                const SizedBox(width: 10.0),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        member.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15.0,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        member.email,
+                        style: TextStyle(fontSize: 12.0, color: Colors.black54),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 15.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            member.userStatus.firstLetterToUpperCase(),
+                            style: TextStyle(
+                              fontSize: 13.0,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Text(
+                            DateFormat.yMMMd().add_jm().format(member.date),
+                            style: TextStyle(
+                                fontSize: 12.0, color: Colors.black54),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                )
               ],
             ),
-            trailing: TextButton(
-              onPressed: () {
-                showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (ctx) => MemberDeleteDialog(
-                    budgetId: widget.budgetId,
-                    budgetName: widget.budgetName,
-                    memberId: widget.memberId,
-                  ),
-                );
-              },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: Text("Remove"),
-            ),
-          );
-        },
-        child: ListTile(
-          leading: Shimmer.fromColors(
-            baseColor: Colors.grey,
-            highlightColor: Colors.white,
-            child: CircleAvatar(
-              backgroundColor: Colors.grey.withOpacity(.5),
-            ),
           ),
-          title: Shimmer.fromColors(
-            baseColor: Colors.grey,
-            highlightColor: Colors.white,
-            child: Container(
-              width: 20.0,
-              height: 10.0,
-              decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(.5),
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-            ),
+          Divider(
+            height: 0,
+            thickness: .5,
+            color: Colors.grey.shade300,
           ),
-          subtitle: Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: Shimmer.fromColors(
-              baseColor: Colors.grey,
-              highlightColor: Colors.white,
-              child: Container(
-                width: 100.0,
-                height: 6.0,
-                decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(.5),
-                  borderRadius: BorderRadius.circular(10.0),
+          Row(
+            mainAxisAlignment: isRequest
+                ? MainAxisAlignment.spaceAround
+                : MainAxisAlignment.center,
+            children: [
+              TextButton(
+                onPressed: () {
+                  showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (ctx) => MemberDeleteDialog(
+                      fromRequest: isRequest,
+                      budgetId: budgetId,
+                      budgetName: budgetName,
+                      memberId: member.uid,
+                    ),
+                  );
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: AppConfig.errorColor,
                 ),
+                child: Text("Remove"),
               ),
-            ),
+              if (isRequest)
+                TextButton(
+                  onPressed: () {},
+                  child: Text("Accept"),
+                ),
+            ],
           ),
-        ),
+        ],
       ),
     );
-  }
-
-  Future<void> _getUserInfo() async {
-    await _accountHelper.getUserInfoByID(id: widget.memberId).then((result) {
-      if (result.isRight) {
-        _user.value = result.right;
-      }
-    });
   }
 }

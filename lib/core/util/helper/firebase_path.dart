@@ -3,6 +3,7 @@ sealed class FirebasePath {
   static final String budgetNode = "budgets";
   static final String categoryNode = "categories";
   static final String memberNode = "members";
+  static final String requestNode = "requests";
   static final String transactionNode = "transactions";
 
   static String categoryPath(String budgetId, String catId) =>
@@ -11,8 +12,13 @@ sealed class FirebasePath {
   static String membersPath(String budgetId) =>
       "$budgetNode/$budgetId/$memberNode";
 
+  static String budgetRequestPath(String budgetId) =>
+      "$budgetNode/$budgetId/$requestNode";
+
   static String userPath(String userId) => "$userNode/$userId";
-  static String userRequestPath(String userId) => "$userNode/$userId/requests";
+
+  static String userRequestPath(String userId) =>
+      "$userNode/$userId/$requestNode";
 
   static String joinedBudgetPath(String userId) => "$userNode/$userId/joined";
 
@@ -22,16 +28,13 @@ sealed class FirebasePath {
   static String transactionPath(String budgetId) =>
       "$budgetNode/$budgetId/$transactionNode";
 
-  static String budgetRequestPath(String budgetId) =>
-      "$budgetNode/$budgetId/requests";
-
   static String budgetPath(String budgetId) => "$budgetNode/$budgetId";
 
   static String budgetDetailPath(String budgetId) =>
       "$budgetNode/$budgetId/details";
 
   static String budgetMembersPath(String budgetId) =>
-      "$budgetNode/$budgetId/members";
+      "$budgetNode/$budgetId/$memberNode";
 
   static String notificationPath(String userId) => "notifications/$userId";
 }

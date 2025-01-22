@@ -33,4 +33,16 @@ class AccountHelper {
     required String budgetId,
   }) async =>
       await _accountRepo.getBudgetInfo(budgetId: budgetId);
+
+  Stream<Either<Failure, List<User>>> subscribeMembers({
+    required String budgetId,
+  }) async* {
+    yield* _accountRepo.subscribeMembers(budgetId: budgetId);
+  }
+
+  Stream<Either<Failure, List<User>>> subscribeRequests({
+    required String budgetId,
+  }) async* {
+    yield* _accountRepo.subscribeRequests(budgetId: budgetId);
+  }
 }

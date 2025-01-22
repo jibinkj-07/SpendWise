@@ -29,7 +29,29 @@ abstract class AccountRepo {
     required String memberId,
     required String budgetId,
     required String budgetName,
+    required bool fromRequest,
   });
+
   Future<Either<Failure, BudgetInfo?>> getBudgetInfo(
       {required String budgetId});
+
+  Stream<Either<Failure, List<User>>> subscribeMembers({
+    required String budgetId,
+  });
+
+  Stream<Either<Failure, List<User>>> subscribeRequests({
+    required String budgetId,
+  });
+
+  Future<Either<Failure, bool>> acceptMemberRequest({
+    required String memberId,
+    required String budgetId,
+    required String budgetName,
+  });
+
+  Future<Either<Failure, bool>> requestBudgetJoin({
+    required String memberId,
+    required String budgetId,
+    required String memberName,
+  });
 }

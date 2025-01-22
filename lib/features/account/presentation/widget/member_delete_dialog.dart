@@ -12,12 +12,14 @@ class MemberDeleteDialog extends StatelessWidget {
   final String memberId;
   final String budgetId;
   final String budgetName;
+  final bool fromRequest;
 
   const MemberDeleteDialog({
     super.key,
     required this.memberId,
     required this.budgetId,
     required this.budgetName,
+    required this.fromRequest,
   });
 
   @override
@@ -48,6 +50,7 @@ class MemberDeleteDialog extends StatelessWidget {
                     TextButton(
                       onPressed: () => context.read<AccountBloc>().add(
                             DeleteMember(
+                              fromRequest: fromRequest,
                               budgetName: budgetName,
                               budgetId: budgetId,
                               memberId: memberId,
