@@ -52,6 +52,7 @@ class ErrorScreen extends StatelessWidget {
                         builder: (ctx) => BudgetSwitcher(
                           currentIndex: 0,
                           budgetDetail: BudgetModel.dummy(),
+                          fromRequestedScreen: false,
                         ),
                       );
                     },

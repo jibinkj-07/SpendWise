@@ -29,14 +29,38 @@ final class InvitedMember extends AccountState {
   List<Object?> get props => [];
 }
 
-final class DeletingMember extends AccountState {
+final class Deleting extends AccountState {
   @override
   List<Object?> get props => [];
 }
 
-final class DeletedMember extends AccountState {
+final class Deleted extends AccountState {
   @override
   List<Object?> get props => [];
+}
+
+final class Requesting extends AccountState {
+  @override
+  List<Object?> get props => [];
+}
+
+final class Requested extends AccountState {
+  @override
+  List<Object?> get props => [];
+}
+
+final class Accepting extends AccountState {
+  @override
+  List<Object?> get props => [];
+}
+
+final class Accepted extends AccountState {
+  final String budgetId;
+
+  const Accepted({this.budgetId = ""});
+
+  @override
+  List<Object?> get props => [budgetId];
 }
 
 final class AccountStateError extends AccountState {

@@ -33,3 +33,4 @@ export '../../../features/analysis/domain/repo/analysis_repo.dart';
 export '../../../features/analysis/presentation/bloc/analysis_bloc.dart';
 export '../../../features/transactions/presentation/bloc/transaction_bloc.dart';
 export '../../../features/account/presentation/bloc/account_bloc.dart';
+export '../../../features/account/data/data_source/account_fb_data_source_impl.dart';

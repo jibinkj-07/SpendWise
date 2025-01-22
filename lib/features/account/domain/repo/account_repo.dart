@@ -32,8 +32,10 @@ abstract class AccountRepo {
     required bool fromRequest,
   });
 
-  Future<Either<Failure, BudgetInfo?>> getBudgetInfo(
-      {required String budgetId});
+  Future<Either<Failure, BudgetInfo?>> getBudgetInfo({
+    required String budgetId,
+    required DateTime date,
+  });
 
   Stream<Either<Failure, List<User>>> subscribeMembers({
     required String budgetId,
@@ -53,5 +55,32 @@ abstract class AccountRepo {
     required String memberId,
     required String budgetId,
     required String memberName,
+  });
+
+  Future<Either<Failure, bool>> acceptBudgetInvitation({
+    required String budgetId,
+    required String budgetName,
+    required String userId,
+    required String userName,
+  });
+
+  Future<Either<Failure, bool>> removeBudgetInvitation({
+    required String budgetId,
+    required String budgetName,
+    required String userId,
+    required String userName,
+  });
+
+  Future<Either<Failure, bool>> removeMyBudgetJoinRequest({
+    required String budgetId,
+    required String userId,
+  });
+
+  Stream<Either<Failure, List<BudgetInfo>>> subscribeInvitations({
+    required String userId,
+  });
+
+  Stream<Either<Failure, List<BudgetInfo>>> subscribeMyInvitationRequests({
+    required String userId,
   });
 }

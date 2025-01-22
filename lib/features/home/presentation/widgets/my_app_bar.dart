@@ -5,6 +5,7 @@ import '../../../account/presentation/widget/display_image.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/domain/model/budget_model.dart';
 import 'budget_switcher.dart';
+import 'notification_button.dart';
 
 /// @author : Jibin K John
 /// @date   : 12/12/2024
@@ -59,18 +60,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
               style: IconButton.styleFrom(foregroundColor: Colors.black),
               icon: Icon(Icons.swap_vertical_circle_outlined),
             ),
-            IconButton(
-              onPressed: () {},
-              style: IconButton.styleFrom(
-                foregroundColor: Colors.black,
-              ),
-              icon: state.user.notificationStatus
-                  ? Icon(
-                      Icons.notifications_active_outlined,
-                      color: Colors.red,
-                    )
-                  : Icon(Icons.notifications_none_rounded),
-            ),
+            NotificationButton(authState: state),
           ],
         );
       }
@@ -90,6 +80,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       builder: (ctx) => BudgetSwitcher(
         currentIndex: index,
         budgetDetail: budgetDetail,
+        fromRequestedScreen: false,
       ),
     );
   }

@@ -18,11 +18,13 @@ import 'budget_switcher_tile.dart';
 class BudgetSwitcher extends StatelessWidget {
   final int currentIndex;
   final BudgetModel budgetDetail;
+  final bool fromRequestedScreen;
 
   const BudgetSwitcher({
     super.key,
     required this.currentIndex,
     required this.budgetDetail,
+    required this.fromRequestedScreen,
   });
 
   @override
@@ -81,6 +83,7 @@ class BudgetSwitcher extends StatelessWidget {
                                         currentIndex: currentIndex,
                                         id: data.key.toString(),
                                         budgetDetail: budgetDetail,
+                                        fromRequestedScreen: fromRequestedScreen,
                                       ),
                                     );
                                   },

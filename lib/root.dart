@@ -16,10 +16,12 @@ import 'features/auth/presentation/bloc/auth_bloc.dart';
 /// @time   : 15:07:08
 class Root extends StatefulWidget {
   final String? userId;
+  final String? budgetId;
 
   const Root({
     super.key,
     this.userId,
+    this.budgetId,
   });
 
   @override
@@ -34,7 +36,7 @@ class _RootState extends State<Root> {
     if (widget.userId != null) {
       _accountHelper.updateSelectedBudget(
         id: widget.userId!,
-        budgetId: "",
+        budgetId: widget.budgetId ?? "",
       );
     }
     super.initState();
@@ -49,8 +51,7 @@ class _RootState extends State<Root> {
           if (state.user.selectedBudget.isEmpty) {
             Navigator.pushReplacementNamed(context, RouteName.decision);
           } else if (state.user.selectedBudget == kRequested) {
-            // todo;
-            log("User's budget is requested.");
+            Navigator.pushReplacementNamed(context, RouteName.requested);
           } else {
             Navigator.pushReplacementNamed(context, RouteName.home);
           }

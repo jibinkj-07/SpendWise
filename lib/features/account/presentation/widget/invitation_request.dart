@@ -1,5 +1,6 @@
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../core/util/error/failure.dart';
 import '../../../../core/util/widget/custom_loading.dart';
 import '../../../../core/util/widget/empty.dart';
@@ -8,14 +9,14 @@ import '../helper/account_helper.dart';
 import 'invitation_tile.dart';
 
 /// @author : Jibin K John
-/// @date   : 18/01/2025
-/// @time   : 18:38:25
+/// @date   : 22/01/2025
+/// @time   : 19:10:34
 
-class Inbox extends StatelessWidget {
+class InvitationRequest extends StatelessWidget {
   final String userId;
   final AccountHelper accountHelper;
 
-  const Inbox({
+  const InvitationRequest({
     super.key,
     required this.userId,
     required this.accountHelper,
@@ -24,7 +25,7 @@ class Inbox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<Either<Failure, List<BudgetInfo>>>(
-      stream: accountHelper.subscribeInvitations(userId: userId),
+      stream: accountHelper.subscribeMyInvitationRequests(userId: userId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CustomLoading();
@@ -43,13 +44,16 @@ class Inbox extends StatelessWidget {
           (failure) => Empty(message: 'Failure: ${failure.message}'),
           (budgets) {
             if (budgets.isEmpty) {
-              return const Empty(message: 'No invitations yet');
+              return const Empty(message: 'No requests yet');
             }
 
             return ListView.builder(
               itemCount: budgets.length,
               itemBuilder: (context, index) {
-                return InvitationTile(budget: budgets[index]);
+                return InvitationTile(
+                  budget: budgets[index],
+                  isMyRequest: true,
+                );
               },
             );
           },

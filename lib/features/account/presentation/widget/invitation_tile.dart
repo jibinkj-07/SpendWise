@@ -1,133 +1,188 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:shimmer/shimmer.dart';
-
-import '../../../../core/config/injection/injection_container.dart';
+import '../../../../core/config/app_config.dart';
+import '../../../../core/util/helper/app_helper.dart';
+import '../../../../core/util/widget/custom_loading.dart';
+import '../../../../root.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/model/budget_info.dart';
-import '../helper/account_helper.dart';
-import 'display_image.dart';
+import '../bloc/account_bloc.dart';
 
 /// @author : Jibin K John
 /// @date   : 18/01/2025
 /// @time   : 19:03:13
 
-class InvitationTile extends StatefulWidget {
+class InvitationTile extends StatelessWidget {
   final bool isMyRequest;
-  final String budgetId;
-  final String userId;
-  final DateTime date;
+  final BudgetInfo budget;
 
   const InvitationTile({
     super.key,
-    required this.isMyRequest,
-    required this.budgetId,
-    required this.userId,
-    required this.date,
+    this.isMyRequest = false,
+    required this.budget,
   });
 
   @override
-  State<InvitationTile> createState() => _InvitationTileState();
-}
-
-class _InvitationTileState extends State<InvitationTile> {
-  final AccountHelper _accountHelper = sl<AccountHelper>();
-  final ValueNotifier<BudgetInfo?> _budgetInfo = ValueNotifier(null);
-
-  @override
-  void initState() {
-    _getBudget();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
-      child: ValueListenableBuilder(
-        valueListenable: _budgetInfo,
-        builder: (ctx, budget, child) {
-          if (budget == null) return child!;
-          return ListTile(
-            title:     Text(
-              budget.budget.name,
-
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Admin : ${budget.admin.name}"),
-                Text(
-                    "Currency : ${budget.budget.currencySymbol} ${budget.budget.currency}"),
-                Text(
-                    "Invited on : ${DateFormat.yMMMd().add_jm().format(widget.date)}"),
-                const SizedBox(height: 10.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+    final size = MediaQuery.sizeOf(context);
+    return Container(
+      margin: EdgeInsets.symmetric(
+        horizontal: AppHelper.horizontalPadding(size),
+        vertical: 8.0,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade300,
+            blurRadius: 8.0,
+          ),
+        ],
+      ),
+      child: BlocConsumer<AccountBloc, AccountState>(
+        builder: (BuildContext context, AccountState state) {
+          final loading = (state is Deleting) || (state is Accepting);
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    FilledButton(
-                      onPressed: () {},
-                      style:
-                          FilledButton.styleFrom(backgroundColor: Colors.red),
-                      child: Text("Reject"),
+                    Text(
+                      budget.budget.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.0,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(width: 10.0),
-                    FilledButton(
-                      onPressed: () {},
-                      child: Text("Accept"),
+                    Text(
+                      "${budget.budget.currencySymbol} ${budget.budget.currency}",
+                      style: TextStyle(fontSize: 12.0, color: Colors.black54),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 15.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Admin",
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              budget.admin.name,
+                              style: TextStyle(
+                                  fontSize: 12.0, color: Colors.black54),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          DateFormat.yMMMd().add_jm().format(budget.date),
+                          style:
+                              TextStyle(fontSize: 12.0, color: Colors.black54),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
                   ],
-                )
-              ],
-            ),
-          );
-        },
-        child: ListTile(
-          leading: Shimmer.fromColors(
-            baseColor: Colors.grey,
-            highlightColor: Colors.white,
-            child: CircleAvatar(
-              backgroundColor: Colors.grey.withOpacity(.5),
-            ),
-          ),
-          title: Shimmer.fromColors(
-            baseColor: Colors.grey,
-            highlightColor: Colors.white,
-            child: Container(
-              width: 20.0,
-              height: 10.0,
-              decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(.5),
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-            ),
-          ),
-          subtitle: Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: Shimmer.fromColors(
-              baseColor: Colors.grey,
-              highlightColor: Colors.white,
-              child: Container(
-                width: 100.0,
-                height: 6.0,
-                decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(.5),
-                  borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-            ),
-          ),
-        ),
+              if (!loading) ...[
+                Divider(
+                  height: 0,
+                  thickness: .5,
+                  color: Colors.grey.shade300,
+                ),
+                Row(
+                  mainAxisAlignment: isMyRequest
+                      ? MainAxisAlignment.center
+                      : MainAxisAlignment.spaceAround,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        final authBloc =
+                            (context.read<AuthBloc>().state as Authenticated);
+                        if (isMyRequest) {
+                          context.read<AccountBloc>().add(
+                                RemoveMyBudgetRequest(
+                                  userId: authBloc.user.uid,
+                                  budgetId: budget.budget.id,
+                                ),
+                              );
+                        } else {
+                          context.read<AccountBloc>().add(
+                                RemoveBudgetRequest(
+                                  userId: authBloc.user.uid,
+                                  userName: authBloc.user.name,
+                                  budgetId: budget.budget.id,
+                                  budgetName: budget.budget.name,
+                                ),
+                              );
+                        }
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppConfig.errorColor,
+                      ),
+                      child: Text("Remove"),
+                    ),
+                    if (!isMyRequest)
+                      TextButton(
+                        onPressed: () {
+                          final authBloc =
+                              (context.read<AuthBloc>().state as Authenticated);
+                          context.read<AccountBloc>().add(
+                                AcceptBudgetRequest(
+                                  userId: authBloc.user.uid,
+                                  userName: authBloc.user.name,
+                                  budgetId: budget.budget.id,
+                                  budgetName: budget.budget.name,
+                                ),
+                              );
+                        },
+                        child: Text("Accept"),
+                      ),
+                  ],
+                ),
+              ] else
+                Container(
+                  height: 50.0,
+                  width: 50.0,
+                  padding: const EdgeInsets.all(15.0),
+                  child: const CustomLoading(),
+                )
+            ],
+          );
+        },
+        listener: (BuildContext ctx, AccountState state) {
+          if (state is AccountStateError) {
+            state.error.showSnackBar(context);
+          }
+
+          if (state is Accepted) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (_) => Root(
+                  userId: (context.read<AuthBloc>().state as Authenticated)
+                      .user
+                      .uid,
+                  budgetId: state.budgetId,
+                ),
+              ),
+              (_) => false,
+            );
+          }
+        },
       ),
     );
-  }
-
-  Future<void> _getBudget() async {
-    await _accountHelper
-        .getBudgetInfo(budgetId: widget.budgetId)
-        .then((result) {
-      if (result.isRight) {
-        _budgetInfo.value = result.right;
-      }
-    });
   }
 }

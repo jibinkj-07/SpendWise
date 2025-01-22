@@ -28,7 +28,7 @@ class MemberDeleteDialog extends StatelessWidget {
       canPop: false,
       child: BlocConsumer<AccountBloc, AccountState>(
         builder: (ctx, state) {
-          final isDeleting = state is DeletingMember;
+          final isDeleting = state is Deleting;
           return AlertDialog(
             title: Text(isDeleting ? "Deleting" : "Delete Member"),
             content: isDeleting
@@ -66,7 +66,7 @@ class MemberDeleteDialog extends StatelessWidget {
             Navigator.pop(context);
             state.error.showSnackBar(context);
           }
-          if (state is DeletedMember) {
+          if (state is Deleted) {
             Navigator.pop(context);
           }
         },

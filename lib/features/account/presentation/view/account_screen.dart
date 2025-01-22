@@ -77,18 +77,18 @@ class AccountScreen extends StatelessWidget {
                                 color: AppConfig.primaryColor,
                               ),
                             ),
-                            ListTile(
-                              onTap: () {},
-                              leading: Icon(Icons.edit_document),
-                              title: Text("Generate Report"),
-                              subtitle:
-                                  Text("Generate report for a specific month"),
-                              trailing: Icon(
-                                Icons.arrow_forward_ios_rounded,
-                                size: 15.0,
-                                color: AppConfig.primaryColor,
-                              ),
-                            ),
+                            // ListTile(
+                            //   onTap: () {},
+                            //   leading: Icon(Icons.edit_document),
+                            //   title: Text("Generate Report"),
+                            //   subtitle:
+                            //       Text("Generate report for a specific month"),
+                            //   trailing: Icon(
+                            //     Icons.arrow_forward_ios_rounded,
+                            //     size: 15.0,
+                            //     color: AppConfig.primaryColor,
+                            //   ),
+                            // ),
                             if (budgetState.budget.admin == state.user.uid)
                               ListTile(
                                 onTap: () {

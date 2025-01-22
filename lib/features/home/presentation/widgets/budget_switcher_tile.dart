@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/config/injection/injection_container.dart';
+import '../../../../root.dart';
 import '../../../account/presentation/helper/account_helper.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/domain/model/budget_model.dart';
@@ -17,12 +18,14 @@ class BudgetSwitcherTile extends StatefulWidget {
   final String id;
   final int currentIndex;
   final BudgetModel budgetDetail;
+  final bool fromRequestedScreen;
 
   const BudgetSwitcherTile({
     super.key,
     required this.id,
     required this.currentIndex,
     required this.budgetDetail,
+    required this.fromRequestedScreen,
   });
 
   @override
@@ -55,11 +58,21 @@ class _BudgetSwitcherTileState extends State<BudgetSwitcherTile> {
             ? ListTile(
                 onTap: () {
                   Navigator.pop(context);
-                  if (widget.budgetDetail.id != budget.id) {
+                  final authBloc =
+                      (context.read<AuthBloc>().state as Authenticated);
+                  if (widget.fromRequestedScreen) {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (_) => Root(
+                          userId: authBloc.user.uid,
+                          budgetId: budget.id,
+                        ),
+                      ),
+                      (_) => false,
+                    );
+                  } else if (widget.budgetDetail.id != budget.id) {
                     _accountHelper.updateSelectedBudget(
-                      id: (context.read<AuthBloc>().state as Authenticated)
-                          .user
-                          .uid,
+                      id: authBloc.user.uid,
                       budgetId: budget.id,
                     );
                     loadBudget(context, widget.currentIndex, budget.id);

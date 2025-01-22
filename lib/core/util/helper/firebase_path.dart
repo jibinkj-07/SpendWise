@@ -33,8 +33,7 @@ sealed class FirebasePath {
   static String budgetDetailPath(String budgetId) =>
       "$budgetNode/$budgetId/details";
 
-  static String budgetMembersPath(String budgetId) =>
-      "$budgetNode/$budgetId/$memberNode";
+
 
   static String notificationPath(String userId) => "notifications/$userId";
 }

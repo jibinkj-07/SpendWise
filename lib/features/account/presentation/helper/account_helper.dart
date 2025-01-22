@@ -29,11 +29,6 @@ class AccountHelper {
         budgetId: budgetId,
       );
 
-  Future<Either<Failure, BudgetInfo?>> getBudgetInfo({
-    required String budgetId,
-  }) async =>
-      await _accountRepo.getBudgetInfo(budgetId: budgetId);
-
   Stream<Either<Failure, List<User>>> subscribeMembers({
     required String budgetId,
   }) async* {
@@ -44,5 +39,17 @@ class AccountHelper {
     required String budgetId,
   }) async* {
     yield* _accountRepo.subscribeRequests(budgetId: budgetId);
+  }
+
+  Stream<Either<Failure, List<BudgetInfo>>> subscribeInvitations({
+    required String userId,
+  }) async* {
+    yield* _accountRepo.subscribeInvitations(userId: userId);
+  }
+
+  Stream<Either<Failure, List<BudgetInfo>>> subscribeMyInvitationRequests({
+    required String userId,
+  }) async* {
+    yield* _accountRepo.subscribeMyInvitationRequests(userId: userId);
   }
 }
