@@ -35,7 +35,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
   }) async* {
     try {
       yield* _firebaseDatabase
-          .ref(FirebasePath.budgetPath(budgetId))
+          .ref(FirebasePath.budget(budgetId))
           .child("categories")
           .onValue
           .map<Either<Failure, List<CategoryModel>>>((event) {
@@ -70,7 +70,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
   }) async {
     try {
       await _firebaseDatabase
-          .ref(FirebasePath.categoryPath(budgetId, category.id))
+          .ref(FirebasePath.category(budgetId, category.id))
           .set(category.toJson());
       return const Right(true);
     } catch (e) {
@@ -85,7 +85,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
   }) async* {
     try {
       yield* _firebaseDatabase
-          .ref(FirebasePath.budgetDetailPath(budgetId))
+          .ref(FirebasePath.budget(budgetId))
           .onValue
           .map<Either<Failure, BudgetModel>>((event) {
         if (event.snapshot.exists) {
@@ -130,7 +130,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
     try {
       // Adding owner id into member node of budget
       await _firebaseDatabase
-          .ref(FirebasePath.budgetPath(id))
+          .ref(FirebasePath.budget(id))
           .child("members/$admin")
           .set({
         "status": "joined",
@@ -138,7 +138,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
       });
 
       // Add budget basic data
-      await _firebaseDatabase.ref(FirebasePath.budgetDetailPath(id)).set({
+      await _firebaseDatabase.ref(FirebasePath.budget(id)).set({
         "name": name,
         "admin": admin,
         "currency": currency.name,
@@ -149,14 +149,14 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
       // Add Categories
       for (final item in categories) {
         await _firebaseDatabase
-            .ref(FirebasePath.categoryPath(id, item.id))
+            .ref(FirebasePath.category(id, item.id))
             .set(item.toJson());
       }
 
       // Add members and invitation into member node
       for (final user in members) {
         await _firebaseDatabase
-            .ref(FirebasePath.budgetPath(id))
+            .ref(FirebasePath.budget(id))
             .child("members/${user.uid}")
             .set({
           "status": "pending",
@@ -165,7 +165,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
 
         // Adding invitation to members node
         await _firebaseDatabase
-            .ref(FirebasePath.invitationPath(user.uid))
+            .ref(FirebasePath.invitations(user.uid))
             .child(id)
             .set({
           "date": date,
@@ -181,7 +181,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
 
       // Adding current budget to joined budget node for owner
       await _firebaseDatabase
-          .ref(FirebasePath.joinedBudgetPath(admin))
+          .ref(FirebasePath.joinedBudgets(admin))
           .child(id)
           .set({"date": date});
 
@@ -203,7 +203,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
   }) async {
     try {
       await _firebaseDatabase
-          .ref(FirebasePath.categoryPath(budgetId, categoryId))
+          .ref(FirebasePath.category(budgetId, categoryId))
           .remove();
       return const Right(true);
     } catch (e) {
@@ -220,7 +220,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
       await _deleteAllImagesInFolder("Images/$budgetId");
       // Get all budget members
       await _firebaseDatabase
-          .ref(FirebasePath.budgetPath(budgetId))
+          .ref(FirebasePath.budget(budgetId))
           .once()
           .then((event) async {
         if (event.snapshot.exists) {
@@ -237,18 +237,18 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
 
             // Remove budget from members node
             await _firebaseDatabase
-                .ref(FirebasePath.invitationPath(memberId))
+                .ref(FirebasePath.invitations(memberId))
                 .child(budgetId)
                 .remove();
             await _firebaseDatabase
-                .ref(FirebasePath.joinedBudgetPath(memberId))
+                .ref(FirebasePath.joinedBudgets(memberId))
                 .child(budgetId)
                 .remove();
           }
         }
       });
 
-      await _firebaseDatabase.ref(FirebasePath.budgetPath(budgetId)).remove();
+      await _firebaseDatabase.ref(FirebasePath.budget(budgetId)).remove();
       return const Right(true);
     } catch (e) {
       log("er: [budget_fb_data_source_impl.dart][deleteBudget] $e");
@@ -256,9 +256,9 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
     }
   }
 
-  Future<void> _deleteAllImagesInFolder(String folderPath) async {
+  Future<void> _deleteAllImagesInFolder(String folder) async {
     // Get a reference to the folder
-    final Reference folderRef = _firebaseStorage.ref().child(folderPath);
+    final Reference folderRef = _firebaseStorage.ref().child(folder);
 
     // List all files in the folder
     final ListResult result = await folderRef.listAll();

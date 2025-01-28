@@ -34,7 +34,7 @@ class AnalysisFbDataSourceImpl implements AnalysisFbDataSource {
   }) async* {
     try {
       yield* _firebaseDatabase
-          .ref(FirebasePath.transactionPath(budgetId))
+          .ref(FirebasePath.transactions(budgetId))
           .child(year)
           .onValue
           .map<Either<Failure, List<TransactionModel>>>((event) {
@@ -65,7 +65,7 @@ class AnalysisFbDataSourceImpl implements AnalysisFbDataSource {
       {required String budgetId}) async {
     try {
       return await _firebaseDatabase
-          .ref(FirebasePath.membersPath(budgetId))
+          .ref(FirebasePath.members(budgetId))
           .once()
           .then((event) async {
         if (event.snapshot.exists) {

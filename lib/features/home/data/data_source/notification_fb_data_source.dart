@@ -36,7 +36,7 @@ class NotificationDataSourceImpl implements NotificationDataSource {
   }) async {
     try {
       await _firebaseDatabase
-          .ref(FirebasePath.notificationPath(userId))
+          .ref(FirebasePath.notifications(userId))
           .remove();
       return const Right(true);
     } catch (e) {
@@ -52,7 +52,7 @@ class NotificationDataSourceImpl implements NotificationDataSource {
   }) async {
     try {
       await _firebaseDatabase
-          .ref(FirebasePath.notificationPath(userId))
+          .ref(FirebasePath.notifications(userId))
           .child(notificationId)
           .remove();
       return const Right(true);
@@ -71,7 +71,7 @@ class NotificationDataSourceImpl implements NotificationDataSource {
     await _notificationFbHelper.toggleReadStatus(userId, false);
     try {
       yield* _firebaseDatabase
-          .ref(FirebasePath.notificationPath(userId))
+          .ref(FirebasePath.notifications(userId))
           .onValue
           .map<Either<Failure, List<NotificationModel>>>((event) {
         if (event.snapshot.exists) {

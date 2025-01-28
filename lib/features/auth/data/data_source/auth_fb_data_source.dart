@@ -8,6 +8,9 @@ import 'package:either_dart/either.dart';
 import 'package:spend_wise/core/util/helper/firebase_path.dart';
 import 'package:spend_wise/features/auth/domain/model/user_model.dart';
 
+import '../../../../core/util/constant/constants.dart';
+import '../../../account/data/data_source/account_fb_data_source.dart';
+
 abstract class AuthFbDataSource {
   Stream<Either<Failure, UserModel>> subscribeUserData();
 
@@ -31,6 +34,7 @@ abstract class AuthFbDataSource {
 
 class AuthFbDataSourceImpl implements AuthFbDataSource {
   final FirebaseAuth _firebaseAuth;
+  final AccountFbDataSource _accountFbDataSource;
   final FirebaseDatabase _firebaseDatabase;
   final GoogleSignIn _googleSignIn;
 
@@ -38,9 +42,8 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
     this._firebaseAuth,
     this._firebaseDatabase,
     this._googleSignIn,
+    this._accountFbDataSource,
   );
-
-  final String _unknown = "unknown";
 
   @override
   Future<Either<Failure, UserModel>> createUser({
@@ -57,7 +60,7 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
 
       final createdOn = DateTime.now();
       final user = UserModel(
-        uid: userCredential.user?.uid ?? _unknown,
+        uid: userCredential.user?.uid ?? kUnknownUser,
         name: name,
         email: email,
         profileUrl: "profile_1",
@@ -67,7 +70,7 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
 
       await userCredential.user?.updateDisplayName(name);
       await _firebaseDatabase
-          .ref(FirebasePath.userDetailPath(user.uid))
+          .ref(FirebasePath.userDetails(user.uid))
           .set(user.toJson());
 
       return Right(user);
@@ -123,24 +126,26 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
         userCredential = await _firebaseAuth.signInWithCredential(credential);
       }
 
-      // Cant call userModel.toJson() because if already user exist
-      // it will override the selected budget id
+      // check if user already created or not
+      //if not create new user
+      final user = await _accountFbDataSource.getUserInfoByID(
+        id: userCredential.user?.uid ?? kUnknownUser,
+      );
 
-      final profile = await _firebaseDatabase
-          .ref(
-              FirebasePath.userDetailPath(userCredential.user?.uid ?? _unknown))
-          .child("profile_url")
-          .get();
-
-      await _firebaseDatabase
-          .ref(
-              FirebasePath.userDetailPath(userCredential.user?.uid ?? _unknown))
-          .update({
-        "name": userCredential.user?.displayName ?? "User",
-        "email": userCredential.user?.email ?? "user@gmail.com",
-        "profile_url": profile.exists ? profile.value.toString() : "profile_1",
-        "created_on": DateTime.now().millisecondsSinceEpoch.toString(),
-      });
+      if (user.isLeft) {
+        final createdOn = DateTime.now();
+        final user = UserModel(
+          uid: userCredential.user?.uid ?? kUnknownUser,
+          name: userCredential.user?.displayName ?? "User",
+          email: userCredential.user?.email ?? "user@gmail.com",
+          profileUrl: "profile_1",
+          selectedBudget: "",
+          createdOn: createdOn,
+        );
+        await _firebaseDatabase
+            .ref(FirebasePath.userDetails(user.uid))
+            .set(user.toJson());
+      }
       return const Right(null);
     } catch (e) {
       log("er: [auth_fb_data_source.dart][loginUserWithGoogle] $e");
@@ -173,13 +178,13 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
 
       // Reference to the user data in Firebase Realtime Database
       final DatabaseReference userRef =
-          _firebaseDatabase.ref(FirebasePath.userDetailPath(userId));
+          _firebaseDatabase.ref(FirebasePath.userDetails(userId));
 
       yield* userRef.onValue.map<Either<Failure, UserModel>>((event) {
         if (event.snapshot.exists) {
           try {
             // Parse the user data snapshot into a UserModel
-            final userModel = UserModel.fromFirebase(event.snapshot,userId);
+            final userModel = UserModel.fromFirebase(event.snapshot, userId);
             return Right(userModel); // Emit the parsed UserModel
           } catch (e) {
             return Left(
@@ -188,10 +193,6 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
         } else {
           return Left(DatabaseError(message: "No data found for this user."));
         }
-      }).handleError((error) {
-        // Handle stream errors and return a failure
-        return Left(
-            DatabaseError(message: "An error occurred: ${error.toString()}"));
       }).cast<
           Either<Failure, UserModel>>(); // Ensure the correct type is emitted
     } catch (e, stackTrace) {

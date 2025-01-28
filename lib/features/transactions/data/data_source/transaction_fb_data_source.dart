@@ -51,7 +51,7 @@ class TransactionFbDataSourceImpl implements TransactionFbDataSource {
       final transId =
           "${transaction.id}-${transaction.createdUserId.substring(0, 5)}";
       await _firebaseDatabase
-          .ref(FirebasePath.transactionPath(budgetId))
+          .ref(FirebasePath.transactions(budgetId))
           .child("${transaction.date.year}")
           .child("${transaction.date.month}")
           .child(transId)
@@ -84,7 +84,7 @@ class TransactionFbDataSourceImpl implements TransactionFbDataSource {
       }
 
       await _firebaseDatabase
-          .ref(FirebasePath.transactionPath(budgetId))
+          .ref(FirebasePath.transactions(budgetId))
           .child("${transactionDate.year}")
           .child("${transactionDate.month}")
           .child(transactionId)
@@ -104,7 +104,7 @@ class TransactionFbDataSourceImpl implements TransactionFbDataSource {
   }) async* {
     try {
       yield* _firebaseDatabase
-          .ref(FirebasePath.transactionPath(budgetId))
+          .ref(FirebasePath.transactions(budgetId))
           .child("${date.year}")
           .child("${date.month}")
           .onValue
@@ -124,11 +124,7 @@ class TransactionFbDataSourceImpl implements TransactionFbDataSource {
         } else {
           return const Right([]);
         }
-      }).cast<
-              Either<
-                  Failure,
-                  List<
-                      TransactionModel>>>(); // Ensure the correct type is emitted
+      }).cast<Either<Failure, List<TransactionModel>>>();
     } catch (e, stackTrace) {
       log("Error: [transaction_fb_data_source_impl.dart][subscribeMonthlyTransactions] $e, $stackTrace");
       yield Left(DatabaseError(message: "Something went wrong."));

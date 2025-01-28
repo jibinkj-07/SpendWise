@@ -27,7 +27,7 @@ class HomeHelper {
   Future<BudgetModel?> getBudgetDetail(String id) async {
     try {
       final result =
-          await _firebaseDatabase.ref(FirebasePath.budgetDetailPath(id)).once();
+          await _firebaseDatabase.ref(FirebasePath.budgetDetails(id)).once();
       if (result.snapshot.exists) {
         return BudgetModel.fromFirebase(result.snapshot, id);
       }

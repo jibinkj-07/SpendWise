@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 
 import '../../../../core/util/constant/constants.dart';
 import '../../../../core/util/error/failure.dart';
+import '../../../../core/util/helper/date_time_helper.dart';
 import '../../../../core/util/helper/firebase_path.dart';
 import '../../../../core/util/helper/notification.dart';
 import '../../../../core/util/helper/notification_fb_helper.dart';
@@ -26,15 +27,16 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
   Future<Either<Failure, User>> getUserInfoByID({required String id}) async {
     try {
       final result =
-          await _firebaseDatabase.ref("${FirebasePath.userNode}/$id").get();
+          await _firebaseDatabase.ref(FirebasePath.userDetails(id)).get();
       if (result.exists) {
         return Right(
           User(
-            imageUrl: result.child("details/profile_url").value.toString(),
-            date: DateTime.now(),
-            uid: result.key.toString(),
-            email: result.child("details/email").value.toString(),
-            name: result.child("details/name").value.toString(),
+            imageUrl: result.child("profile_url").value.toString(),
+            date: DateTimeHelper.getDateTimeFromMilli(
+                result.child("created_on").value.toString()),
+            uid: id,
+            email: result.child("email").value.toString(),
+            name: result.child("name").value.toString(),
             userStatus: "",
           ),
         );
@@ -51,7 +53,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
     required String email,
   }) async {
     try {
-      final result = await _firebaseDatabase.ref(FirebasePath.userNode).once();
+      final result = await _firebaseDatabase.ref(FirebasePath.usersNode).once();
       if (result.snapshot.exists) {
         for (final user in result.snapshot.children) {
           if (user.child("details/email").value.toString() == email) {
@@ -84,7 +86,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
       String budget = budgetId;
       if (budgetId.trim().isEmpty) {
         await _firebaseDatabase
-            .ref(FirebasePath.joinedBudgetPath(id))
+            .ref(FirebasePath.joinedBudgets(id))
             .once()
             .then((event) {
           if (event.snapshot.exists) {
@@ -93,7 +95,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
         });
       }
 
-      await _firebaseDatabase.ref(FirebasePath.userDetailPath(id)).update(
+      await _firebaseDatabase.ref(FirebasePath.userDetails(id)).update(
         {"selected": budget},
       );
       return const Right(true);
@@ -109,7 +111,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
     required String profileName,
   }) async {
     try {
-      await _firebaseDatabase.ref(FirebasePath.userDetailPath(userId)).update(
+      await _firebaseDatabase.ref(FirebasePath.userDetails(userId)).update(
         {"profile_url": profileName},
       );
       return const Right(true);
@@ -129,26 +131,26 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
     try {
       // Remove from user joined and invitation node
       await _firebaseDatabase
-          .ref(FirebasePath.joinedBudgetPath(memberId))
+          .ref(FirebasePath.joinedBudgets(memberId))
           .child(budgetId)
           .remove();
       if (fromRequest) {
         await _firebaseDatabase
-            .ref(FirebasePath.budgetRequestPath(budgetId))
+            .ref(FirebasePath.budgetDetails(budgetId))
             .child(memberId)
             .remove();
         await _firebaseDatabase
-            .ref(FirebasePath.userRequestPath(memberId))
+            .ref(FirebasePath.userRequests(memberId))
             .child(budgetId)
             .remove();
       } else {
         await _firebaseDatabase
-            .ref(FirebasePath.invitationPath(memberId))
+            .ref(FirebasePath.invitations(memberId))
             .child(budgetId)
             .remove();
         // Remove user from budget node
         await _firebaseDatabase
-            .ref(FirebasePath.membersPath(budgetId))
+            .ref(FirebasePath.members(budgetId))
             .child(memberId)
             .remove();
       }
@@ -179,7 +181,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
 
       // Add user into budget node
       await _firebaseDatabase
-          .ref(FirebasePath.membersPath(budgetId))
+          .ref(FirebasePath.members(budgetId))
           .child(memberId)
           .set({
         "status": "joined",
@@ -188,18 +190,18 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
 
       // Add budget into member joined node
       await _firebaseDatabase
-          .ref(FirebasePath.joinedBudgetPath(memberId))
+          .ref(FirebasePath.joinedBudgets(memberId))
           .child(budgetId)
           .set({
         "date": date,
       });
       // Remove the requests from user and budget nodes
       await _firebaseDatabase
-          .ref(FirebasePath.budgetRequestPath(budgetId))
+          .ref(FirebasePath.budgetRequests(budgetId))
           .child(memberId)
           .remove();
       await _firebaseDatabase
-          .ref(FirebasePath.userRequestPath(memberId))
+          .ref(FirebasePath.userRequests(memberId))
           .child(budgetId)
           .remove();
       // Add notification to user
@@ -227,7 +229,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
       final date = DateTime.now().millisecondsSinceEpoch.toString();
       // Add user into budget node
       await _firebaseDatabase
-          .ref(FirebasePath.membersPath(budgetId))
+          .ref(FirebasePath.members(budgetId))
           .child(memberId)
           .set({
         "status": "pending",
@@ -236,7 +238,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
 
       // Add budget into member invitation node
       await _firebaseDatabase
-          .ref(FirebasePath.invitationPath(memberId))
+          .ref(FirebasePath.invitations(memberId))
           .child(budgetId)
           .set({
         "date": date,
@@ -270,7 +272,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
       );
       if (result.isRight && result.right != null) {
         await _firebaseDatabase
-            .ref(FirebasePath.joinedBudgetPath(memberId))
+            .ref(FirebasePath.joinedBudgets(memberId))
             .once()
             .then((event) {
           for (final budget in event.snapshot.children) {
@@ -286,7 +288,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
         final date = DateTime.now().millisecondsSinceEpoch.toString();
         // Add user into budget node
         await _firebaseDatabase
-            .ref(FirebasePath.budgetRequestPath(budgetId))
+            .ref(FirebasePath.budgetRequests(budgetId))
             .child(memberId)
             .set({
           "status": kRequested,
@@ -295,7 +297,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
 
         // Add budget into member requested node
         await _firebaseDatabase
-            .ref(FirebasePath.userRequestPath(memberId))
+            .ref(FirebasePath.userRequests(memberId))
             .child(budgetId)
             .set({
           "date": date,
@@ -329,7 +331,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
     BudgetInfo? budget;
     try {
       await _firebaseDatabase
-          .ref(FirebasePath.budgetDetailPath(budgetId))
+          .ref(FirebasePath.budgetRequests(budgetId))
           .once()
           .then((event) async {
         if (event.snapshot.exists) {
@@ -359,7 +361,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
   }) async* {
     try {
       final stream = _firebaseDatabase
-          .ref(FirebasePath.membersPath(budgetId))
+          .ref(FirebasePath.members(budgetId))
           .onValue
           .asyncMap<Either<Failure, List<User>>>((event) async {
         try {
@@ -406,7 +408,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
       {required String budgetId}) async* {
     try {
       final stream = _firebaseDatabase
-          .ref(FirebasePath.budgetRequestPath(budgetId))
+          .ref(FirebasePath.budgetRequests(budgetId))
           .onValue
           .asyncMap<Either<Failure, List<User>>>((event) async {
         try {
@@ -454,7 +456,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
       {required String userId}) async* {
     try {
       final stream = _firebaseDatabase
-          .ref(FirebasePath.invitationPath(userId))
+          .ref(FirebasePath.invitations(userId))
           .onValue
           .asyncMap<Either<Failure, List<BudgetInfo>>>((event) async {
         try {
@@ -498,7 +500,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
       {required String userId}) async* {
     try {
       final stream = _firebaseDatabase
-          .ref(FirebasePath.userRequestPath(userId))
+          .ref(FirebasePath.userRequests(userId))
           .onValue
           .asyncMap<Either<Failure, List<BudgetInfo>>>((event) async {
         try {
@@ -550,7 +552,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
 
       // Add user into budget node
       await _firebaseDatabase
-          .ref(FirebasePath.membersPath(budgetId))
+          .ref(FirebasePath.members(budgetId))
           .child(userId)
           .update({
         "status": "joined",
@@ -559,19 +561,19 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
 
       // Add budget into member joined node
       await _firebaseDatabase
-          .ref(FirebasePath.joinedBudgetPath(userId))
+          .ref(FirebasePath.joinedBudgets(userId))
           .child(budgetId)
           .set({
         "date": date,
       });
       // Remove request from user invitation node
       await _firebaseDatabase
-          .ref(FirebasePath.invitationPath(userId))
+          .ref(FirebasePath.invitations(userId))
           .child(budgetId)
           .remove();
 
       await _firebaseDatabase
-          .ref(FirebasePath.membersPath(budgetId))
+          .ref(FirebasePath.members(budgetId))
           .once()
           .then((event) async {
         for (final member in event.snapshot.children) {
@@ -599,18 +601,18 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
   }) async {
     try {
       await _firebaseDatabase
-          .ref(FirebasePath.membersPath(budgetId))
+          .ref(FirebasePath.members(budgetId))
           .child(userId)
           .remove();
 
       // Remove request from user invitation node
       await _firebaseDatabase
-          .ref(FirebasePath.invitationPath(userId))
+          .ref(FirebasePath.invitations(userId))
           .child(budgetId)
           .remove();
 
       await _firebaseDatabase
-          .ref(FirebasePath.membersPath(budgetId))
+          .ref(FirebasePath.members(budgetId))
           .once()
           .then((event) async {
         for (final member in event.snapshot.children) {
@@ -637,11 +639,11 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
   }) async {
     try {
       await _firebaseDatabase
-          .ref(FirebasePath.budgetRequestPath(budgetId))
+          .ref(FirebasePath.budgetRequests(budgetId))
           .child(userId)
           .remove();
       await _firebaseDatabase
-          .ref(FirebasePath.userRequestPath(userId))
+          .ref(FirebasePath.userRequests(userId))
           .child(budgetId)
           .remove();
 

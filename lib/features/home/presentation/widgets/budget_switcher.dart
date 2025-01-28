@@ -43,7 +43,7 @@ class BudgetSwitcher extends StatelessWidget {
           if (state is Authenticated) {
             return StreamBuilder<DatabaseEvent>(
                 stream: FirebaseDatabase.instance
-                    .ref(FirebasePath.joinedBudgetPath(state.user.uid))
+                    .ref(FirebasePath.joinedBudgets(state.user.uid))
                     .onValue,
                 builder: (context, snapshot) {
                   return Column(

@@ -1,42 +1,46 @@
 sealed class FirebasePath {
-  static final String userNode = "users";
-  static final String budgetNode = "budgets";
-  static final String categoryNode = "categories";
-  static final String memberNode = "members";
-  static final String requestNode = "requests";
-  static final String transactionNode = "transactions";
-  static final String notificationStatusNode = "new_notification";
+  // Nodes
+  static const String _users = "users";
+  static const String _budgets = "_budgets";
+  static const String _categories = "_categories";
+  static const String _members = "members";
+  static const String _requests = "requests";
+  static const String _transactions = "transactions";
+  static const String _newNotification = "new_notification";
+  static const String _settings = "settings";
 
-  static String categoryPath(String budgetId, String catId) =>
-      "$budgetNode/$budgetId/$categoryNode/$catId";
+  // Nodes getters
+  static String get usersNode => _users;
+  static String get newNotification => _newNotification;
 
-  static String membersPath(String budgetId) =>
-      "$budgetNode/$budgetId/$memberNode";
+  // Paths
+  static String category(String budgetId, String categoryId) =>
+      "$_budgets/$budgetId/$_categories/$categoryId";
 
-  static String budgetRequestPath(String budgetId) =>
-      "$budgetNode/$budgetId/$requestNode";
+  static String members(String budgetId) => "$_budgets/$budgetId/$_members";
 
-  static String userDetailPath(String userId) => "$userNode/$userId/details";
-  static String userPath(String userId) => "$userNode/$userId";
-  static String userNotificationPath(String userId) => "$userNode/$userId/$notificationStatusNode";
+  static String budgetRequests(String budgetId) =>
+      "$_budgets/$budgetId/$_requests";
 
-  static String userRequestPath(String userId) =>
-      "$userNode/$userId/$requestNode";
+  static String userDetails(String userId) => "$_users/$userId/details";
 
-  static String joinedBudgetPath(String userId) => "$userNode/$userId/joined";
+  static String user(String userId) => "$_users/$userId";
 
-  static String invitationPath(String userId) =>
-      "$userNode/$userId/invitations";
+  static String userSettings(String userId) =>
+      "$_users/$userId/$_settings";
 
-  static String transactionPath(String budgetId) =>
-      "$budgetNode/$budgetId/$transactionNode";
+  static String userRequests(String userId) => "$_users/$userId/$_requests";
 
-  static String budgetPath(String budgetId) => "$budgetNode/$budgetId";
+  static String joinedBudgets(String userId) => "$_users/$userId/joined";
 
-  static String budgetDetailPath(String budgetId) =>
-      "$budgetNode/$budgetId/details";
+  static String invitations(String userId) => "$_users/$userId/invitations";
 
+  static String transactions(String budgetId) =>
+      "$_budgets/$budgetId/$_transactions";
 
+  static String budget(String budgetId) => "$_budgets/$budgetId";
 
-  static String notificationPath(String userId) => "notifications/$userId";
+  static String budgetDetails(String budgetId) => "$_budgets/$budgetId/details";
+
+  static String notifications(String userId) => "notifications/$userId";
 }

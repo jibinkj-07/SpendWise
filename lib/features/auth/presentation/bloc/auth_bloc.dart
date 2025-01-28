@@ -36,10 +36,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   FutureOr<void> _onSubscribe(
       SubscribeUserData event, Emitter<AuthState> emit) {
     emit(Fetching());
-    _authRepo.subscribeUserData().listen((event) {
-      if (event.isRight) add(UserDataLoaded(userData: event.right));
-      if (event.isLeft) add(AuthErrorOccurred(error: event.left));
-    });
+    _authRepo.subscribeUserData().listen(
+      (event) {
+        if (event.isRight) add(UserDataLoaded(userData: event.right));
+        if (event.isLeft) add(AuthErrorOccurred(error: event.left));
+      },
+      onError: (error) {
+        add(
+          AuthErrorOccurred(
+            error: Failure(message: "An unexpected error occurred.\n$error"),
+          ),
+        );
+      },
+      cancelOnError: true,
+    );
   }
 
   FutureOr<void> _onDataLoad(UserDataLoaded event, Emitter<AuthState> emit) {

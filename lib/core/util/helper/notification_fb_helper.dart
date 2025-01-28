@@ -17,7 +17,7 @@ class NotificationFbHelper {
     try {
       final date = DateTime.now().millisecondsSinceEpoch.toString();
       await _firebaseDatabase
-          .ref(FirebasePath.notificationPath(userId))
+          .ref(FirebasePath.notifications(userId))
           .child(date)
           .set({
         "title": title,
@@ -32,7 +32,7 @@ class NotificationFbHelper {
 
   Future<void> toggleReadStatus(String userId, bool status) async {
     await _firebaseDatabase
-        .ref(FirebasePath.userPath(userId))
-        .update({FirebasePath.notificationStatusNode: status});
+        .ref(FirebasePath.userSettings(userId))
+        .update({FirebasePath.newNotification: status});
   }
 }

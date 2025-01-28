@@ -28,6 +28,7 @@ Future<void> initDependencies() async {
       sl(),
       sl(),
       sl(),
+      sl(),
     ),
   );
   sl.registerLazySingleton<BudgetFbDataSource>(() => BudgetFbDataSourceImpl(

@@ -32,7 +32,8 @@ class _NotificationButtonState extends State<NotificationButton> {
       ),
       icon: StreamBuilder(
         stream: _firebaseDatabase
-            .ref(FirebasePath.userNotificationPath(widget.userId))
+            .ref(FirebasePath.userSettings(widget.userId))
+            .child(FirebasePath.newNotification)
             .onValue,
         builder: (ctx, snapshot) {
           bool unRead = false;
