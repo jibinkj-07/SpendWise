@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:either_dart/either.dart';
@@ -103,24 +104,28 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
         const Duration(seconds: 2), () => emit(AccountInitial()));
   }
 
-  FutureOr<void> _onAcceptBudget(
+  Future<void> _onAcceptBudget(
     AcceptBudgetRequest event,
     Emitter<AccountState> emit,
   ) async {
     emit(Accepting());
     await _accountRepo
         .acceptBudgetInvitation(
-            budgetId: event.budgetId,
-            budgetName: event.budgetName,
-            userId: event.userId,
-            userName: event.userName)
-        .fold((error) => emit(AccountStateError(error: error)),
-            (success) => emit(Accepted(budgetId: event.budgetId)));
+          budgetId: event.budgetId,
+          budgetName: event.budgetName,
+          userId: event.userId,
+          userName: event.userName,
+        )
+        .fold(
+          (error) => emit(AccountStateError(error: error)),
+          (_) => emit(Accepted(budgetId: event.budgetId)),
+        );
+
     await Future.delayed(
         const Duration(seconds: 2), () => emit(AccountInitial()));
   }
 
-  FutureOr<void> _onRemoveBudgetReq(
+  Future<void> _onRemoveBudgetReq(
     RemoveBudgetRequest event,
     Emitter<AccountState> emit,
   ) async {
@@ -137,7 +142,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
         const Duration(seconds: 2), () => emit(AccountInitial()));
   }
 
-  FutureOr<void> _onRemoveMyBudgetReq(
+  Future<void> _onRemoveMyBudgetReq(
     RemoveMyBudgetRequest event,
     Emitter<AccountState> emit,
   ) async {
@@ -151,5 +156,11 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
             (success) => emit(Deleted()));
     await Future.delayed(
         const Duration(seconds: 2), () => emit(AccountInitial()));
+  }
+
+  @override
+  void onEvent(AccountEvent event) {
+    super.onEvent(event);
+    log("AccountEvent dispatched: $event");
   }
 }

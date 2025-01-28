@@ -11,6 +11,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/util/error/failure.dart';
 import '../../../../core/util/helper/notification.dart';
+import '../../../../core/util/helper/notification_fb_helper.dart';
 import '../../../account/data/data_source/account_fb_data_source.dart';
 import '../../domain/model/category_model.dart';
 import 'budget_fb_data_source.dart';
@@ -19,11 +20,13 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
   final FirebaseDatabase _firebaseDatabase;
   final FirebaseStorage _firebaseStorage;
   final AccountFbDataSource _accountFbDataSource;
+  final NotificationFbHelper _notificationFbHelper;
 
   BudgetFbDataSourceImpl(
     this._firebaseDatabase,
     this._firebaseStorage,
     this._accountFbDataSource,
+    this._notificationFbHelper,
   );
 
   @override
@@ -51,10 +54,6 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
         } else {
           return const Right([]);
         }
-      }).handleError((error) {
-        // Handle stream errors and return a failure
-        return Left(
-            DatabaseError(message: "An error occurred: ${error.toString()}"));
       }).cast<
               Either<Failure,
                   List<CategoryModel>>>(); // Ensure the correct type is emitted
@@ -111,13 +110,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
                     " Please contact the administrator for further assistance."),
           );
         }
-      }).handleError((error) {
-        // Handle stream errors and return a failure
-        return Left(
-            DatabaseError(message: "An error occurred: ${error.toString()}"));
-      }).cast<
-              Either<Failure,
-                  BudgetModel>>(); // Ensure the correct type is emitted
+      }).cast<Either<Failure, BudgetModel>>();
     } catch (e, stackTrace) {
       log("Error: [budget_fb_data_source_impl.dart][subscribeBudget] $e, $stackTrace");
       yield Left(DatabaseError(message: "Something went wrong."));
@@ -135,14 +128,6 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
     final id = Uuid().v1();
     final date = DateTime.now().millisecondsSinceEpoch.toString();
     try {
-      // Add budget basic data
-      await _firebaseDatabase.ref(FirebasePath.budgetDetailPath(id)).set({
-        "name": name,
-        "admin": admin,
-        "currency": currency.name,
-        "currency_symbol": currency.symbol,
-        "created_on": date,
-      });
       // Adding owner id into member node of budget
       await _firebaseDatabase
           .ref(FirebasePath.budgetPath(id))
@@ -151,6 +136,16 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
         "status": "joined",
         "date": date,
       });
+
+      // Add budget basic data
+      await _firebaseDatabase.ref(FirebasePath.budgetDetailPath(id)).set({
+        "name": name,
+        "admin": admin,
+        "currency": currency.name,
+        "currency_symbol": currency.symbol,
+        "created_on": date,
+      });
+
       // Add Categories
       for (final item in categories) {
         await _firebaseDatabase
@@ -177,19 +172,11 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
         });
 
         // Adding notification to corresponding users
-        await _firebaseDatabase
-            .ref(FirebasePath.notificationPath(user.uid))
-            .child(date)
-            .set({
-          "title": Notification.budgetInvitation,
-          "body": "You have a new invitation to join the budget \"$name\"",
-          "time": date,
-        });
-
-        // Toggle notification status to true
-        await _firebaseDatabase
-            .ref(FirebasePath.userPath(user.uid))
-            .update({"notification_status": true});
+        await _notificationFbHelper.sendNotification(
+          title: Notification.budgetInvitation,
+          body: "You have a new invitation to join the budget \"$name\"",
+          userId: user.uid,
+        );
       }
 
       // Adding current budget to joined budget node for owner
@@ -230,7 +217,6 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
     required String budgetId,
   }) async {
     try {
-      final date = DateTime.now().millisecondsSinceEpoch.toString();
       await _deleteAllImagesInFolder("Images/$budgetId");
       // Get all budget members
       await _firebaseDatabase
@@ -243,20 +229,12 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
           for (final member in budgetMembers.children) {
             final memberId = member.key.toString();
             // Add Notification to all members
-            await _firebaseDatabase
-                .ref(FirebasePath.notificationPath(memberId))
-                .child(date)
-                .set({
-              "title": Notification.budgetDeleted,
-              "body":
-                  "\"${budgetDetail.child("name").value}\" has been deleted.",
-              "time": date,
-            });
+            await _notificationFbHelper.sendNotification(
+              title: Notification.budgetDeleted,
+              body: "\"${budgetDetail.child("name").value}\" has been deleted.",
+              userId: memberId,
+            );
 
-            // Toggle notification status to true
-            await _firebaseDatabase
-                .ref(FirebasePath.userPath(memberId))
-                .update({"notification_status": true});
             // Remove budget from members node
             await _firebaseDatabase
                 .ref(FirebasePath.invitationPath(memberId))

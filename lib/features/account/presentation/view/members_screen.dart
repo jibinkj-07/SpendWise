@@ -13,11 +13,13 @@ import '../widget/requested_members.dart';
 class MembersScreen extends StatefulWidget {
   final String budgetId;
   final String budgetName;
+  final String adminId;
 
   const MembersScreen({
     super.key,
     required this.budgetId,
     required this.budgetName,
+    required this.adminId,
   });
 
   @override
@@ -56,11 +58,13 @@ class _MembersScreenState extends State<MembersScreen> {
               budgetName: widget.budgetName,
               budgetId: widget.budgetId,
               accountHelper: _accountHelper,
+              adminId: widget.adminId,
             ),
             RequestedMembers(
               budgetName: widget.budgetName,
               budgetId: widget.budgetId,
               accountHelper: _accountHelper,
+              adminId: widget.adminId,
             ),
           ],
         ),

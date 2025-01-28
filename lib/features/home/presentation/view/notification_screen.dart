@@ -69,12 +69,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                   showDialog(
                                       context: context,
                                       builder: (ctx) {
-                                        return AlertDialog(
-                                          title: Text("Deleting"),
-                                          content: SizedBox(
-                                              height: 70.0,
-                                              width: 70.0,
-                                              child: CustomLoading()),
+                                        return  PopScope(
+                                          canPop: false,
+                                          child: AlertDialog(
+                                            title: Text("Deleting"),
+                                            content: SizedBox(
+                                                height: 70.0,
+                                                width: 70.0,
+                                                child: CustomLoading()),
+                                          ),
                                         );
                                       });
                                   for (final notif in _selected.value) {
@@ -97,12 +100,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                   showDialog(
                                       context: context,
                                       builder: (ctx) {
-                                        return AlertDialog(
-                                          title: Text("Deleting"),
-                                          content: SizedBox(
-                                              height: 70.0,
-                                              width: 70.0,
-                                              child: CustomLoading()),
+                                        return PopScope(
+                                          canPop: false,
+                                          child: AlertDialog(
+                                            title: Text("Deleting"),
+                                            content: SizedBox(
+                                                height: 70.0,
+                                                width: 70.0,
+                                                child: CustomLoading()),
+                                          ),
                                         );
                                       });
                                   await _notificationHelper

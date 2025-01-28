@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/config/app_config.dart';
+import '../../../../core/config/route/app_routes.dart';
 import '../../../../core/util/helper/app_helper.dart';
+import '../../../../core/util/widget/custom_loading.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/presentation/bloc/budget_view_bloc.dart';
 import '../widget/profile_info.dart';
@@ -28,7 +30,7 @@ class AccountScreen extends StatelessWidget {
         title: const Text("My Account"),
         centerTitle: true,
       ),
-      body: BlocBuilder<AuthBloc, AuthState>(
+      body: BlocConsumer<AuthBloc, AuthState>(
         builder: (ctx, state) {
           if (state is Authenticated) {
             return ListView(
@@ -95,6 +97,7 @@ class AccountScreen extends StatelessWidget {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (_) => MembersScreen(
+                                        adminId: budgetState.budget.admin,
                                         budgetName: budgetState.budget.name,
                                         budgetId: budgetState.budget.id,
                                       ),
@@ -131,7 +134,9 @@ class AccountScreen extends StatelessWidget {
                             ),
                           ),
                           ListTile(
-                            onTap: () {},
+                            onTap: () => context.read<AuthBloc>().add(
+                                  SignOut(),
+                                ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.vertical(
                                 bottom: Radius.circular(20.0),
@@ -168,6 +173,29 @@ class AccountScreen extends StatelessWidget {
             );
           }
           return const SizedBox.shrink();
+        },
+        listener: (BuildContext context, AuthState state) {
+          if (state is SigningOut) {
+            showDialog(
+                context: context,
+                builder: (ctx) {
+                  return PopScope(
+                    canPop: false,
+                    child: AlertDialog(
+                      title: Text("Signing out"),
+                      content: SizedBox(
+                          height: 70.0, width: 70.0, child: CustomLoading()),
+                    ),
+                  );
+                });
+          }
+
+          if (state is SignedOut) {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              RouteName.login,
+              (_) => false,
+            );
+          }
         },
       ),
     );

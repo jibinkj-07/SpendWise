@@ -49,10 +49,6 @@ class AnalysisFbDataSourceImpl implements AnalysisFbDataSource {
         } else {
           return const Right([]);
         }
-      }).handleError((error) {
-        // Handle stream errors and return a failure
-        return Left(
-            DatabaseError(message: "An error occurred: ${error.toString()}"));
       }).cast<
               Either<
                   Failure,

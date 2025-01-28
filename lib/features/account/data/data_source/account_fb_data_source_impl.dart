@@ -7,6 +7,7 @@ import '../../../../core/util/constant/constants.dart';
 import '../../../../core/util/error/failure.dart';
 import '../../../../core/util/helper/firebase_path.dart';
 import '../../../../core/util/helper/notification.dart';
+import '../../../../core/util/helper/notification_fb_helper.dart';
 import '../../../budget/domain/model/budget_model.dart';
 import '../../domain/model/budget_info.dart';
 import '../../domain/model/user.dart';
@@ -14,8 +15,12 @@ import 'account_fb_data_source.dart';
 
 class AccountFbDataSourceImpl implements AccountFbDataSource {
   final FirebaseDatabase _firebaseDatabase;
+  final NotificationFbHelper _notificationHelper;
 
-  AccountFbDataSourceImpl(this._firebaseDatabase);
+  AccountFbDataSourceImpl(
+    this._firebaseDatabase,
+    this._notificationHelper,
+  );
 
   @override
   Future<Either<Failure, User>> getUserInfoByID({required String id}) async {
@@ -25,11 +30,11 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
       if (result.exists) {
         return Right(
           User(
-            imageUrl: result.child("profile_url").value.toString(),
+            imageUrl: result.child("details/profile_url").value.toString(),
             date: DateTime.now(),
             uid: result.key.toString(),
-            email: result.child("email").value.toString(),
-            name: result.child("name").value.toString(),
+            email: result.child("details/email").value.toString(),
+            name: result.child("details/name").value.toString(),
             userStatus: "",
           ),
         );
@@ -49,14 +54,14 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
       final result = await _firebaseDatabase.ref(FirebasePath.userNode).once();
       if (result.snapshot.exists) {
         for (final user in result.snapshot.children) {
-          if (user.child("email").value.toString() == email) {
+          if (user.child("details/email").value.toString() == email) {
             return Right(
               User(
-                imageUrl: user.child("profile_url").value.toString(),
+                imageUrl: user.child("details/profile_url").value.toString(),
                 date: DateTime.now(),
                 uid: user.key.toString(),
-                email: user.child("email").value.toString(),
-                name: user.child("name").value.toString(),
+                email: user.child("details/email").value.toString(),
+                name: user.child("details/name").value.toString(),
                 userStatus: "",
               ),
             );
@@ -88,7 +93,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
         });
       }
 
-      await _firebaseDatabase.ref(FirebasePath.userPath(id)).update(
+      await _firebaseDatabase.ref(FirebasePath.userDetailPath(id)).update(
         {"selected": budget},
       );
       return const Right(true);
@@ -104,7 +109,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
     required String profileName,
   }) async {
     try {
-      await _firebaseDatabase.ref(FirebasePath.userPath(userId)).update(
+      await _firebaseDatabase.ref(FirebasePath.userDetailPath(userId)).update(
         {"profile_url": profileName},
       );
       return const Right(true);
@@ -149,21 +154,13 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
       }
 
       // Add notification to user
-      final date = DateTime.now().millisecondsSinceEpoch.toString();
-      await _firebaseDatabase
-          .ref(FirebasePath.notificationPath(memberId))
-          .child(date)
-          .set({
-        "title": Notification.accessRevoked,
-        "body":
-            "Your ${fromRequest ? "Request" : "Access"} to the budget \"$budgetName\" has been revoked by admin",
-        "time": date,
-      });
+      await _notificationHelper.sendNotification(
+        title: Notification.accessRevoked,
+        body: "Your ${fromRequest ? "Request" : "Access"} to the budget "
+            "\"$budgetName\" has been revoked by the admin",
+        userId: memberId,
+      );
 
-      // Toggle notification status to true
-      await _firebaseDatabase
-          .ref(FirebasePath.userPath(memberId))
-          .update({"notification_status": true});
       return const Right(true);
     } catch (e) {
       log("er:[account_fb_data_source_impl.dart][deleteMember] $e");
@@ -206,19 +203,13 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
           .child(budgetId)
           .remove();
       // Add notification to user
-      await _firebaseDatabase
-          .ref(FirebasePath.notificationPath(memberId))
-          .child(date)
-          .set({
-        "title": Notification.requestAccepted,
-        "body":
+      await _notificationHelper.sendNotification(
+        title: Notification.requestAccepted,
+        body:
             "Your request to join the budget \"$budgetName\" has been accepted",
-        "time": date,
-      });
-      // Toggle notification status to true
-      await _firebaseDatabase
-          .ref(FirebasePath.userPath(memberId))
-          .update({"notification_status": true});
+        userId: memberId,
+      );
+
       return const Right(true);
     } catch (e) {
       log("er:[account_fb_data_source_impl.dart][acceptMemberRequest] $e");
@@ -244,7 +235,6 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
       });
 
       // Add budget into member invitation node
-
       await _firebaseDatabase
           .ref(FirebasePath.invitationPath(memberId))
           .child(budgetId)
@@ -253,18 +243,12 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
       });
 
       // Add notification to user
-      await _firebaseDatabase
-          .ref(FirebasePath.notificationPath(memberId))
-          .child(date)
-          .set({
-        "title": Notification.budgetInvitation,
-        "body": "You have a new invitation to join the budget \"$budgetName\"",
-        "time": date,
-      });
-      // Toggle notification status to true
-      await _firebaseDatabase
-          .ref(FirebasePath.userPath(memberId))
-          .update({"notification_status": true});
+      await _notificationHelper.sendNotification(
+        title: Notification.budgetInvitation,
+        body: "You have a new invitation to join the budget \"$budgetName\"",
+        userId: memberId,
+      );
+
       return const Right(true);
     } catch (e) {
       log("er:[account_fb_data_source_impl.dart][inviteMember] $e");
@@ -318,19 +302,12 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
         });
 
         // Add notification to admin
-        await _firebaseDatabase
-            .ref(FirebasePath.notificationPath(result.right!.admin.uid))
-            .child(date)
-            .set({
-          "title": Notification.joinRequest,
-          "body":
-              "You have a new request from \"$memberName\" to join \"${result.right!.budget.name}\" budget ",
-          "time": date,
-        });
-        // Toggle notification status to true
-        await _firebaseDatabase
-            .ref(FirebasePath.userPath(result.right!.admin.uid))
-            .update({"notification_status": true});
+        await _notificationHelper.sendNotification(
+          title: Notification.joinRequest,
+          body: "You have a new request from \"$memberName\" to "
+              "join \"${result.right!.budget.name}\" budget",
+          userId: result.right!.admin.uid,
+        );
 
         return const Right(true);
       } else {
@@ -339,7 +316,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
         );
       }
     } catch (e) {
-      log("er:[account_fb_data_source_impl.dart][inviteMember] $e");
+      log("er:[account_fb_data_source_impl.dart][requestBudgetJoin] $e");
       return Left(Failure(message: "Something went wrong. Try again"));
     }
   }
@@ -371,7 +348,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
       });
       return Right(budget);
     } catch (e) {
-      log("er:[account_fb_data_source_impl.dart][inviteMember] $e");
+      log("er:[account_fb_data_source_impl.dart][getBudgetInfo] $e");
       return Left(Failure(message: "Something went wrong. Try again"));
     }
   }
@@ -598,22 +575,14 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
           .once()
           .then((event) async {
         for (final member in event.snapshot.children) {
-          await _firebaseDatabase
-              .ref(FirebasePath.notificationPath(member.key.toString()))
-              .child(date)
-              .set({
-            "title": Notification.memberJoined,
-            "body":
-                "New member \"$userName\" has been joined to \"$budgetName\" budget ",
-            "time": date,
-          });
-          // Toggle notification status to true
-          await _firebaseDatabase
-              .ref(FirebasePath.userPath(member.key.toString()))
-              .update({"notification_status": true});
+          await _notificationHelper.sendNotification(
+            title: Notification.memberJoined,
+            body: "New member \"$userName\" joined to \"$budgetName\" budget",
+            userId: member.key.toString(),
+          );
         }
       });
-
+      log("reached end");
       return const Right(true);
     } catch (e) {
       log("er:[account_fb_data_source_impl.dart][acceptBudgetInvitation] $e");
@@ -629,8 +598,6 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
     required String userName,
   }) async {
     try {
-      final date = DateTime.now().millisecondsSinceEpoch.toString();
-
       await _firebaseDatabase
           .ref(FirebasePath.membersPath(budgetId))
           .child(userId)
@@ -647,19 +614,12 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
           .once()
           .then((event) async {
         for (final member in event.snapshot.children) {
-          await _firebaseDatabase
-              .ref(FirebasePath.notificationPath(member.key.toString()))
-              .child(date)
-              .set({
-            "title": Notification.requestDeclined,
-            "body":
-                "\"$userName\" has been declined the request to join \"$budgetName\" budget ",
-            "time": date,
-          });
-          // Toggle notification status to true
-          await _firebaseDatabase
-              .ref(FirebasePath.userPath(member.key.toString()))
-              .update({"notification_status": true});
+          await _notificationHelper.sendNotification(
+            title: Notification.requestDeclined,
+            body:
+                "\"$userName\" declined the request to join \"$budgetName\" budget",
+            userId: member.key.toString(),
+          );
         }
       });
 

@@ -15,12 +15,14 @@ import 'member_list_tile.dart';
 class RequestedMembers extends StatelessWidget {
   final String budgetId;
   final String budgetName;
+  final String adminId;
   final AccountHelper accountHelper;
 
   const RequestedMembers({
     super.key,
     required this.budgetId,
     required this.budgetName,
+    required this.adminId,
     required this.accountHelper,
   });
 
@@ -57,6 +59,7 @@ class RequestedMembers extends StatelessWidget {
                   isRequest: true,
                   member: member,
                   budgetId: budgetId,
+                  adminId: adminId,
                   budgetName: budgetName,
                 );
               },

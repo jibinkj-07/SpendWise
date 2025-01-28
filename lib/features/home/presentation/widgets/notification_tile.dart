@@ -63,7 +63,10 @@ class NotificationTile extends StatelessWidget {
                       trailing: Text(
                         noti.Notification.formatDateTime(notification.date),
                         style: TextStyle(
-                            fontWeight: FontWeight.w500, fontSize: 10.0),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 10.0,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   ),

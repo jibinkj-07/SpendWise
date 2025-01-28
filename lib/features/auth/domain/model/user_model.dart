@@ -6,7 +6,6 @@ class UserModel {
   final String email;
   final String profileUrl;
   final String selectedBudget;
-  final bool notificationStatus;
   final DateTime createdOn;
 
   UserModel({
@@ -15,23 +14,20 @@ class UserModel {
     required this.email,
     required this.profileUrl,
     required this.selectedBudget,
-    required this.notificationStatus,
     required this.createdOn,
   });
 
-  factory UserModel.fromFirebase(DataSnapshot userData) {
+  factory UserModel.fromFirebase(DataSnapshot userData,String userId) {
     // If user logging with google there might be a chance to
     // not creating selected node under user detail
     final budget = userData.child("selected").exists
         ? userData.child("selected").value.toString()
         : "";
     return UserModel(
-      uid: userData.key.toString(),
+      uid: userId,
       name: userData.child("name").value.toString(),
       email: userData.child("email").value.toString(),
       profileUrl: userData.child("profile_url").value.toString(),
-      notificationStatus:
-          userData.child("notification_status").value.toString() == "true",
       selectedBudget: budget,
       createdOn: DateTime.fromMillisecondsSinceEpoch(
         int.parse(userData.child("created_on").value.toString()),
@@ -44,7 +40,6 @@ class UserModel {
         "email": email,
         "profile_url": profileUrl,
         "selected": selectedBudget,
-        "notification_status": notificationStatus,
         "created_on": createdOn.millisecondsSinceEpoch.toString(),
       };
 

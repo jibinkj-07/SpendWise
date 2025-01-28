@@ -1,4 +1,3 @@
-
 import './imports.dart';
 
 final sl = GetIt.instance;
@@ -8,6 +7,8 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<AccountHelper>(() => AccountHelper(sl()));
   sl.registerLazySingleton<HomeHelper>(() => HomeHelper(sl()));
   sl.registerLazySingleton<NotificationHelper>(() => NotificationHelper(sl()));
+  sl.registerLazySingleton<NotificationFbHelper>(
+      () => NotificationFbHelper(sl()));
 
   // **************************************** Externals ****************************************
   final auth = FirebaseAuth.instance;
@@ -23,24 +24,26 @@ Future<void> initDependencies() async {
   // **************************************** Data Sources ****************************************
 
   sl.registerLazySingleton<AuthFbDataSource>(
-        () =>
-        AuthFbDataSourceImpl(
-          sl(),
-          sl(),
-          sl(),
-        ),
+    () => AuthFbDataSourceImpl(
+      sl(),
+      sl(),
+      sl(),
+    ),
   );
-  sl.registerLazySingleton<BudgetFbDataSource>(
-          () => BudgetFbDataSourceImpl(sl(), sl(), sl()));
+  sl.registerLazySingleton<BudgetFbDataSource>(() => BudgetFbDataSourceImpl(
+        sl(),
+        sl(),
+        sl(),
+        sl(),
+      ));
   sl.registerLazySingleton<AccountFbDataSource>(
-          () => AccountFbDataSourceImpl(sl()));
+      () => AccountFbDataSourceImpl(sl(), sl()));
   sl.registerLazySingleton<TransactionFbDataSource>(
-          () => TransactionFbDataSourceImpl(sl(), sl()));
+      () => TransactionFbDataSourceImpl(sl(), sl()));
   sl.registerLazySingleton<AnalysisFbDataSource>(
-          () => AnalysisFbDataSourceImpl(sl(), sl()));
+      () => AnalysisFbDataSourceImpl(sl(), sl()));
   sl.registerLazySingleton<NotificationDataSource>(
-          () => NotificationDataSourceImpl(sl())
-  );
+      () => NotificationDataSourceImpl(sl(), sl()));
 
   // **************************************** Repos ****************************************
   sl.registerLazySingleton<AuthRepo>(() => AuthRepoImpl(sl()));

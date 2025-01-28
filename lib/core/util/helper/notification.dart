@@ -71,11 +71,12 @@ sealed class Notification {
     final difference = now.difference(dateTime);
 
     if (difference.inDays == 0) {
-      return "Today";
+      return "Today\n${DateFormat.jm().format(dateTime)}";
     } else if (difference.inDays == 1) {
       return "Yesterday";
     } else if (difference.inDays < 7) {
-      return DateFormat.EEEE().format(dateTime); // Returns day name like "Monday"
+      return DateFormat.EEEE()
+          .format(dateTime); // Returns day name like "Monday"
     } else if (difference.inDays < 30) {
       return DateFormat("d MMM").format(dateTime); // Returns like "1 Jan"
     } else if (difference.inDays < 365) {
@@ -86,5 +87,4 @@ sealed class Notification {
       return "$yearsAgo year${yearsAgo > 1 ? 's' : ''} ago";
     }
   }
-
 }

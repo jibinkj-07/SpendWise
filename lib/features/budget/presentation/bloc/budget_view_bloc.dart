@@ -42,10 +42,21 @@ class BudgetViewBloc extends Bloc<BudgetViewEvent, BudgetViewState> {
     await _cancelSubscription();
     emit(BudgetSubscribing());
     _budgetSubscription =
-        _budgetRepo.subscribeBudget(budgetId: event.budgetId).listen((event) {
-      if (event.isRight) add(BudgetLoaded(budget: event.right));
-      if (event.isLeft) add(BudgetViewErrorOccurred(error: event.left));
-    });
+        _budgetRepo.subscribeBudget(budgetId: event.budgetId).listen(
+      (event) {
+        if (event.isRight) add(BudgetLoaded(budget: event.right));
+        if (event.isLeft) add(BudgetViewErrorOccurred(error: event.left));
+      },
+      onError: (error) {
+        add(
+          BudgetViewErrorOccurred(
+              error: Failure(
+                  message:
+                      "An unexpected error occurred while fetching the budget\n$error")),
+        );
+      },
+      cancelOnError: true,
+    );
   }
 
   FutureOr<void> _onLoaded(

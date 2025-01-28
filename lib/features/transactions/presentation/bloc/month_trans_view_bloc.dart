@@ -46,10 +46,21 @@ class MonthTransViewBloc
     _transactionSubscription = _transactionRepo
         .subscribeMonthlyTransactions(
             budgetId: event.budgetId, date: event.date)
-        .listen((event) {
-      if (event.isRight) add(SubscribedMonthView(transactions: event.right));
-      if (event.isLeft) add(ErrorMonthView(error: event.left));
-    });
+        .listen(
+      (event) {
+        if (event.isRight) add(SubscribedMonthView(transactions: event.right));
+        if (event.isLeft) add(ErrorMonthView(error: event.left));
+      },
+      onError: (error) {
+        add(
+          ErrorMonthView(
+              error: Failure(
+                  message:
+                      "An unexpected error occurred while fetching the budget\n$error")),
+        );
+      },
+      cancelOnError: true,
+    );
   }
 
   FutureOr<void> _onSubscribed(

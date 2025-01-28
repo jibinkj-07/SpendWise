@@ -55,15 +55,26 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         budgetId: event.budgetId,
         date: state.date,
       )
-          .listen((result) {
-        result.fold(
-          (failure) => add(ErrorTransaction(error: failure)),
-          (transactions) => add(SubscribedTransaction(
-            transactions: transactions,
-            date: state.date,
-          )),
-        );
-      });
+          .listen(
+        (result) {
+          result.fold(
+            (failure) => add(ErrorTransaction(error: failure)),
+            (transactions) => add(SubscribedTransaction(
+              transactions: transactions,
+              date: state.date,
+            )),
+          );
+        },
+        onError: (error) {
+          add(
+            ErrorTransaction(
+                error: Failure(
+                    message:
+                        "An unexpected error occurred while fetching the budget\n$error")),
+          );
+        },
+        cancelOnError: true,
+      );
     }
   }
 

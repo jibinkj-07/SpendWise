@@ -1,10 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/config/app_config.dart';
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/widget/custom_loading.dart';
-import '../../../../root.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/model/budget_info.dart';
 import '../bloc/account_bloc.dart';
@@ -41,8 +42,9 @@ class InvitationTile extends StatelessWidget {
           ),
         ],
       ),
-      child: BlocConsumer<AccountBloc, AccountState>(
+      child: BlocBuilder<AccountBloc, AccountState>(
         builder: (BuildContext context, AccountState state) {
+          log("state from builder $state");
           final loading = (state is Deleting) || (state is Accepting);
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -97,90 +99,72 @@ class InvitationTile extends StatelessWidget {
                   ],
                 ),
               ),
-              if (!loading) ...[
-                Divider(
-                  height: 0,
-                  thickness: .5,
-                  color: Colors.grey.shade300,
-                ),
-                Row(
-                  mainAxisAlignment: isMyRequest
-                      ? MainAxisAlignment.center
-                      : MainAxisAlignment.spaceAround,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        final authBloc =
-                            (context.read<AuthBloc>().state as Authenticated);
-                        if (isMyRequest) {
-                          context.read<AccountBloc>().add(
-                                RemoveMyBudgetRequest(
-                                  userId: authBloc.user.uid,
-                                  budgetId: budget.budget.id,
-                                ),
-                              );
-                        } else {
-                          context.read<AccountBloc>().add(
-                                RemoveBudgetRequest(
-                                  userId: authBloc.user.uid,
-                                  userName: authBloc.user.name,
-                                  budgetId: budget.budget.id,
-                                  budgetName: budget.budget.name,
-                                ),
-                              );
-                        }
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: AppConfig.errorColor,
-                      ),
-                      child: Text("Remove"),
-                    ),
-                    if (!isMyRequest)
+
+                if (!loading) ...[
+                  Divider(
+                    height: 0,
+                    thickness: .5,
+                    color: Colors.grey.shade300,
+                  ),
+                  Row(
+                    mainAxisAlignment: isMyRequest
+                        ? MainAxisAlignment.center
+                        : MainAxisAlignment.spaceAround,
+                    children: [
                       TextButton(
                         onPressed: () {
                           final authBloc =
                               (context.read<AuthBloc>().state as Authenticated);
-                          context.read<AccountBloc>().add(
-                                AcceptBudgetRequest(
-                                  userId: authBloc.user.uid,
-                                  userName: authBloc.user.name,
-                                  budgetId: budget.budget.id,
-                                  budgetName: budget.budget.name,
-                                ),
-                              );
+                          if (isMyRequest) {
+                            context.read<AccountBloc>().add(
+                                  RemoveMyBudgetRequest(
+                                    userId: authBloc.user.uid,
+                                    budgetId: budget.budget.id,
+                                  ),
+                                );
+                          } else {
+                            context.read<AccountBloc>().add(
+                                  RemoveBudgetRequest(
+                                    userId: authBloc.user.uid,
+                                    userName: authBloc.user.name,
+                                    budgetId: budget.budget.id,
+                                    budgetName: budget.budget.name,
+                                  ),
+                                );
+                          }
                         },
-                        child: Text("Accept"),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppConfig.errorColor,
+                        ),
+                        child: Text("Remove"),
                       ),
-                  ],
-                ),
-              ] else
-                Container(
-                  height: 50.0,
-                  width: 50.0,
-                  padding: const EdgeInsets.all(15.0),
-                  child: const CustomLoading(),
-                )
+                      if (!isMyRequest)
+                        TextButton(
+                          onPressed: () {
+                            final authBloc = (context.read<AuthBloc>().state
+                                as Authenticated);
+                            context.read<AccountBloc>().add(
+                                  AcceptBudgetRequest(
+                                    userId: authBloc.user.uid,
+                                    userName: authBloc.user.name,
+                                    budgetId: budget.budget.id,
+                                    budgetName: budget.budget.name,
+                                  ),
+                                );
+                          },
+                          child: Text("Accept"),
+                        ),
+                    ],
+                  ),
+                ] else
+                  Container(
+                    height: 50.0,
+                    width: 50.0,
+                    padding: const EdgeInsets.all(15.0),
+                    child: const CustomLoading(),
+                  )
             ],
           );
-        },
-        listener: (BuildContext ctx, AccountState state) {
-          if (state is AccountStateError) {
-            state.error.showSnackBar(context);
-          }
-
-          if (state is Accepted) {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                builder: (_) => Root(
-                  userId: (context.read<AuthBloc>().state as Authenticated)
-                      .user
-                      .uid,
-                  budgetId: state.budgetId,
-                ),
-              ),
-              (_) => false,
-            );
-          }
         },
       ),
     );

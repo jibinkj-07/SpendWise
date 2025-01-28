@@ -51,15 +51,26 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
       _analysisSubscription = _analysisRepo
           .getTransactionsPerYear(
               budgetId: event.budgetId, year: state.date.year.toString())
-          .listen((result) {
-        result.fold(
-          (failure) => add(Error(error: failure)),
-          (transactions) => add(SubscribedAnalysis(
-            transactions: transactions,
-            budgetId: event.budgetId,
-          )),
-        );
-      });
+          .listen(
+        (result) {
+          result.fold(
+            (failure) => add(Error(error: failure)),
+            (transactions) => add(SubscribedAnalysis(
+              transactions: transactions,
+              budgetId: event.budgetId,
+            )),
+          );
+        },
+        onError: (error) {
+          add(
+            Error(
+                error: Failure(
+                    message:
+                        "An unexpected error occurred while fetching the budget\n$error")),
+          );
+        },
+        cancelOnError: true,
+      );
     }
   }
 

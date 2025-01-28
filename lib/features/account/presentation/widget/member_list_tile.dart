@@ -17,6 +17,7 @@ import 'member_delete_dialog.dart';
 class MemberListTile extends StatelessWidget {
   final User member;
   final String budgetId;
+  final String adminId;
   final String budgetName;
   final bool isRequest;
 
@@ -24,6 +25,7 @@ class MemberListTile extends StatelessWidget {
     super.key,
     required this.member,
     required this.budgetId,
+    required this.adminId,
     required this.budgetName,
     this.isRequest = false,
   });
@@ -66,13 +68,21 @@ class MemberListTile extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            member.name,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15.0,
-                            ),
-                            overflow: TextOverflow.ellipsis,
+                          Row(
+                            children: [
+                              if (member.uid == adminId) ...[
+                                Icon(Icons.admin_panel_settings_rounded),
+                                const SizedBox(width: 5.0),
+                              ],
+                              Text(
+                                member.name,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15.0,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
                           ),
                           Text(
                             member.email,
@@ -105,57 +115,58 @@ class MemberListTile extends StatelessWidget {
                   ],
                 ),
               ),
-              if (!loading) ...[
-                Divider(
-                  height: 0,
-                  thickness: .5,
-                  color: Colors.grey.shade300,
-                ),
-                Row(
-                  mainAxisAlignment: isRequest
-                      ? MainAxisAlignment.spaceAround
-                      : MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        showDialog(
-                          barrierDismissible: false,
-                          context: context,
-                          builder: (ctx) => MemberDeleteDialog(
-                            fromRequest: isRequest,
-                            budgetId: budgetId,
-                            budgetName: budgetName,
-                            memberId: member.uid,
-                          ),
-                        );
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: AppConfig.errorColor,
-                      ),
-                      child: Text("Remove"),
-                    ),
-                    if (isRequest)
+              if (member.uid != adminId)
+                if (!loading) ...[
+                  Divider(
+                    height: 0,
+                    thickness: .5,
+                    color: Colors.grey.shade300,
+                  ),
+                  Row(
+                    mainAxisAlignment: isRequest
+                        ? MainAxisAlignment.spaceAround
+                        : MainAxisAlignment.center,
+                    children: [
                       TextButton(
                         onPressed: () {
-                          context.read<AccountBloc>().add(
-                                AcceptAccess(
-                                  memberId: member.uid,
-                                  budgetId: budgetId,
-                                  budgetName: budgetName,
-                                ),
-                              );
+                          showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (ctx) => MemberDeleteDialog(
+                              fromRequest: isRequest,
+                              budgetId: budgetId,
+                              budgetName: budgetName,
+                              memberId: member.uid,
+                            ),
+                          );
                         },
-                        child: Text("Accept"),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppConfig.errorColor,
+                        ),
+                        child: Text("Remove"),
                       ),
-                  ],
-                )
-              ] else
-                Container(
-                  height: 50.0,
-                  width: 50.0,
-                  padding: const EdgeInsets.all(15.0),
-                  child: const CustomLoading(),
-                )
+                      if (isRequest)
+                        TextButton(
+                          onPressed: () {
+                            context.read<AccountBloc>().add(
+                                  AcceptAccess(
+                                    memberId: member.uid,
+                                    budgetId: budgetId,
+                                    budgetName: budgetName,
+                                  ),
+                                );
+                          },
+                          child: Text("Accept"),
+                        ),
+                    ],
+                  )
+                ] else
+                  Container(
+                    height: 50.0,
+                    width: 50.0,
+                    padding: const EdgeInsets.all(15.0),
+                    child: const CustomLoading(),
+                  )
             ],
           );
         },

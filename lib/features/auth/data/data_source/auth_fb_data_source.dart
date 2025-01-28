@@ -62,13 +62,12 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
         email: email,
         profileUrl: "profile_1",
         selectedBudget: "",
-        notificationStatus: false,
         createdOn: createdOn,
       );
 
       await userCredential.user?.updateDisplayName(name);
       await _firebaseDatabase
-          .ref(FirebasePath.userPath(user.uid))
+          .ref(FirebasePath.userDetailPath(user.uid))
           .set(user.toJson());
 
       return Right(user);
@@ -126,15 +125,21 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
 
       // Cant call userModel.toJson() because if already user exist
       // it will override the selected budget id
+
+      final profile = await _firebaseDatabase
+          .ref(
+              FirebasePath.userDetailPath(userCredential.user?.uid ?? _unknown))
+          .child("profile_url")
+          .get();
+
       await _firebaseDatabase
-          .ref(FirebasePath.userPath(userCredential.user?.uid ?? _unknown))
+          .ref(
+              FirebasePath.userDetailPath(userCredential.user?.uid ?? _unknown))
           .update({
         "name": userCredential.user?.displayName ?? "User",
         "email": userCredential.user?.email ?? "user@gmail.com",
-        "profile_url": userCredential.user?.photoURL ?? "profile_1",
-        "notification_status": false,
-        "created_on":
-            userCredential.user?.metadata.creationTime ?? DateTime.now(),
+        "profile_url": profile.exists ? profile.value.toString() : "profile_1",
+        "created_on": DateTime.now().millisecondsSinceEpoch.toString(),
       });
       return const Right(null);
     } catch (e) {
@@ -168,13 +173,13 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
 
       // Reference to the user data in Firebase Realtime Database
       final DatabaseReference userRef =
-          _firebaseDatabase.ref(FirebasePath.userPath(userId));
+          _firebaseDatabase.ref(FirebasePath.userDetailPath(userId));
 
       yield* userRef.onValue.map<Either<Failure, UserModel>>((event) {
         if (event.snapshot.exists) {
           try {
             // Parse the user data snapshot into a UserModel
-            final userModel = UserModel.fromFirebase(event.snapshot);
+            final userModel = UserModel.fromFirebase(event.snapshot,userId);
             return Right(userModel); // Emit the parsed UserModel
           } catch (e) {
             return Left(

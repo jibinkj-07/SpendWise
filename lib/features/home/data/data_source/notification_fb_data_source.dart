@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 
 import '../../../../core/util/error/failure.dart';
 import '../../../../core/util/helper/firebase_path.dart';
+import '../../../../core/util/helper/notification_fb_helper.dart';
 import '../model/notification_model.dart';
 
 abstract class NotificationDataSource {
@@ -22,8 +23,12 @@ abstract class NotificationDataSource {
 
 class NotificationDataSourceImpl implements NotificationDataSource {
   final FirebaseDatabase _firebaseDatabase;
+  final NotificationFbHelper _notificationFbHelper;
 
-  NotificationDataSourceImpl(this._firebaseDatabase);
+  NotificationDataSourceImpl(
+    this._firebaseDatabase,
+    this._notificationFbHelper,
+  );
 
   @override
   Future<Either<Failure, bool>> clearAllNotification({
@@ -63,9 +68,7 @@ class NotificationDataSourceImpl implements NotificationDataSource {
   }) async* {
     // change user notification status back to false
     // Means user read notifications
-    await _firebaseDatabase
-        .ref(FirebasePath.userPath(userId))
-        .update({"notification_status": false});
+    await _notificationFbHelper.toggleReadStatus(userId, false);
     try {
       yield* _firebaseDatabase
           .ref(FirebasePath.notificationPath(userId))

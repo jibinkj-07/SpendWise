@@ -42,10 +42,21 @@ class CategoryViewBloc extends Bloc<CategoryViewEvent, CategoryViewState> {
     await _cancelSubscription();
     emit(CategorySubscribing());
     _categorySubscription =
-        _budgetRepo.subscribeCategory(budgetId: event.budgetId).listen((event) {
-      if (event.isRight) add(CategoryLoaded(categories: event.right));
-      if (event.isLeft) add(CategoryViewErrorOccurred(error: event.left));
-    });
+        _budgetRepo.subscribeCategory(budgetId: event.budgetId).listen(
+      (event) {
+        if (event.isRight) add(CategoryLoaded(categories: event.right));
+        if (event.isLeft) add(CategoryViewErrorOccurred(error: event.left));
+      },
+      onError: (error) {
+        add(
+          CategoryViewErrorOccurred(
+              error: Failure(
+                  message:
+                      "An unexpected error occurred while fetching the budget\n$error")),
+        );
+      },
+      cancelOnError: true,
+    );
   }
 
   FutureOr<void> _onLoaded(

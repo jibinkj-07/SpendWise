@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../core/config/route/app_routes.dart';
 import '../../../account/presentation/widget/display_image.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -8,18 +9,13 @@ import 'budget_switcher.dart';
 import 'notification_button.dart';
 
 /// @author : Jibin K John
-/// @date   : 12/12/2024
-/// @time   : 15:33:41
+/// @date   : 28/01/2025
+/// @time   : 19:07:31
 
-class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final int index;
-  final BudgetModel budgetDetail;
+class ErrorAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String subtitle;
 
-  const MyAppBar({
-    super.key,
-    required this.index,
-    required this.budgetDetail,
-  });
+  const ErrorAppBar({super.key, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +43,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
             subtitle: Text(
-              budgetDetail.name,
+              subtitle,
               style: TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.w500,
@@ -78,8 +74,8 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.transparent,
       context: context,
       builder: (ctx) => BudgetSwitcher(
-        currentIndex: index,
-        budgetDetail: budgetDetail,
+        currentIndex: 0,
+        budgetDetail: BudgetModel.dummy(),
         fromRequestedScreen: false,
       ),
     );

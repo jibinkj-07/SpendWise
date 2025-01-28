@@ -5,6 +5,7 @@ sealed class FirebasePath {
   static final String memberNode = "members";
   static final String requestNode = "requests";
   static final String transactionNode = "transactions";
+  static final String notificationStatusNode = "new_notification";
 
   static String categoryPath(String budgetId, String catId) =>
       "$budgetNode/$budgetId/$categoryNode/$catId";
@@ -15,7 +16,9 @@ sealed class FirebasePath {
   static String budgetRequestPath(String budgetId) =>
       "$budgetNode/$budgetId/$requestNode";
 
+  static String userDetailPath(String userId) => "$userNode/$userId/details";
   static String userPath(String userId) => "$userNode/$userId";
+  static String userNotificationPath(String userId) => "$userNode/$userId/$notificationStatusNode";
 
   static String userRequestPath(String userId) =>
       "$userNode/$userId/$requestNode";
