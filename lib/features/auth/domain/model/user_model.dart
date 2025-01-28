@@ -5,7 +5,6 @@ class UserModel {
   final String name;
   final String email;
   final String profileUrl;
-  final String selectedBudget;
   final DateTime createdOn;
 
   UserModel({
@@ -13,11 +12,10 @@ class UserModel {
     required this.name,
     required this.email,
     required this.profileUrl,
-    required this.selectedBudget,
     required this.createdOn,
   });
 
-  factory UserModel.fromFirebase(DataSnapshot userData,String userId) {
+  factory UserModel.fromFirebase(DataSnapshot userData, String userId) {
     // If user logging with google there might be a chance to
     // not creating selected node under user detail
     final budget = userData.child("selected").exists
@@ -28,7 +26,6 @@ class UserModel {
       name: userData.child("name").value.toString(),
       email: userData.child("email").value.toString(),
       profileUrl: userData.child("profile_url").value.toString(),
-      selectedBudget: budget,
       createdOn: DateTime.fromMillisecondsSinceEpoch(
         int.parse(userData.child("created_on").value.toString()),
       ),
@@ -39,11 +36,9 @@ class UserModel {
         "name": name,
         "email": email,
         "profile_url": profileUrl,
-        "selected": selectedBudget,
         "created_on": createdOn.millisecondsSinceEpoch.toString(),
       };
 
   @override
-  String toString() =>
-      "UID $uid Name $name Email $email\nURL $profileUrl Selected $selectedBudget";
+  String toString() => "UID $uid Name $name Email $email\nURL $profileUrl";
 }

@@ -10,9 +10,11 @@ import 'package:spend_wise/features/auth/domain/model/user_model.dart';
 
 import '../../../../core/util/constant/constants.dart';
 import '../../../account/data/data_source/account_fb_data_source.dart';
+import '../../domain/model/settings_model.dart';
 
 abstract class AuthFbDataSource {
-  Stream<Either<Failure, UserModel>> subscribeUserData();
+  Stream<Either<Failure, MapEntry<UserModel, SettingsModel>>>
+      subscribeUserData();
 
   Future<Either<Failure, void>> loginUser({
     required String email,
@@ -46,7 +48,7 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
   );
 
   @override
-  Future<Either<Failure, UserModel>> createUser({
+  Future<Either<Failure, void>> createUser({
     required String name,
     required String email,
     required String password,
@@ -58,22 +60,14 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
         password: password,
       );
 
-      final createdOn = DateTime.now();
-      final user = UserModel(
+      await userCredential.user?.updateDisplayName(name);
+      await _createUser(
         uid: userCredential.user?.uid ?? kUnknownUser,
         name: name,
         email: email,
-        profileUrl: "profile_1",
-        selectedBudget: "",
-        createdOn: createdOn,
       );
 
-      await userCredential.user?.updateDisplayName(name);
-      await _firebaseDatabase
-          .ref(FirebasePath.userDetails(user.uid))
-          .set(user.toJson());
-
-      return Right(user);
+      return Right(null);
     } on FirebaseAuthException catch (e) {
       log("er: [auth_fb_data_source.dart][createUser] $e");
       return Left(
@@ -133,18 +127,11 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
       );
 
       if (user.isLeft) {
-        final createdOn = DateTime.now();
-        final user = UserModel(
+        await _createUser(
           uid: userCredential.user?.uid ?? kUnknownUser,
           name: userCredential.user?.displayName ?? "User",
           email: userCredential.user?.email ?? "user@gmail.com",
-          profileUrl: "profile_1",
-          selectedBudget: "",
-          createdOn: createdOn,
         );
-        await _firebaseDatabase
-            .ref(FirebasePath.userDetails(user.uid))
-            .set(user.toJson());
       }
       return const Right(null);
     } catch (e) {
@@ -166,7 +153,8 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
   }
 
   @override
-  Stream<Either<Failure, UserModel>> subscribeUserData() async* {
+  Stream<Either<Failure, MapEntry<UserModel, SettingsModel>>>
+      subscribeUserData() async* {
     try {
       // Ensure the user is logged in
       final userId = _firebaseAuth.currentUser?.uid;
@@ -176,25 +164,38 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
         return;
       }
 
-      // Reference to the user data in Firebase Realtime Database
-      final DatabaseReference userRef =
+      // References to the user data in Firebase Realtime Database
+      final DatabaseReference userDetailsRef =
           _firebaseDatabase.ref(FirebasePath.userDetails(userId));
+      final DatabaseReference userSettingsRef =
+          _firebaseDatabase.ref(FirebasePath.userSettings(userId));
 
-      yield* userRef.onValue.map<Either<Failure, UserModel>>((event) {
-        if (event.snapshot.exists) {
-          try {
-            // Parse the user data snapshot into a UserModel
-            final userModel = UserModel.fromFirebase(event.snapshot, userId);
-            return Right(userModel); // Emit the parsed UserModel
-          } catch (e) {
-            return Left(
-                DatabaseError(message: "Failed to parse user data: $e"));
+      // Listen to both userDetails and userSettings nodes
+      final userDetailsStream = userDetailsRef.onValue;
+      final userSettingsStream = userSettingsRef.onValue;
+
+      // Combine both streams using async* to yield results when either stream emits
+      await for (var userEvent in userDetailsStream) {
+        await for (var settingsEvent in userSettingsStream) {
+          if (userEvent.snapshot.exists && settingsEvent.snapshot.exists) {
+            try {
+              // Parse the user data and settings data
+              final userModel =
+                  UserModel.fromFirebase(userEvent.snapshot, userId);
+              final settingsModel =
+                  SettingsModel.fromFirebase(settingsEvent.snapshot);
+
+              // Emit the parsed models as a MapEntry
+              yield Right(MapEntry(userModel, settingsModel));
+            } catch (e) {
+              yield Left(DatabaseError(
+                  message: "Failed to parse user or settings data: $e"));
+            }
+          } else {
+            yield Left(DatabaseError(message: "No data found for this user."));
           }
-        } else {
-          return Left(DatabaseError(message: "No data found for this user."));
         }
-      }).cast<
-          Either<Failure, UserModel>>(); // Ensure the correct type is emitted
+      }
     } catch (e, stackTrace) {
       log("Error: [auth_fb_data_source.dart][subscribeUserData] $e, $stackTrace");
       yield Left(DatabaseError(message: "Something went wrong."));
@@ -210,5 +211,26 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
       log("er: [auth_fb_data_source.dart][signOut] $e");
       return Left(AuthenticationError(message: "Something went wrong."));
     }
+  }
+
+  Future<void> _createUser({
+    required String uid,
+    required String name,
+    required String email,
+  }) async {
+    final user = UserModel(
+      uid: uid,
+      name: name,
+      email: email,
+      profileUrl: kDefaultProfile,
+      createdOn: DateTime.now(),
+    );
+    await _firebaseDatabase
+        .ref(FirebasePath.userDetails(user.uid))
+        .set(user.toJson()); // Creating settings node
+    await _firebaseDatabase.ref(FirebasePath.userSettings(user.uid)).set({
+      FirebasePath.newNotification: false,
+      FirebasePath.currentBudget: "",
+    });
   }
 }

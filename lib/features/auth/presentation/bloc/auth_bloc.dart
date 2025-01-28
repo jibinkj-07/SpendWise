@@ -6,6 +6,7 @@ import 'package:either_dart/either.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../../core/util/error/failure.dart';
+import '../../domain/model/settings_model.dart';
 import '../../domain/model/user_model.dart';
 import '../../domain/repo/auth_repo.dart';
 
@@ -34,7 +35,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   FutureOr<void> _onSubscribe(
-      SubscribeUserData event, Emitter<AuthState> emit) {
+    SubscribeUserData event,
+    Emitter<AuthState> emit,
+  ) {
     emit(Fetching());
     _authRepo.subscribeUserData().listen(
       (event) {
@@ -53,7 +56,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   FutureOr<void> _onDataLoad(UserDataLoaded event, Emitter<AuthState> emit) {
-    emit(Authenticated(user: event.userData));
+    emit(
+      Authenticated(
+        user: event.userData.key,
+        settings: event.userData.value,
+      ),
+    );
   }
 
   Future<void> _onLogin(LoginUser event, Emitter<AuthState> emit) async {
@@ -102,7 +110,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
   }
 
-  FutureOr<void> _onError(AuthErrorOccurred event, Emitter<AuthState> emit) {
+  FutureOr<void> _onError(
+    AuthErrorOccurred event,
+    Emitter<AuthState> emit,
+  ) {
     emit(AuthError(error: event.error));
   }
 }

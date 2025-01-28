@@ -14,11 +14,15 @@ class Authenticating extends AuthState {
 
 class Authenticated extends AuthState {
   final UserModel user;
+  final SettingsModel settings;
 
-  Authenticated({required this.user});
+  Authenticated({
+    required this.user,
+    required this.settings,
+  });
 
   @override
-  List<Object?> get props => [user];
+  List<Object?> get props => [user, settings];
 }
 
 class ResetMailSending extends AuthState {

@@ -61,15 +61,15 @@ class _BudgetSwitcherTileState extends State<BudgetSwitcherTile> {
                   final authBloc =
                       (context.read<AuthBloc>().state as Authenticated);
                   if (widget.fromRequestedScreen) {
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                        builder: (_) => Root(
-                          userId: authBloc.user.uid,
-                          budgetId: budget.id,
-                        ),
-                      ),
-                      (_) => false,
-                    );
+                    // Navigator.of(context).pushAndRemoveUntil(
+                    //   MaterialPageRoute(
+                    //     builder: (_) => Root(
+                    //       userId: authBloc.user.uid,
+                    //       budgetId: budget.id,
+                    //     ),
+                    //   ),
+                    //   (_) => false,
+                    // );
                   } else if (widget.budgetDetail.id != budget.id) {
                     _accountHelper.updateSelectedBudget(
                       id: authBloc.user.uid,

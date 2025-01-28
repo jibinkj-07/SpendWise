@@ -10,7 +10,7 @@ class SubscribeUserData extends AuthEvent {
 }
 
 class UserDataLoaded extends AuthEvent {
-  final UserModel userData;
+  final MapEntry<UserModel, SettingsModel> userData;
 
   const UserDataLoaded({required this.userData});
 

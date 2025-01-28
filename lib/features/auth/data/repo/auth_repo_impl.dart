@@ -5,6 +5,8 @@ import 'package:spend_wise/features/auth/data/data_source/auth_fb_data_source.da
 import 'package:spend_wise/features/auth/domain/model/user_model.dart';
 import 'package:spend_wise/features/auth/domain/repo/auth_repo.dart';
 
+import '../../domain/model/settings_model.dart';
+
 class AuthRepoImpl implements AuthRepo {
   final AuthFbDataSource _authFbDataSource;
 
@@ -61,7 +63,7 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
-  Stream<Either<Failure, UserModel>> subscribeUserData() async* {
+  Stream<Either<Failure, MapEntry<UserModel, SettingsModel>>> subscribeUserData() async* {
     if (await InternetConnection().hasInternetAccess) {
       yield* _authFbDataSource.subscribeUserData();
     } else {

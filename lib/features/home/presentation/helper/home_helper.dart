@@ -42,7 +42,7 @@ void loadBudget(BuildContext context, int currentIndex, [String? budgetId]) {
   String? currentBudget = budgetId;
   final authBloc = context.read<AuthBloc>();
   if (currentBudget == null && authBloc.state is Authenticated) {
-    currentBudget = (authBloc.state as Authenticated).user.selectedBudget;
+    currentBudget = (authBloc.state as Authenticated).settings.currentBudget;
   }
 
   // cancel and subscribe to bloc if necessary depends on current index value

@@ -58,15 +58,15 @@ class BudgetDeleteDialog extends StatelessWidget {
           }
           if (state is BudgetDeleted) {
             Navigator.pop(context);
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                  builder: (_) => Root(
-                    userId: (context.read<AuthBloc>().state as Authenticated)
-                        .user
-                        .uid,
-                  ),
-                ),
-                (_) => false);
+            // Navigator.of(context).pushAndRemoveUntil(
+            //     MaterialPageRoute(
+            //       builder: (_) => Root(
+            //         userId: (context.read<AuthBloc>().state as Authenticated)
+            //             .user
+            //             .uid,
+            //       ),
+            //     ),
+            //     (_) => false);
           }
         },
       ),

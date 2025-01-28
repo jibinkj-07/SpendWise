@@ -42,12 +42,12 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
         _loading.value = state is Authenticating;
 
         if (state is Authenticated) {
-          if (state.user.selectedBudget.isEmpty) {
+          if (state.settings.currentBudget.isEmpty) {
             /// Navigate to decision screen if user doesn't have expenses
             Navigator.of(context).pushReplacementNamed(RouteName.decision);
-          } else if (state.user.selectedBudget == kRequested) {
-            // todo
+          } else if (state.settings.currentBudget == kRequested) {
             /// Navigate to Waiting screen
+            Navigator.of(context).pushReplacementNamed(RouteName.requested);
           } else {
             /// Navigate to home screen for success login
             Navigator.of(context).pushReplacementNamed(RouteName.home);

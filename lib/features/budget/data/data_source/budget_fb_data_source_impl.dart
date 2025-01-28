@@ -85,7 +85,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
   }) async* {
     try {
       yield* _firebaseDatabase
-          .ref(FirebasePath.budget(budgetId))
+          .ref(FirebasePath.budgetDetails(budgetId))
           .onValue
           .map<Either<Failure, BudgetModel>>((event) {
         if (event.snapshot.exists) {
@@ -129,16 +129,13 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
     final date = DateTime.now().millisecondsSinceEpoch.toString();
     try {
       // Adding owner id into member node of budget
-      await _firebaseDatabase
-          .ref(FirebasePath.budget(id))
-          .child("members/$admin")
-          .set({
+      await _firebaseDatabase.ref(FirebasePath.members(id)).child(admin).set({
         "status": "joined",
         "date": date,
       });
 
       // Add budget basic data
-      await _firebaseDatabase.ref(FirebasePath.budget(id)).set({
+      await _firebaseDatabase.ref(FirebasePath.budgetDetails(id)).set({
         "name": name,
         "admin": admin,
         "currency": currency.name,
@@ -153,23 +150,21 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
             .set(item.toJson());
       }
 
-      // Add members and invitation into member node
+      // Add member pending data into budget member node
       for (final user in members) {
         await _firebaseDatabase
-            .ref(FirebasePath.budget(id))
-            .child("members/${user.uid}")
+            .ref(FirebasePath.members(id))
+            .child(user.uid)
             .set({
           "status": "pending",
           "date": date,
         });
 
-        // Adding invitation to members node
+        // Add invitation detail to members invitation node
         await _firebaseDatabase
             .ref(FirebasePath.invitations(user.uid))
             .child(id)
-            .set({
-          "date": date,
-        });
+            .set({"date": date});
 
         // Adding notification to corresponding users
         await _notificationFbHelper.sendNotification(

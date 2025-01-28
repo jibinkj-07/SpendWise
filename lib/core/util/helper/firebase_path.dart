@@ -1,8 +1,9 @@
 sealed class FirebasePath {
   // Nodes
   static const String _users = "users";
-  static const String _budgets = "_budgets";
-  static const String _categories = "_categories";
+  static const String _currentBudget = "current_budget";
+  static const String _budgets = "budgets";
+  static const String _categories = "categories";
   static const String _members = "members";
   static const String _requests = "requests";
   static const String _transactions = "transactions";
@@ -12,6 +13,7 @@ sealed class FirebasePath {
   // Nodes getters
   static String get usersNode => _users;
   static String get newNotification => _newNotification;
+  static String get currentBudget => _currentBudget;
 
   // Paths
   static String category(String budgetId, String categoryId) =>

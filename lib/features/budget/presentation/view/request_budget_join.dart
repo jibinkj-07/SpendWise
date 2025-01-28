@@ -96,17 +96,17 @@ class _RequestBudgetJoinState extends State<RequestBudgetJoin> {
               }
 
               if (state is Requested) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                    builder: (_) => Root(
-                      userId: (context.read<AuthBloc>().state as Authenticated)
-                          .user
-                          .uid,
-                      budgetId: kRequested,
-                    ),
-                  ),
-                  (_) => false,
-                );
+                // Navigator.of(context).pushAndRemoveUntil(
+                //   MaterialPageRoute(
+                //     builder: (_) => Root(
+                //       userId: (context.read<AuthBloc>().state as Authenticated)
+                //           .user
+                //           .uid,
+                //       budgetId: kRequested,
+                //     ),
+                //   ),
+                //   (_) => false,
+                // );
               }
             },
             child: ValueListenableBuilder(

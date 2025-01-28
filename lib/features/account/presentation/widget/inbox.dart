@@ -35,13 +35,13 @@ class Inbox extends StatelessWidget {
         }
 
         if (state is Accepted) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (_) =>
-                  Root(userId: userId, budgetId: state.budgetId),
-            ),
-                (_) => false,
-          );
+          // Navigator.of(context).pushAndRemoveUntil(
+          //   MaterialPageRoute(
+          //     builder: (_) =>
+          //         Root(userId: userId, budgetId: state.budgetId),
+          //   ),
+          //       (_) => false,
+          // );
         }
       },
       child: StreamBuilder<Either<Failure, List<BudgetInfo>>>(

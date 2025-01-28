@@ -95,8 +95,8 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
         });
       }
 
-      await _firebaseDatabase.ref(FirebasePath.userDetails(id)).update(
-        {"selected": budget},
+      await _firebaseDatabase.ref(FirebasePath.userSettings(id)).update(
+        {FirebasePath.currentBudget: budget},
       );
       return const Right(true);
     } catch (e) {
