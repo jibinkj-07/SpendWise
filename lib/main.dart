@@ -19,8 +19,6 @@ Future<void> main() async {
   // Initialising injection container
   await initDependencies();
 
-  // Initialing user data
-  sl<AuthBloc>().add(SubscribeUserData());
   // restricting application orientation to portrait only
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

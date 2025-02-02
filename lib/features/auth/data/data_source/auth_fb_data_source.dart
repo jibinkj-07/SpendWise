@@ -196,8 +196,8 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
           }
         }
       }
-    } catch (e, stackTrace) {
-      log("Error: [auth_fb_data_source.dart][subscribeUserData] $e, $stackTrace");
+    } catch (e) {
+      log("Error: [auth_fb_data_source.dart][subscribeUserData] $e");
       yield Left(DatabaseError(message: "Something went wrong."));
     }
   }
@@ -231,6 +231,11 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
     await _firebaseDatabase.ref(FirebasePath.userSettings(user.uid)).set({
       FirebasePath.newNotification: false,
       FirebasePath.currentBudget: "",
+    });
+
+    // create a meta user data into db
+    await _firebaseDatabase.ref(FirebasePath.usersMeta(user.uid)).set({
+      "email": email,
     });
   }
 }

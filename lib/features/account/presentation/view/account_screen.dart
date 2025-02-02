@@ -21,183 +21,179 @@ class AccountScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text("My Account"),
-        centerTitle: true,
-      ),
-      body: BlocConsumer<AuthBloc, AuthState>(
-        builder: (ctx, state) {
-          if (state is Authenticated) {
-            return ListView(
-              padding: EdgeInsets.all(AppHelper.horizontalPadding(size)),
-              children: [
-                ProfileInfo(size: size, user: state.user),
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 20.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.0),
-                    boxShadow: [
-                      BoxShadow(color: Colors.grey.shade300, blurRadius: 5.0),
-                    ],
-                    color: Colors.white,
+    return BlocConsumer<AuthBloc, AuthState>(
+      builder: (BuildContext context, AuthState state) => PopScope(
+        canPop: state is! SigningOut,
+        child: Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            leading: state is SigningOut
+                ? null
+                : IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                    onPressed: () => Navigator.pop(context),
                   ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: BlocBuilder<BudgetViewBloc, BudgetViewState>(
-                        builder: (ctx, budgetState) {
-                      return Column(
-                        children: [
-                          if (budgetState is BudgetSubscribed) ...[
-                            ListTile(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => BudgetDetailScreen(
-                                      userId: state.user.uid,
-                                      budget: budgetState.budget,
+            title: const Text("My Account"),
+            centerTitle: true,
+          ),
+          body: state is Authenticated
+              ? ListView(
+                  padding: EdgeInsets.all(AppHelper.horizontalPadding(size)),
+                  children: [
+                    ProfileInfo(size: size, user: state.user),
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 20.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.0),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.grey.shade300, blurRadius: 5.0),
+                        ],
+                        color: Colors.white,
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: BlocBuilder<BudgetViewBloc, BudgetViewState>(
+                            builder: (ctx, budgetState) {
+                          return Column(
+                            children: [
+                              if (budgetState is BudgetSubscribed) ...[
+                                ListTile(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => BudgetDetailScreen(
+                                          userId: state.user.uid,
+                                          budget: budgetState.budget,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20.0),
                                     ),
                                   ),
-                                );
-                              },
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20.0),
+                                  leading: Icon(Icons.account_balance_rounded),
+                                  title: Text("Budget"),
+                                  subtitle: Text(
+                                      "Find more details about current budget"),
+                                  trailing: Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                    size: 15.0,
+                                    color: AppConfig.primaryColor,
+                                  ),
                                 ),
-                              ),
-                              leading: Icon(Icons.account_balance_rounded),
-                              title: Text("Budget"),
-                              subtitle: Text(
-                                  "Find more details about current budget"),
-                              trailing: Icon(
-                                Icons.arrow_forward_ios_rounded,
-                                size: 15.0,
-                                color: AppConfig.primaryColor,
-                              ),
-                            ),
-                            // ListTile(
-                            //   onTap: () {},
-                            //   leading: Icon(Icons.edit_document),
-                            //   title: Text("Generate Report"),
-                            //   subtitle:
-                            //       Text("Generate report for a specific month"),
-                            //   trailing: Icon(
-                            //     Icons.arrow_forward_ios_rounded,
-                            //     size: 15.0,
-                            //     color: AppConfig.primaryColor,
-                            //   ),
-                            // ),
-                            if (budgetState.budget.admin == state.user.uid)
+                                // ListTile(
+                                //   onTap: () {},
+                                //   leading: Icon(Icons.edit_document),
+                                //   title: Text("Generate Report"),
+                                //   subtitle:
+                                //       Text("Generate report for a specific month"),
+                                //   trailing: Icon(
+                                //     Icons.arrow_forward_ios_rounded,
+                                //     size: 15.0,
+                                //     color: AppConfig.primaryColor,
+                                //   ),
+                                // ),
+                                if (budgetState.budget.admin == state.user.uid)
+                                  ListTile(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) => MembersScreen(
+                                            adminId: budgetState.budget.admin,
+                                            budgetName: budgetState.budget.name,
+                                            budgetId: budgetState.budget.id,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    leading: Icon(Icons.people_alt_rounded),
+                                    title: Text("Members"),
+                                    subtitle:
+                                        Text("Manage your budget members"),
+                                    trailing: Icon(
+                                      Icons.arrow_forward_ios_rounded,
+                                      size: 15.0,
+                                      color: AppConfig.primaryColor,
+                                    ),
+                                  ),
+                              ],
                               ListTile(
                                 onTap: () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (_) => MembersScreen(
-                                        adminId: budgetState.budget.admin,
-                                        budgetName: budgetState.budget.name,
-                                        budgetId: budgetState.budget.id,
+                                      builder: (_) => MyInvitationScreen(
+                                        userId: state.user.uid,
                                       ),
                                     ),
                                   );
                                 },
-                                leading: Icon(Icons.people_alt_rounded),
-                                title: Text("Members"),
-                                subtitle: Text("Manage your budget members"),
+                                leading: Icon(Icons.link_rounded),
+                                title: Text("Invitations"),
+                                subtitle:
+                                    Text("Manage your budget invitations"),
                                 trailing: Icon(
                                   Icons.arrow_forward_ios_rounded,
                                   size: 15.0,
                                   color: AppConfig.primaryColor,
                                 ),
                               ),
-                          ],
-                          ListTile(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => MyInvitationScreen(
-                                    userId: state.user.uid,
+                              ListTile(
+                                onTap: () => context.read<AuthBloc>().add(
+                                      SignOut(),
+                                    ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                    bottom: Radius.circular(20.0),
                                   ),
                                 ),
-                              );
-                            },
-                            leading: Icon(Icons.link_rounded),
-                            title: Text("Invitations"),
-                            subtitle: Text("Manage your budget invitations"),
-                            trailing: Icon(
-                              Icons.arrow_forward_ios_rounded,
-                              size: 15.0,
-                              color: AppConfig.primaryColor,
-                            ),
-                          ),
-                          ListTile(
-                            onTap: () => context.read<AuthBloc>().add(
-                                  SignOut(),
+                                leading: Icon(
+                                  Icons.logout_rounded,
+                                  color: AppConfig.errorColor,
                                 ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                bottom: Radius.circular(20.0),
+                                title: Text(
+                                  "Sign Out",
+                                  style: TextStyle(
+                                    color: AppConfig.errorColor,
+                                  ),
+                                ),
+                                trailing: Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  size: 15.0,
+                                  color: AppConfig.errorColor,
+                                ),
                               ),
-                            ),
-                            leading: Icon(
-                              Icons.logout_rounded,
-                              color: AppConfig.errorColor,
-                            ),
-                            title: Text(
-                              "Sign Out",
-                              style: TextStyle(
-                                color: AppConfig.errorColor,
-                              ),
-                            ),
-                            trailing: Icon(
-                              Icons.arrow_forward_ios_rounded,
-                              size: 15.0,
-                              color: AppConfig.errorColor,
-                            ),
-                          ),
-                        ],
-                      );
-                    }),
-                  ),
-                ),
-                Center(
-                  child: Text(
-                    "Version ${AppConfig.version}",
-                    style: TextStyle(fontSize: 13.0),
-                  ),
-                ),
-              ],
-            );
-          }
-          return const SizedBox.shrink();
-        },
-        listener: (BuildContext context, AuthState state) {
-          if (state is SigningOut) {
-            showDialog(
-                context: context,
-                builder: (ctx) {
-                  return PopScope(
-                    canPop: false,
-                    child: AlertDialog(
-                      title: Text("Signing out"),
-                      content: SizedBox(
-                          height: 70.0, width: 70.0, child: CustomLoading()),
+                            ],
+                          );
+                        }),
+                      ),
                     ),
-                  );
-                });
-          }
-
-          if (state is SignedOut) {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              RouteName.login,
-              (_) => false,
-            );
-          }
-        },
+                    Center(
+                      child: Text(
+                        "Version ${AppConfig.version}",
+                        style: TextStyle(fontSize: 13.0),
+                      ),
+                    ),
+                  ],
+                )
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CustomLoading(),
+                    const SizedBox(height: 15.0),
+                    Text("Signing out"),
+                  ],
+                ),
+        ),
       ),
+      listener: (BuildContext context, AuthState state) {
+        if (state is SigningOut) {
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil(RouteName.login, (_) => false);
+        }
+      },
     );
   }
 }

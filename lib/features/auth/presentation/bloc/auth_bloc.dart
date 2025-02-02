@@ -17,6 +17,8 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepo _authRepo;
 
+  StreamSubscription? _authSubscription;
+
   AuthBloc(this._authRepo) : super(Fetching()) {
     on<SubscribeUserData>(_onSubscribe);
     on<UserDataLoaded>(_onDataLoad);
@@ -34,12 +36,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     log("AuthEvent dispatched: $event");
   }
 
+  @override
+  Future<void> close() async {
+    await _cancelSubscription();
+    return super.close();
+  }
+
   FutureOr<void> _onSubscribe(
     SubscribeUserData event,
     Emitter<AuthState> emit,
   ) {
     emit(Fetching());
-    _authRepo.subscribeUserData().listen(
+    _authSubscription = _authRepo.subscribeUserData().listen(
       (event) {
         if (event.isRight) add(UserDataLoaded(userData: event.right));
         if (event.isLeft) add(AuthErrorOccurred(error: event.left));
@@ -104,6 +112,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onSignOut(SignOut event, Emitter<AuthState> emit) async {
     emit(SigningOut());
+    await _cancelSubscription();
     await _authRepo.signOut().fold(
           (failure) => emit(AuthError(error: failure)),
           (_) => emit(SignedOut()),
@@ -115,5 +124,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) {
     emit(AuthError(error: event.error));
+  }
+
+  Future<void> _cancelSubscription() async {
+    if (_authSubscription != null) {
+      await _authSubscription!.cancel();
+      _authSubscription = null;
+    }
   }
 }

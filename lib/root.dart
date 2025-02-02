@@ -18,6 +18,13 @@ class Root extends StatefulWidget {
 
 class _RootState extends State<Root> {
   @override
+  void initState() {
+    super.initState();
+    // Initialing user data
+    context.read<AuthBloc>().add(SubscribeUserData());
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (ctx, state) {

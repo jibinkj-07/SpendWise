@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:spend_wise/core/util/constant/constants.dart';
-
-import '../../../../core/config/injection/injection_container.dart';
+import '../../../../core/config/route/app_routes.dart';
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/helper/asset_mapper.dart';
 import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../../core/util/widget/outlined_text_field.dart';
-import '../../../../root.dart';
 import '../../../account/presentation/bloc/account_bloc.dart';
-import '../../../account/presentation/helper/account_helper.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 
 /// @author : Jibin K John
@@ -28,7 +24,6 @@ class _RequestBudgetJoinState extends State<RequestBudgetJoin> {
   final _formKey = GlobalKey<FormState>();
   String _budgetId = "";
   final ValueNotifier<bool> _loading = ValueNotifier(false);
-  final AccountHelper _accountHelper = sl<AccountHelper>();
 
   @override
   void dispose() {
@@ -96,17 +91,8 @@ class _RequestBudgetJoinState extends State<RequestBudgetJoin> {
               }
 
               if (state is Requested) {
-                // Navigator.of(context).pushAndRemoveUntil(
-                //   MaterialPageRoute(
-                //     builder: (_) => Root(
-                //       userId: (context.read<AuthBloc>().state as Authenticated)
-                //           .user
-                //           .uid,
-                //       budgetId: kRequested,
-                //     ),
-                //   ),
-                //   (_) => false,
-                // );
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil(RouteName.root, (_) => false);
               }
             },
             child: ValueListenableBuilder(

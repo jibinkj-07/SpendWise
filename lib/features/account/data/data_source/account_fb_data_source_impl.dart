@@ -53,20 +53,19 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
     required String email,
   }) async {
     try {
-      final result = await _firebaseDatabase.ref(FirebasePath.usersNode).once();
+      final result =
+          await _firebaseDatabase.ref(FirebasePath.usersMetaNode).once();
       if (result.snapshot.exists) {
         for (final user in result.snapshot.children) {
-          if (user.child("details/email").value.toString() == email) {
-            return Right(
-              User(
-                imageUrl: user.child("details/profile_url").value.toString(),
-                date: DateTime.now(),
-                uid: user.key.toString(),
-                email: user.child("details/email").value.toString(),
-                name: user.child("details/name").value.toString(),
-                userStatus: "",
-              ),
-            );
+          if (user.child("email").value.toString() == email) {
+            final userData = await getUserInfoByID(id: user.key.toString());
+            if (userData.isRight) {
+              return Right(userData.right);
+            } else {
+              return Left(
+                Failure(message: "Unable to retrieve user information"),
+              );
+            }
           }
         }
       }
@@ -265,24 +264,31 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
     required String memberName,
   }) async {
     try {
-      List<String> memberJoinedBudgets = [];
       final result = await getBudgetInfo(
         budgetId: budgetId,
         date: DateTime.now(),
       );
       if (result.isRight && result.right != null) {
-        await _firebaseDatabase
+        // Check whether the budget is already in the joined list of user
+        final alreadyJoined = await _firebaseDatabase
             .ref(FirebasePath.joinedBudgets(memberId))
-            .once()
-            .then((event) {
-          for (final budget in event.snapshot.children) {
-            memberJoinedBudgets.add(budget.key.toString());
-          }
-        });
+            .child(budgetId)
+            .once();
 
-        if (memberJoinedBudgets.contains(budgetId)) {
+        if (alreadyJoined.snapshot.exists) {
           return Left(
             Failure(message: "Already you are a member of this budget"),
+          );
+        }
+        // Check whether the user has an invitation from the current budget
+        final hasInvitation = await _firebaseDatabase
+            .ref(FirebasePath.invitations(memberId))
+            .child(budgetId)
+            .once();
+
+        if (hasInvitation.snapshot.exists) {
+          return Left(
+            Failure(message: "You have an invitation to join this budget"),
           );
         }
         final date = DateTime.now().millisecondsSinceEpoch.toString();
@@ -311,6 +317,9 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
           userId: result.right!.admin.uid,
         );
 
+        // Update  member current budget node into [kRequested]
+        await updateSelectedBudget(id: memberId, budgetId: kRequested);
+
         return const Right(true);
       } else {
         return Left(
@@ -331,7 +340,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
     BudgetInfo? budget;
     try {
       await _firebaseDatabase
-          .ref(FirebasePath.budgetRequests(budgetId))
+          .ref(FirebasePath.budgetDetails(budgetId))
           .once()
           .then((event) async {
         if (event.snapshot.exists) {
@@ -577,14 +586,19 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
           .once()
           .then((event) async {
         for (final member in event.snapshot.children) {
-          await _notificationHelper.sendNotification(
-            title: Notification.memberJoined,
-            body: "New member \"$userName\" joined to \"$budgetName\" budget",
-            userId: member.key.toString(),
-          );
+          // Skipping notification for current joined user
+          if (member.key.toString() != userId) {
+            await _notificationHelper.sendNotification(
+              title: Notification.memberJoined,
+              body: "New member \"$userName\" joined to \"$budgetName\" budget",
+              userId: member.key.toString(),
+            );
+          }
         }
       });
-      log("reached end");
+
+      // Update  member current budget node into [budget ID]
+      await updateSelectedBudget(id: userId, budgetId: budgetId);
       return const Right(true);
     } catch (e) {
       log("er:[account_fb_data_source_impl.dart][acceptBudgetInvitation] $e");

@@ -17,48 +17,48 @@ sealed class Notification {
   static Widget getIcon(String title) {
     Color color = Colors.blue.shade100;
     IconData icon = Icons.notification_add_outlined;
-
-    switch (title) {
-      case budgetInvitation:
-        color = Colors.purple.shade100;
-        icon = Icons.mail_outline;
-        break;
-      case budgetDeleted:
-        color = Colors.red.shade100;
-        icon = Icons.delete_outline;
-        break;
-      case accessRevoked:
-        color = Colors.orange.shade100;
-        icon = Icons.block;
-        break;
-      case accessGranted:
-        color = Colors.green.shade100;
-        icon = Icons.check_circle_outline;
-        break;
-      case requestAccepted:
-        color = Colors.green.shade100;
-        icon = Icons.thumb_up_alt_outlined;
-        break;
-      case requestDeclined:
-        color = Colors.red.shade100;
-        icon = Icons.thumb_down_alt_outlined;
-        break;
-      case joinRequest:
-        color = Colors.blue.shade100;
-        icon = Icons.group_add_outlined;
-        break;
-      case memberJoined:
-        color = Colors.green.shade100;
-        icon = Icons.person_add_alt_outlined;
-        break;
-      case memberRemoved:
-        color = Colors.red.shade100;
-        icon = Icons.person_remove_alt_1_outlined;
-        break;
-      default:
-        color = Colors.grey.shade300;
-        icon = Icons.notifications_none;
-    }
+    //
+    // switch (title) {
+    //   case budgetInvitation:
+    //     color = Colors.purple.shade100;
+    //     icon = Icons.mail_outline;
+    //     break;
+    //   case budgetDeleted:
+    //     color = Colors.red.shade100;
+    //     icon = Icons.delete_outline;
+    //     break;
+    //   case accessRevoked:
+    //     color = Colors.orange.shade100;
+    //     icon = Icons.block;
+    //     break;
+    //   case accessGranted:
+    //     color = Colors.green.shade100;
+    //     icon = Icons.check_circle_outline;
+    //     break;
+    //   case requestAccepted:
+    //     color = Colors.green.shade100;
+    //     icon = Icons.thumb_up_alt_outlined;
+    //     break;
+    //   case requestDeclined:
+    //     color = Colors.red.shade100;
+    //     icon = Icons.thumb_down_alt_outlined;
+    //     break;
+    //   case joinRequest:
+    //     color = Colors.blue.shade100;
+    //     icon = Icons.group_add_outlined;
+    //     break;
+    //   case memberJoined:
+    //     color = Colors.green.shade100;
+    //     icon = Icons.person_add_alt_outlined;
+    //     break;
+    //   case memberRemoved:
+    //     color = Colors.red.shade100;
+    //     icon = Icons.person_remove_alt_1_outlined;
+    //     break;
+    //   default:
+    //     color = Colors.grey.shade300;
+    //     icon = Icons.notifications_none;
+    // }
 
     return CircleAvatar(
       backgroundColor: color,

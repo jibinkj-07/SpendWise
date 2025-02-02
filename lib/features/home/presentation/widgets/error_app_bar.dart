@@ -56,7 +56,7 @@ class ErrorAppBar extends StatelessWidget implements PreferredSizeWidget {
               style: IconButton.styleFrom(foregroundColor: Colors.black),
               icon: Icon(Icons.swap_vertical_circle_outlined),
             ),
-            NotificationButton(userId: state.user.uid),
+            NotificationButton(userState: state),
           ],
         );
       }

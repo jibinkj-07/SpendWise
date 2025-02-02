@@ -51,9 +51,7 @@ class InvitationRequest extends StatelessWidget {
               itemCount: budgets.length,
               itemBuilder: (context, index) {
                 return InvitationTile(
-                  budget: budgets[index],
-                  isMyRequest: true,
-                );
+                    budget: budgets[index], isUserRequest: true);
               },
             );
           },

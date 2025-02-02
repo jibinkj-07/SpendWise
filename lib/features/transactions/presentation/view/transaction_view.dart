@@ -7,7 +7,6 @@ import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/widget/custom_loading.dart';
 import '../../../../core/util/widget/empty.dart';
 import '../../../budget/presentation/bloc/budget_view_bloc.dart';
-import '../../../budget/presentation/bloc/category_view_bloc.dart';
 import '../../domain/model/transaction_model.dart';
 import '../bloc/transaction_bloc.dart';
 import '../helper/transaction_helper.dart';
@@ -107,7 +106,7 @@ class _TransactionViewState extends State<TransactionView> {
                       }
 
                       if (transactions.isEmpty) {
-                        return Empty(message: "Transactions not found");
+                        return Empty(message: "Transaction not found");
                       }
                       return CustomScrollView(
                         slivers: [
@@ -138,7 +137,9 @@ class _TransactionViewState extends State<TransactionView> {
                         ],
                       );
                     })
-                : Empty(message: "No transactions"),
+                : Empty(
+                    message: "No transactions for\n"
+                        "${DateFormat.yMMMM().format(transState.date)}"),
           )
         ],
       );

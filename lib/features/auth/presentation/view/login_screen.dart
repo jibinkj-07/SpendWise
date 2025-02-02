@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -39,6 +41,7 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
+        log("state from login screen is $state");
         _loading.value = state is Authenticating;
 
         if (state is Authenticated) {
@@ -56,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
 
         /// Show error if any occurs
         if (state is AuthError) {
+          log("called");
           state.error.showSnackBar(context);
         }
       },

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:spend_wise/core/util/widget/custom_snackbar.dart';
 
 import '../../../../core/config/app_config.dart';
 import '../../../../core/config/injection/injection_container.dart';
@@ -206,15 +208,33 @@ class _BudgetDetailScreenState extends State<BudgetDetailScreen> {
             style: TextStyle(fontSize: 13.0),
           ),
           const SizedBox(height: 15.0),
-          FilledButton(
-              onPressed: () {
-                Share.share(
-                  "Let’s join ${AppConfig.name} to manage your budget effortlessly and stay on top of your expenses!\n\n"
-                  "Join the ${widget.budget.name} budget by copying the Budget ID below and pasting it in the 'Join Budget' section of the ${AppConfig.name} app.\n\nStart collaborating today!\n\n\n"
-                  "ID - ${widget.budget.id}",
-                );
-              },
-              child: Text("Share Now"))
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: widget.budget.id))
+                          .then(
+                        (_) => CustomSnackBar.showInfoSnackBar(
+                            context, "ID copied to clipboard"),
+                      );
+                    },
+                    child: Text("Copy ID")),
+              ),
+              const SizedBox(width: 20.0),
+              Expanded(
+                child: FilledButton(
+                    onPressed: () {
+                      Share.share(
+                        "Let’s join ${AppConfig.name} to manage your budget effortlessly and stay on top of your expenses!\n\n"
+                        "Join the ${widget.budget.name} budget by copying the Budget ID below and pasting it in the 'Join Budget' section of the ${AppConfig.name} app.\n\nStart collaborating today!\n\n\n"
+                        "ID - ${widget.budget.id}",
+                      );
+                    },
+                    child: Text("Share Now")),
+              ),
+            ],
+          )
         ],
       ),
     );

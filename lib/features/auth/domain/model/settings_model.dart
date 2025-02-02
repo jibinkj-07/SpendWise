@@ -15,7 +15,7 @@ class SettingsModel {
     return SettingsModel(
         currentBudget: data.child(FirebasePath.currentBudget).value.toString(),
         newNotification:
-            data.child(FirebasePath.currentBudget).value.toString() == "true");
+            data.child(FirebasePath.newNotification).value.toString() == "true");
   }
 
   @override

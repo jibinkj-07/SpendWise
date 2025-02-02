@@ -31,7 +31,7 @@ class DecisionScreen extends StatelessWidget {
           BlocConsumer<AuthBloc, AuthState>(
             builder: (ctx, state) {
               if (state is Authenticated) {
-                return NotificationButton(userId: state.user.uid);
+                return NotificationButton(userState: state);
               }
               return const SizedBox.shrink();
             },
