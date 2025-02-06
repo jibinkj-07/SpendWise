@@ -83,4 +83,11 @@ abstract class AccountRepo {
   Stream<Either<Failure, List<BudgetInfo>>> subscribeMyInvitationRequests({
     required String userId,
   });
+
+  Future<Either<Failure, bool>> leaveBudget({
+    required String budgetId,
+    required String budgetName,
+    required String userId,
+    required String userName,
+  });
 }

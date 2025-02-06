@@ -96,6 +96,23 @@ final class AcceptBudgetRequest extends AccountEvent {
   List<Object?> get props => [userId, budgetId];
 }
 
+final class LeaveBudget extends AccountEvent {
+  final String budgetId;
+  final String budgetName;
+  final String userId;
+  final String userName;
+
+  const LeaveBudget({
+    required this.userId,
+    required this.userName,
+    required this.budgetId,
+    required this.budgetName,
+  });
+
+  @override
+  List<Object?> get props => [userId, budgetId];
+}
+
 final class RemoveBudgetRequest extends AccountEvent {
   final String budgetId;
   final String budgetName;

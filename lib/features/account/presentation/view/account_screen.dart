@@ -8,7 +8,9 @@ import '../../../../core/util/widget/custom_loading.dart';
 import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/presentation/bloc/budget_view_bloc.dart';
+import '../widget/leave_alert_dialog.dart';
 import '../widget/profile_info.dart';
+import '../widget/sign_out_dialog.dart';
 import 'budget_detail_screen.dart';
 import 'members_screen.dart';
 import 'my_invitation_screen.dart';
@@ -23,7 +25,7 @@ class AccountScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    return BlocConsumer<AuthBloc, AuthState>(
+    return BlocBuilder<AuthBloc, AuthState>(
       builder: (BuildContext context, AuthState state) => PopScope(
         canPop: state is! SigningOut,
         child: Scaffold(
@@ -86,6 +88,36 @@ class AccountScreen extends StatelessWidget {
                                     color: AppConfig.primaryColor,
                                   ),
                                 ),
+                                if (budgetState.budget.admin != state.user.uid)
+                                  ListTile(
+                                    onTap: () {
+                                      showDialog(
+                                        barrierDismissible: false,
+                                        context: context,
+                                        builder: (ctx) => LeaveAlertDialog(
+                                          budgetId: budgetState.budget.id,
+                                          budgetName: budgetState.budget.name,
+                                          userId: state.user.uid,
+                                          userName: state.user.name,
+                                        ),
+                                      );
+                                    },
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(20.0),
+                                      ),
+                                    ),
+                                    leading: Icon(
+                                        Icons.remove_circle_outline_rounded),
+                                    title: Text("Leave Budget"),
+                                    subtitle: Text(
+                                        "Delete and leave from current budget"),
+                                    trailing: Icon(
+                                      Icons.arrow_forward_ios_rounded,
+                                      size: 15.0,
+                                      color: AppConfig.primaryColor,
+                                    ),
+                                  ),
                                 // ListTile(
                                 //   onTap: () {},
                                 //   leading: Icon(Icons.edit_document),
@@ -143,9 +175,11 @@ class AccountScreen extends StatelessWidget {
                                 ),
                               ),
                               ListTile(
-                                onTap: () => context.read<AuthBloc>().add(
-                                      SignOut(),
-                                    ),
+                                onTap: () => showDialog(
+                                  barrierDismissible: false,
+                                  context: context,
+                                  builder: (ctx) => const SignOutDialog(),
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.vertical(
                                     bottom: Radius.circular(20.0),
@@ -180,40 +214,9 @@ class AccountScreen extends StatelessWidget {
                     ),
                   ],
                 )
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CustomLoading(),
-                    const SizedBox(height: 15.0),
-                    Text("Signing out"),
-                  ],
-                ),
+              : const SizedBox.shrink(),
         ),
       ),
-      listener: (BuildContext context, AuthState state) {
-        if (state is SigningOut) {
-          showDialog(
-              context: context,
-              builder: (ctx) {
-                return CustomAlertDialog(
-                  title: "Signing Out",
-                  message: "",
-                  actionWidget: LoadingFilledButton(
-                    loading: true,
-                    isDelete: true,
-                    onPressed: null,
-                    child: Text("Sign Out"),
-                  ),
-                  isLoading: true,
-                );
-              });
-        }
-
-        if (state is SignedOut) {
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil(RouteName.login, (_) => false);
-        }
-      },
     );
   }
 }

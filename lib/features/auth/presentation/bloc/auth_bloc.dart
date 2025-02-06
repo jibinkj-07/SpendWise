@@ -112,11 +112,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onSignOut(SignOut event, Emitter<AuthState> emit) async {
     emit(SigningOut());
-    await _cancelSubscription();
     await _authRepo.signOut().fold(
-          (failure) => emit(AuthError(error: failure)),
-          (_) => emit(SignedOut()),
-        );
+      (failure) => emit(AuthError(error: failure)),
+      (_) async {
+        await _cancelSubscription();
+        emit(SignedOut());
+      },
+    );
   }
 
   FutureOr<void> _onError(

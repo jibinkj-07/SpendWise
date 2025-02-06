@@ -40,7 +40,7 @@ class NotificationFbHelper {
           .once()
           .then((e) {
         if (e.snapshot.exists) {
-          count = int.parse(e.snapshot.value.toString());
+          value = int.parse(e.snapshot.value.toString()) + 1;
         }
       });
     }

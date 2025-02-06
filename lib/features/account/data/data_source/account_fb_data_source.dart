@@ -78,6 +78,13 @@ abstract class AccountFbDataSource {
     required String userName,
   });
 
+  Future<Either<Failure, bool>> leaveBudget({
+    required String budgetId,
+    required String budgetName,
+    required String userId,
+    required String userName,
+  });
+
   Future<Either<Failure, bool>> removeMyBudgetJoinRequest({
     required String budgetId,
     required String userId,

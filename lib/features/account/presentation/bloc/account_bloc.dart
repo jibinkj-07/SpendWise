@@ -23,6 +23,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     on<DeleteMember>(_onDelete);
     on<AcceptBudgetRequest>(_onAcceptBudget);
     on<RemoveBudgetRequest>(_onRemoveBudgetReq);
+    on<LeaveBudget>(_onLeave);
     on<RemoveMyBudgetRequest>(_onRemoveMyBudgetReq);
   }
 
@@ -63,7 +64,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
         .deleteMember(
             memberId: event.memberId,
             budgetId: event.budgetId,
-        isJoinRequest: event.isJoinRequest,
+            isJoinRequest: event.isJoinRequest,
             budgetName: event.budgetName)
         .fold((error) => emit(AccountStateError(error: error)),
             (success) => emit(Deleted()));
@@ -162,5 +163,19 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   void onEvent(AccountEvent event) {
     super.onEvent(event);
     log("AccountEvent dispatched: $event");
+  }
+
+  Future<void> _onLeave(LeaveBudget event, Emitter<AccountState> emit) async {
+    emit(Leaving());
+    await _accountRepo
+        .leaveBudget(
+            budgetId: event.budgetId,
+            budgetName: event.budgetName,
+            userId: event.userId,
+            userName: event.userName)
+        .fold((error) => emit(AccountStateError(error: error)),
+            (success) => emit(Left()));
+    await Future.delayed(
+        const Duration(seconds: 2), () => emit(AccountInitial()));
   }
 }

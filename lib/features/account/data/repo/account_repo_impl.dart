@@ -237,4 +237,23 @@ class AccountRepoImpl implements AccountRepo {
       return Left(NetworkError());
     }
   }
+
+  @override
+  Future<Either<Failure, bool>> leaveBudget({
+    required String budgetId,
+    required String budgetName,
+    required String userId,
+    required String userName,
+  }) async {
+    if (await InternetConnection().hasInternetAccess) {
+      return await _accountFbDataSource.leaveBudget(
+        budgetId: budgetId,
+        budgetName: budgetName,
+        userId: userId,
+        userName: userName,
+      );
+    } else {
+      return Left(NetworkError());
+    }
+  }
 }

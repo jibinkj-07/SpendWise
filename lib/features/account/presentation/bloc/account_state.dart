@@ -54,6 +54,16 @@ final class Accepting extends AccountState {
   List<Object?> get props => [];
 }
 
+final class Leaving extends AccountState {
+  @override
+  List<Object?> get props => [];
+}
+
+final class Left extends AccountState {
+  @override
+  List<Object?> get props => [];
+}
+
 final class Accepted extends AccountState {
   final String budgetId;
 

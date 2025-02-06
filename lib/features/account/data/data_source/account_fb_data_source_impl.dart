@@ -160,8 +160,6 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
             "\"$budgetName\" has been revoked by the admin",
         userId: memberId,
       );
-      // update member selected budget to [""]
-      await updateSelectedBudget(id: memberId, budgetId: "");
       return const Right(true);
     } catch (e) {
       log("er:[account_fb_data_source_impl.dart][deleteMember] $e");
@@ -664,6 +662,48 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
       return const Right(true);
     } catch (e) {
       log("er:[account_fb_data_source_impl.dart][removeMyBudgetJoinRequest] $e");
+      return Left(Failure(message: "Something went wrong. Try again"));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> leaveBudget({
+    required String budgetId,
+    required String budgetName,
+    required String userId,
+    required String userName,
+  }) async {
+    try {
+      // Remove request from user joined node
+      await _firebaseDatabase
+          .ref(FirebasePath.joinedBudgets(userId))
+          .child(budgetId)
+          .remove();
+
+      await _firebaseDatabase
+          .ref(FirebasePath.members(budgetId))
+          .once()
+          .then((event) async {
+        for (final member in event.snapshot.children) {
+          if (member.key.toString() != userId) {
+            await _notificationHelper.sendNotification(
+              title: Notification.leftBudget,
+              body: "\"$userName\" left from \"$budgetName\" budget",
+              userId: member.key.toString(),
+            );
+          }
+        }
+      });
+
+      await _firebaseDatabase
+          .ref(FirebasePath.members(budgetId))
+          .child(userId)
+          .remove();
+
+      await updateSelectedBudget(id: userId, budgetId: "");
+      return const Right(true);
+    } catch (e) {
+      log("er:[account_fb_data_source_impl.dart][removeBudgetInvitation] $e");
       return Left(Failure(message: "Something went wrong. Try again"));
     }
   }
