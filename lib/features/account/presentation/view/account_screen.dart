@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/config/app_config.dart';
 import '../../../../core/config/route/app_routes.dart';
 import '../../../../core/util/helper/app_helper.dart';
+import '../../../../core/util/widget/custom_alert.dart';
 import '../../../../core/util/widget/custom_loading.dart';
+import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/presentation/bloc/budget_view_bloc.dart';
 import '../widget/profile_info.dart';
@@ -190,6 +192,24 @@ class AccountScreen extends StatelessWidget {
       ),
       listener: (BuildContext context, AuthState state) {
         if (state is SigningOut) {
+          showDialog(
+              context: context,
+              builder: (ctx) {
+                return CustomAlertDialog(
+                  title: "Signing Out",
+                  message: "",
+                  actionWidget: LoadingFilledButton(
+                    loading: true,
+                    isDelete: true,
+                    onPressed: null,
+                    child: Text("Sign Out"),
+                  ),
+                  isLoading: true,
+                );
+              });
+        }
+
+        if (state is SignedOut) {
           Navigator.of(context)
               .pushNamedAndRemoveUntil(RouteName.login, (_) => false);
         }

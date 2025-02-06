@@ -85,7 +85,6 @@ class _CategoryEntryScreenState extends State<CategoryEntryScreen> {
               onPressed: () {
                 showDialog(
                   barrierDismissible: false,
-
                   context: context,
                   builder: (ctx) => CategoryDeleteDialog(
                     categoryId: widget.category?.id ?? "",

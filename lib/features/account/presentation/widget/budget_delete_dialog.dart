@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/config/route/app_routes.dart';
-import '../../../../core/util/widget/custom_loading.dart';
+import '../../../../core/util/widget/custom_alert.dart';
+import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../budget/presentation/bloc/budget_edit_bloc.dart';
 
 /// @author : Jibin K John
@@ -20,52 +21,37 @@ class BudgetDeleteDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: BlocConsumer<BudgetEditBloc, BudgetEditState>(
-        builder: (ctx, state) {
-          final isDeleting = state is DeletingBudget;
-          return AlertDialog(
-            title: Text(isDeleting ? "Deleting" : "Delete Budget"),
-            content: isDeleting
-                ? SizedBox(
-                    height: 60.0,
-                    width: double.infinity,
-                    child: CustomLoading(),
-                  )
-                : Text("Are you sure you want to delete this budget?"),
-            actions: isDeleting
-                ? null
-                : [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      style:
-                          TextButton.styleFrom(foregroundColor: Colors.black54),
-                      child: Text("Cancel"),
-                    ),
-                    TextButton(
-                      onPressed: () => context.read<BudgetEditBloc>().add(
-                            DeleteBudget(
-                              budgetId: budgetId,
-                              budgetName: budgetName,
-                            ),
-                          ),
-                      child: Text("Delete"),
-                    ),
-                  ],
-          );
-        },
-        listener: (BuildContext context, BudgetEditState state) {
-          if (state is BudgetErrorOccurred) {
-            Navigator.pop(context);
-            state.error.showSnackBar(context);
-          }
-          if (state is BudgetDeleted) {
-            Navigator.of(context)
-                .pushNamedAndRemoveUntil(RouteName.root, (_) => false);
-          }
-        },
-      ),
+    return BlocConsumer<BudgetEditBloc, BudgetEditState>(
+      builder: (ctx, state) {
+        final isDeleting = state is DeletingBudget;
+
+        return CustomAlertDialog(
+          title: isDeleting ? "Deleting" : "Delete Budget",
+          message: "Are you sure you want to delete this budget",
+          actionWidget: LoadingFilledButton(
+            loading: isDeleting,
+            isDelete: true,
+            onPressed: () => context.read<BudgetEditBloc>().add(
+                  DeleteBudget(
+                    budgetId: budgetId,
+                    budgetName: budgetName,
+                  ),
+                ),
+            child: Text("Delete"),
+          ),
+          isLoading: isDeleting,
+        );
+      },
+      listener: (BuildContext context, BudgetEditState state) {
+        if (state is BudgetErrorOccurred) {
+          Navigator.pop(context);
+          state.error.showSnackBar(context);
+        }
+        if (state is BudgetDeleted) {
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil(RouteName.root, (_) => false);
+        }
+      },
     );
   }
 }

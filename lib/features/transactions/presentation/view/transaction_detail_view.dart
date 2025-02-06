@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/config/app_config.dart';
 import '../../../../core/config/injection/injection_container.dart';
 import '../../../../core/util/helper/app_helper.dart';
+import '../../../../core/util/widget/custom_alert.dart';
 import '../../../../core/util/widget/image_preview.dart';
 import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../account/domain/model/user.dart';
@@ -364,33 +365,28 @@ class _TransactionDetailViewState extends State<TransactionDetailView> {
   Future _onDelete() {
     return showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text("Delete Transaction"),
-        content: Text("Are you sure want to delete this transaction?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            style: TextButton.styleFrom(foregroundColor: Colors.black54),
-            child: Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              context.read<TransactionEditBloc>().add(
-                    DeleteTransaction(
-                      budgetId: (context.read<BudgetViewBloc>().state
-                              as BudgetSubscribed)
-                          .budget
-                          .id,
-                      transactionId: widget.transaction.id,
-                      createdDate: widget.transaction.date,
-                    ),
-                  );
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text("Delete"),
-          ),
-        ],
+      builder: (ctx) => CustomAlertDialog(
+        message: 'Are you sure you want to delete this transaction',
+        title: 'Delete Transaction',
+        actionWidget: LoadingFilledButton(
+          onPressed: () {
+            Navigator.pop(ctx);
+            context.read<TransactionEditBloc>().add(
+                  DeleteTransaction(
+                    budgetId: (context.read<BudgetViewBloc>().state
+                            as BudgetSubscribed)
+                        .budget
+                        .id,
+                    transactionId: widget.transaction.id,
+                    createdDate: widget.transaction.date,
+                  ),
+                );
+          },
+          loading: false,
+          isDelete: true,
+          child: Text("Delete"),
+        ),
+        isLoading: false,
       ),
     );
   }

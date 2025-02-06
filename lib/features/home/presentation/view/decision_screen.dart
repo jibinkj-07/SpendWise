@@ -6,7 +6,8 @@ import 'package:spend_wise/core/util/widget/zoom_animation.dart';
 
 import '../../../../core/config/app_config.dart';
 import '../../../../core/util/helper/asset_mapper.dart';
-import '../../../../core/util/widget/custom_loading.dart';
+import '../../../../core/util/widget/custom_alert.dart';
+import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../account/presentation/view/my_invitation_screen.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../widgets/notification_button.dart';
@@ -40,15 +41,16 @@ class DecisionScreen extends StatelessWidget {
                 showDialog(
                     context: context,
                     builder: (ctx) {
-                      return PopScope(
-                        canPop: false,
-                        child: AlertDialog(
-                          title: Text("Signing out"),
-                          content: SizedBox(
-                              height: 70.0,
-                              width: 70.0,
-                              child: CustomLoading()),
+                      return CustomAlertDialog(
+                        title: "Signing Out",
+                        message: "",
+                        actionWidget: LoadingFilledButton(
+                          loading: true,
+                          isDelete: true,
+                          onPressed: null,
+                          child: Text("Sign Out"),
                         ),
+                        isLoading: true,
                       );
                     });
               }

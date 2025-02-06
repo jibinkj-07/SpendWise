@@ -4,8 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/config/injection/injection_container.dart';
 import '../../../../core/util/error/failure.dart';
+import '../../../../core/util/widget/custom_alert.dart';
 import '../../../../core/util/widget/custom_loading.dart';
 import '../../../../core/util/widget/empty.dart';
+import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../data/model/notification_model.dart';
 import '../helper/notification_helper.dart';
@@ -68,15 +70,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                   showDialog(
                                       context: context,
                                       builder: (ctx) {
-                                        return  PopScope(
-                                          canPop: false,
-                                          child: AlertDialog(
-                                            title: Text("Deleting"),
-                                            content: SizedBox(
-                                                height: 70.0,
-                                                width: 70.0,
-                                                child: CustomLoading()),
+                                        return CustomAlertDialog(
+                                          title: "Deleting",
+                                          message: "",
+                                          actionWidget: LoadingFilledButton(
+                                            loading: true,
+                                            isDelete: true,
+                                            onPressed: null,
+                                            child: Text("Delete"),
                                           ),
+                                          isLoading: true,
                                         );
                                       });
                                   for (final notif in _selected.value) {
@@ -99,15 +102,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                   showDialog(
                                       context: context,
                                       builder: (ctx) {
-                                        return PopScope(
-                                          canPop: false,
-                                          child: AlertDialog(
-                                            title: Text("Deleting"),
-                                            content: SizedBox(
-                                                height: 70.0,
-                                                width: 70.0,
-                                                child: CustomLoading()),
+                                        return CustomAlertDialog(
+                                          title: "Deleting",
+                                          message: "",
+                                          actionWidget: LoadingFilledButton(
+                                            loading: true,
+                                            isDelete: true,
+                                            onPressed: null,
+                                            child: Text("Delete"),
                                           ),
+                                          isLoading: true,
                                         );
                                       });
                                   await _notificationHelper
