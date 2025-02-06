@@ -33,9 +33,9 @@ class SignOutDialog extends StatelessWidget {
         );
       },
       listener: (BuildContext context, AuthState state) {
-        if (state is AuthError) {
+        if (state is Authenticated && state.error != null) {
           Navigator.pop(context);
-          state.error.showSnackBar(context);
+          state.error?.showSnackBar(context);
         }
         if (state is SignedOut) {
           Navigator.of(context)

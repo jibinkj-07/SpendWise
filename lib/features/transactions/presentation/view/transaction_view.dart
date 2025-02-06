@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
+import '../../../../core/util/error/failure.dart';
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/widget/access_error.dart';
 import '../../../../core/util/widget/custom_loading.dart';
 import '../../../../core/util/widget/empty.dart';
+import '../../../../core/util/widget/network_error_widget.dart';
 import '../../../budget/presentation/bloc/budget_view_bloc.dart';
 import '../../domain/model/transaction_model.dart';
 import '../bloc/transaction_bloc.dart';
@@ -55,6 +57,9 @@ class _TransactionViewState extends State<TransactionView> {
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (ctx, transState) {
         if (transState.error != null) {
+          if (transState.error is NetworkError) {
+            return NetworkErrorWidget(size: size);
+          }
           return AccessError(size: size);
         }
 

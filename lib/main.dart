@@ -8,7 +8,6 @@ import 'core/config/injection/injection_container.dart';
 import 'core/config/providers/bloc_providers.dart';
 import 'core/config/route/app_routes.dart';
 import 'core/config/theme/light.dart';
-import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {

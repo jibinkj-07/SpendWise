@@ -4,6 +4,7 @@ import 'core/config/route/app_routes.dart';
 import 'core/util/constant/constants.dart';
 import 'core/util/error/failure.dart';
 import 'core/util/widget/custom_loading.dart';
+import 'desktop_warning.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 
 /// @author : Jibin K John
@@ -26,7 +27,9 @@ class _RootState extends State<Root> {
 
   @override
   Widget build(BuildContext context) {
-    // return Sample();
+    if (MediaQuery.sizeOf(context).width > 600) {
+      return const DesktopWarning();
+    }
     return BlocListener<AuthBloc, AuthState>(
       listener: (ctx, state) {
         /// SUCCESS

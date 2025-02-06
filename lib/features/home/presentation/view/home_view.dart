@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/util/error/failure.dart';
 import '../../../../core/util/widget/access_error.dart';
 import '../../../../core/util/widget/custom_loading.dart';
+import '../../../../core/util/widget/network_error_widget.dart';
 import '../../../transactions/presentation/bloc/month_trans_view_bloc.dart';
 import '../helper/home_helper.dart';
 import '../widgets/budget_card.dart';
@@ -24,6 +26,10 @@ class HomeView extends StatelessWidget {
       }
 
       if (state is ErrorOccurredMonthTransState) {
+        if (state.error is NetworkError) {
+          return NetworkErrorWidget(size: size);
+        }
+
         return AccessError(size: size);
       }
       if (state is SubscribedMonthTransState) {

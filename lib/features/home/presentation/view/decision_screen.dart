@@ -23,6 +23,7 @@ class DecisionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size=MediaQuery.sizeOf(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -77,13 +78,13 @@ class DecisionScreen extends StatelessWidget {
           ZoomAnimationImage(
             child: SvgPicture.asset(
               AssetMapper.coinsSVG,
-              height: MediaQuery.sizeOf(context).height * .4,
+              height: size.height* .35,
             ),
           ),
           Container(
             width: double.infinity,
-            margin: const EdgeInsets.all(25.0),
-            padding: const EdgeInsets.all(30.0),
+            margin:  EdgeInsets.all(size.width*.035),
+            padding:  EdgeInsets.all(size.width*.05),
             decoration: BoxDecoration(
               color: AppConfig.primaryColor,
               borderRadius: BorderRadius.circular(30.0),

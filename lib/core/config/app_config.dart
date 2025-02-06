@@ -7,6 +7,7 @@ sealed class AppConfig {
   static final String _version = "1.1.0";
   static final String _fontFamily = "Poppins";
   static final String _slogan = "Spend Smarter, Live Better";
+  static final String _developer = "jibinkunnumpurath@gmail.com";
   static final Color _primaryColor = Color(0xFF00539F);
   static final Color _generalColor = Color(0xFF67BFFF);
   static final Color _focusColor = Color(0xFFFFA726);
@@ -30,4 +31,6 @@ sealed class AppConfig {
   static Color get focusColor => _focusColor;
 
   static Color get errorColor => _errorColor;
+
+  static String get developer => _developer;
 }

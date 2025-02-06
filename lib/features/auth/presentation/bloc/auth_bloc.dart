@@ -116,9 +116,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onSignOut(SignOut event, Emitter<AuthState> emit) async {
+    final authState = state as Authenticated;
     emit(SigningOut());
     await _authRepo.signOut().fold(
-      (failure) => emit(AuthError(error: failure)),
+      (failure) => emit(
+        Authenticated(
+          user: authState.user,
+          settings: authState.settings,
+          error: failure,
+        ),
+      ),
       (_) async {
         await _cancelSubscription();
         await _prefHelper.clearStorage();

@@ -111,7 +111,7 @@ class MemberCategoryView extends StatelessWidget {
                   ],
                 )
               : SizedBox(
-                  height: size.height * .2,
+                  height: size.height * .3,
                   child: Empty(message: "No transactions available"),
                 ),
         ),

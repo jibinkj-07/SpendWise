@@ -1,31 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:lottie/lottie.dart';
+
 import '../helper/app_helper.dart';
 import '../helper/asset_mapper.dart';
 
 /// @author : Jibin K John
-/// @date   : 05/02/2025
-/// @time   : 17:33:42
+/// @date   : 06/02/2025
+/// @time   : 23:42:32
 
-class AccessError extends StatelessWidget {
+class NetworkErrorWidget extends StatelessWidget {
   final Size size;
 
-  const AccessError({super.key, required this.size});
+  const NetworkErrorWidget({super.key, required this.size});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.all(AppHelper.horizontalPadding(size)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SvgPicture.asset(
-            AssetMapper.accessRevokedSVG,
-            height: size.height * .2,
+          Lottie.asset(
+            AssetMapper.noInternetLottie,
+            height: size.height * .3,
           ),
           const SizedBox(height: 15.0),
           Text(
-            "Access Revoked or Data Missing",
+            "Internet Unavailable",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 15.0,
@@ -33,7 +35,7 @@ class AccessError extends StatelessWidget {
           ),
           const SizedBox(height: 15.0),
           Text(
-            "Access Denied, this may be due to revoked user permissions by the admin or the data no longer being available.",
+            "Connect to a stable network and try again",
             textAlign: TextAlign.center,
           ),
         ],

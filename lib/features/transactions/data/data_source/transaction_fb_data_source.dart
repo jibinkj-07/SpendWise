@@ -41,15 +41,16 @@ class TransactionFbDataSourceImpl implements TransactionFbDataSource {
     XFile? doc,
   }) async {
     String url = transaction.docUrl;
+    final transId =
+        "${transaction.id}-${transaction.createdUserId.substring(0, 5)}";
     try {
       if (doc != null) {
         url = await _uploadImage(
-          path: "Images/$budgetId/${transaction.id}.jpg",
+          path: "Images/$budgetId/$transId.jpg",
           image: doc,
         );
       }
-      final transId =
-          "${transaction.id}-${transaction.createdUserId.substring(0, 5)}";
+
       await _firebaseDatabase
           .ref(FirebasePath.transactions(budgetId))
           .child("${transaction.date.year}")

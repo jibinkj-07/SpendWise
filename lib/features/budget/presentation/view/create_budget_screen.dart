@@ -289,6 +289,7 @@ class _CreateBudgetScreenState extends State<CreateBudgetScreen> {
   void _currencySelector() {
     showCurrencyPicker(
       context: context,
+      showFlag: false,
       onSelect: (value) {
         _currency.value = value;
         _currencyController.text = "${value.symbol} ${value.name}";

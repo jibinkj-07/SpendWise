@@ -23,10 +23,11 @@ class NavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
     return Container(
-      margin: const EdgeInsets.only(
-        left: 15.0,
-        right: 15.0,
+      margin: EdgeInsets.only(
+        left: size.width * .02,
+        right: size.width * .02,
         bottom: 20.0,
         top: 5.0,
       ),
@@ -54,33 +55,46 @@ class NavBar extends StatelessWidget {
                 onTabChange: (value) => index.value = value,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 padding: EdgeInsets.symmetric(
-                  horizontal: 20.0,
+                  horizontal: size.width * .05,
                   vertical: 8.0,
                 ),
                 tabBackgroundColor: AppConfig.primaryColor,
                 haptic: true,
                 tabBorderRadius: 100,
-                gap: 5,
+                gap: 8,
                 activeColor: Colors.white,
                 color: Colors.black54,
                 tabs: [
                   GButton(
                     icon: Iconsax.house_2,
-                    text: 'Home',
+                    text: 'Home',    textStyle: TextStyle(
+                    fontSize: 12.5,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
                   ),
                   GButton(
                     icon: Iconsax.chart_3,
-                    text: 'Analytics',
+                    text: 'Analytics',    textStyle: TextStyle(
+                    fontSize: 12.5,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
                   ),
                   GButton(
                     icon: Iconsax.document_text,
                     text: 'Transactions',
+                    textStyle: TextStyle(
+                      fontSize: 12.5,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(width: 15.0),
+          SizedBox(width: size.width * .02),
           if (currentIndex == 0)
             IconButton.filled(
               onPressed: () {

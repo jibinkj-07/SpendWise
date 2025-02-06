@@ -49,10 +49,6 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
     this._accountFbDataSource,
   );
 
-  // Store the StreamSubscription objects
-  StreamSubscription<DatabaseEvent>? _userDetailsSubscription;
-  StreamSubscription<DatabaseEvent>? _userSettingsSubscription;
-
   @override
   Future<Either<Failure, void>> createUser({
     required String name,
@@ -207,6 +203,8 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
           yield Left(DatabaseError(message: "No data found for this user."));
         }
       }
+    } on FirebaseException catch (e) {
+      log("error ${e.message}");
     } catch (e) {
       log("Error: [auth_fb_data_source.dart][subscribeUserData] $e");
       yield Left(DatabaseError(message: "Something went wrong."));
@@ -216,10 +214,6 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
   @override
   Future<Either<Failure, void>> signOut() async {
     try {
-      // Cancel the Firebase listeners
-      await _userDetailsSubscription?.cancel();
-      await _userSettingsSubscription?.cancel();
-
       // Sign out from Firebase Auth
       await _firebaseAuth.signOut();
 

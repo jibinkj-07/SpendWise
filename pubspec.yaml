@@ -37,6 +37,7 @@ dependencies:
   shared_preferences: # for local storage
   iconsax: # for custom icons
   rxdart: # for stream control
+  url_launcher: # for url launch
 
 
 

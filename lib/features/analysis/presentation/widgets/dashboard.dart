@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spend_wise/core/util/widget/custom_loading.dart';
 
+import '../../../../core/util/error/failure.dart';
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/helper/chart_helpers.dart';
 import '../../../../core/util/widget/access_error.dart';
+import '../../../../core/util/widget/network_error_widget.dart';
 import '../../../budget/presentation/bloc/category_view_bloc.dart';
 import '../../../transactions/presentation/helper/transaction_helper.dart';
 import '../bloc/analysis_bloc.dart';
@@ -47,6 +49,9 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     if (widget.analysisState.error != null) {
+      if (widget.analysisState.error is NetworkError) {
+        return NetworkErrorWidget(size: widget.size);
+      }
       return AccessError(size: widget.size);
     }
 

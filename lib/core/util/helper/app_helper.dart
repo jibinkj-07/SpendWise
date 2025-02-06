@@ -81,7 +81,7 @@ sealed class AppHelper {
   }
 
   /// Function to return padding
-  static double horizontalPadding(Size size) => size.width * .05;
+  static double horizontalPadding(Size size) => size.width * .035;
 
   /// Function to format price
   static String formatAmount(BuildContext context, double amount,

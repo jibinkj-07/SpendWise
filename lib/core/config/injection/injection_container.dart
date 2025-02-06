@@ -1,3 +1,4 @@
+import '../api_config.dart';
 import './imports.dart';
 
 final sl = GetIt.instance;
@@ -13,7 +14,9 @@ Future<void> initDependencies() async {
 
   // **************************************** Externals ****************************************
   final auth = FirebaseAuth.instance;
-  final googleAuth = GoogleSignIn();
+  final googleAuth = GoogleSignIn(
+    clientId: ApiConfig.googleSignInClientId,
+  );
   final db = FirebaseDatabase.instance;
   final storage = FirebaseStorage.instance;
   final localStorage = await SharedPreferences.getInstance();

@@ -140,6 +140,7 @@ class _BottomCategorySheetState extends State<BottomCategorySheet> {
                                         onTap: () => Navigator.pop(
                                             context, _categories[index]),
                                         leading: CircleAvatar(
+                                          radius: 15.0,
                                           backgroundColor: _categories[index]
                                               .color
                                               .withOpacity(.15),
@@ -147,15 +148,20 @@ class _BottomCategorySheetState extends State<BottomCategorySheet> {
                                             AppHelper.getIconFromString(
                                               _categories[index].icon,
                                             ),
+                                            size: 20.0,
                                             color: _categories[index].color,
                                           ),
                                         ),
-                                        title: Text(_categories[index].name),
+                                        title: Text(
+                                          _categories[index].name,
+                                          style: TextStyle(fontSize: 13),
+                                        ),
                                       );
                                     },
                                     gridDelegate:
                                         SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 2,
+                                      crossAxisSpacing: 5.0,
                                       childAspectRatio: 1 / .35,
                                     ),
                                   ),

@@ -148,5 +148,5 @@ class _MembersDetailViewState extends State<MembersDetailView> {
   }
 }
 
-const kHeaderHeight = 0.05;
+const kHeaderHeight = 0.08;
 const kHorizontalPadding = 16.0;

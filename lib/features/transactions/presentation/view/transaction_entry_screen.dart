@@ -55,10 +55,12 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
     if (widget.transactionModel != null) {
       _date = ValueNotifier(widget.transactionModel!.date);
       final categories =
-          (context.read<CategoryViewBloc>().state as CategorySubscribed)
+          (context
+              .read<CategoryViewBloc>()
+              .state as CategorySubscribed)
               .categories;
       final index = categories.indexWhere(
-        (item) => item.id == widget.transactionModel!.categoryId,
+            (item) => item.id == widget.transactionModel!.categoryId,
       );
       if (index > -1) {
         _categoryController.text = categories[index].name;
@@ -81,7 +83,9 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final size = MediaQuery
+        .of(context)
+        .size;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -137,40 +141,46 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                       title: "Title",
                       child: Autocomplete(
                         optionsBuilder: (TextEditingValue value) {
-                          if (value.text.trim().isEmpty) {
+                          if (value.text
+                              .trim()
+                              .isEmpty) {
                             return const Iterable<String>.empty();
                           }
                           return _sharedPrefHelper
                               .getTransactionSuggestions()
                               .where(
                                 (title) => title.contains(value.text.trim()),
-                              );
+                          );
                         },
-                        fieldViewBuilder: (
-                          context,
-                          textEditingController,
-                          focusNode,
-                          onFieldSubmitted,
-                        ) =>
-                            FilledTextField(
-                          textFieldKey: "title",
-                          hintText: "eg: Haircut",
-                          focusNode: focusNode,
-                          onFieldSubmitted: (value) => onFieldSubmitted(),
-                          controller: textEditingController,
-                          initialValue: widget.transactionModel?.title,
-                          textCapitalization: TextCapitalization.words,
-                          maxLength: 50,
-                          minLines: 1,
-                          validator: (data) {
-                            if (data.toString().trim().isEmpty) {
-                              return "Please fill title";
-                            }
-                            return null;
-                          },
-                          onSaved: (data) => _title = data.toString().trim(),
-                          inputAction: TextInputAction.next,
-                        ),
+                        fieldViewBuilder: (context,
+                            textEditingController,
+                            focusNode,
+                            onFieldSubmitted,) {
+                          if (widget.transactionModel != null && textEditingController.text.isEmpty) {
+                            textEditingController.text = widget.transactionModel!.title;
+                          }
+                          return FilledTextField(
+                            textFieldKey: "title",
+                            hintText: "eg: Haircut",
+                            focusNode: focusNode,
+                            onFieldSubmitted: (value) => onFieldSubmitted(),
+                            controller: textEditingController,
+                            textCapitalization: TextCapitalization.words,
+                            maxLength: 50,
+                            minLines: 1,
+                            validator: (data) {
+                              if (data
+                                  .toString()
+                                  .trim()
+                                  .isEmpty) {
+                                return "Please fill title";
+                              }
+                              return null;
+                            },
+                            onSaved: (data) => _title = data.toString().trim(),
+                            inputAction: TextInputAction.next,
+                          );
+                        },
                         optionsViewBuilder: (context, onSelected, options) {
                           return Align(
                             alignment: Alignment.topLeft,
@@ -178,13 +188,16 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                               elevation: 4.0,
                               borderRadius: BorderRadius.circular(10),
                               child: SizedBox(
-                                width: MediaQuery.of(context).size.width * .75,
+                                width: MediaQuery
+                                    .of(context)
+                                    .size
+                                    .width * .75,
                                 child: ListView.builder(
                                   shrinkWrap: true,
                                   itemCount: options.length,
                                   itemBuilder: (context, index) {
                                     final String option =
-                                        options.elementAt(index);
+                                    options.elementAt(index);
                                     return ListTile(
                                       title: Text(
                                         option,
@@ -211,21 +224,25 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                         numberOnly: true,
                         hintText: "eg: 54.0",
                         initialValue:
-                            widget.transactionModel?.amount.toString(),
+                        widget.transactionModel?.amount.toString(),
                         maxLines: 1,
                         maxLength: 30,
                         validator: (value) {
-                          if (value.toString().trim().isEmpty) {
+                          if (value
+                              .toString()
+                              .trim()
+                              .isEmpty) {
                             return "Amount is empty";
                           } else if (double.parse(
-                                value.toString().trim(),
-                              ) <
+                            value.toString().trim(),
+                          ) <
                               .1) {
                             return "Minimum amount is .1";
                           }
                           return null;
                         },
-                        onSaved: (value) => _amount = double.parse(
+                        onSaved: (value) =>
+                        _amount = double.parse(
                           value.toString().trim(),
                         ),
                         inputAction: TextInputAction.next,
@@ -244,13 +261,17 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                             context: context,
                             backgroundColor: Colors.transparent,
                             isScrollControlled: true,
-                            builder: (context) => Padding(
-                              padding: EdgeInsets.only(
-                                bottom:
-                                    MediaQuery.of(context).viewInsets.bottom,
-                              ),
-                              child: const BottomCategorySheet(),
-                            ),
+                            builder: (context) =>
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    bottom:
+                                    MediaQuery
+                                        .of(context)
+                                        .viewInsets
+                                        .bottom,
+                                  ),
+                                  child: const BottomCategorySheet(),
+                                ),
                           );
                           if (result != null) {
                             _category.value = result;
@@ -258,7 +279,10 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                           }
                         },
                         validator: (data) {
-                          if (data.toString().trim().isEmpty) {
+                          if (data
+                              .toString()
+                              .trim()
+                              .isEmpty) {
                             return "Please select a category";
                           }
                           return null;
@@ -281,7 +305,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                         inputAction: TextInputAction.done,
                         textCapitalization: TextCapitalization.sentences,
                         onSaved: (value) =>
-                            _description = value.toString().trim(),
+                        _description = value.toString().trim(),
                         initialValue: widget.transactionModel?.description,
                       ),
                       color: Colors.deepPurple,
@@ -315,14 +339,14 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                                     ),
                                   Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                     children: [
                                       if (doc == null)
                                         const SizedBox.shrink()
                                       else
                                         TextButton(
                                           onPressed: () =>
-                                              _document.value = null,
+                                          _document.value = null,
                                           child: Text("Remove"),
                                         ),
                                       Row(
@@ -330,7 +354,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                                           IconButton(
                                             onPressed: () async {
                                               _document.value =
-                                                  await ImagePicker().pickImage(
+                                              await ImagePicker().pickImage(
                                                 source: ImageSource.gallery,
                                               );
                                             },
@@ -339,7 +363,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                                           IconButton(
                                             onPressed: () async {
                                               _document.value =
-                                                  await ImagePicker().pickImage(
+                                              await ImagePicker().pickImage(
                                                 source: ImageSource.camera,
                                               );
                                             },
@@ -378,8 +402,9 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                     onPressed: _onAddOrUpdate,
                     loading: loading,
                     child: Text(
-                        "${widget.isDuplicate ? "Duplicate" : widget.transactionModel == null ? "Add" : "Update"}"
-                        " Transaction"),
+                        "${widget.isDuplicate ? "Duplicate" : widget
+                            .transactionModel == null ? "Add" : "Update"}"
+                            " Transaction"),
                   );
                 },
               ),
@@ -443,7 +468,9 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
       );
       final transBloc = context.read<TransactionEditBloc>();
       final budgetBloc =
-          (context.read<BudgetViewBloc>().state as BudgetSubscribed);
+      (context
+          .read<BudgetViewBloc>()
+          .state as BudgetSubscribed);
 
       // for duplication and creating new one adding id as current datetime stamp
       if (widget.transactionModel == null || widget.isDuplicate) {
