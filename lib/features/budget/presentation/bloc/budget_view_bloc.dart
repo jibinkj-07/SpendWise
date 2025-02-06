@@ -20,6 +20,7 @@ class BudgetViewBloc extends Bloc<BudgetViewEvent, BudgetViewState> {
   BudgetViewBloc(this._budgetRepo) : super(BudgetSubscribing()) {
     on<SubscribeBudget>(_onSubscribe);
     on<BudgetLoaded>(_onLoaded);
+    on<CancelSubscription>(_onCancel);
     on<BudgetViewErrorOccurred>(_onError);
   }
 
@@ -72,6 +73,14 @@ class BudgetViewBloc extends Bloc<BudgetViewEvent, BudgetViewState> {
     Emitter<BudgetViewState> emit,
   ) {
     emit(BudgetViewError(error: event.error));
+  }
+
+  Future<void> _onCancel(
+    CancelSubscription event,
+    Emitter<BudgetViewState> emit,
+  ) async {
+    await _cancelSubscription();
+    emit(BudgetSubscribing());
   }
 
   Future<void> _cancelSubscription() async {

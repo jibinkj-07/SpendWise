@@ -612,10 +612,7 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
     required String userName,
   }) async {
     try {
-      await _firebaseDatabase
-          .ref(FirebasePath.members(budgetId))
-          .child(userId)
-          .remove();
+
 
       // Remove request from user invitation node
       await _firebaseDatabase
@@ -636,7 +633,10 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
           );
         }
       });
-
+      await _firebaseDatabase
+          .ref(FirebasePath.members(budgetId))
+          .child(userId)
+          .remove();
       return const Right(true);
     } catch (e) {
       log("er:[account_fb_data_source_impl.dart][removeBudgetInvitation] $e");
@@ -679,31 +679,34 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
           .ref(FirebasePath.joinedBudgets(userId))
           .child(budgetId)
           .remove();
-
-      await _firebaseDatabase
-          .ref(FirebasePath.members(budgetId))
-          .once()
-          .then((event) async {
-        for (final member in event.snapshot.children) {
-          if (member.key.toString() != userId) {
-            await _notificationHelper.sendNotification(
-              title: Notification.leftBudget,
-              body: "\"$userName\" left from \"$budgetName\" budget",
-              userId: member.key.toString(),
-            );
+      try {
+        await _firebaseDatabase
+            .ref(FirebasePath.members(budgetId))
+            .once()
+            .then((event) async {
+          for (final member in event.snapshot.children) {
+            if (member.key.toString() != userId) {
+              await _notificationHelper.sendNotification(
+                title: Notification.leftBudget,
+                body: "\"$userName\" left from \"$budgetName\" budget",
+                userId: member.key.toString(),
+              );
+            }
           }
-        }
-      });
+        });
 
-      await _firebaseDatabase
-          .ref(FirebasePath.members(budgetId))
-          .child(userId)
-          .remove();
+        await _firebaseDatabase
+            .ref(FirebasePath.members(budgetId))
+            .child(userId)
+            .remove();
+      } catch (e) {
+        log("er:[account_fb_data_source_impl.dart][leaveBudget] User not in budget member node");
+      }
 
       await updateSelectedBudget(id: userId, budgetId: "");
       return const Right(true);
     } catch (e) {
-      log("er:[account_fb_data_source_impl.dart][removeBudgetInvitation] $e");
+      log("er:[account_fb_data_source_impl.dart][leaveBudget] $e");
       return Left(Failure(message: "Something went wrong. Try again"));
     }
   }

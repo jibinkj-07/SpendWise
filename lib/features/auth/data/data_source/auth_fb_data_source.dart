@@ -223,6 +223,12 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
       // Sign out from Firebase Auth
       await _firebaseAuth.signOut();
 
+      try {
+        await _googleSignIn.signOut();
+      } catch (e) {
+        log("er: [auth_fb_data_source.dart][signOut] on google sign out $e");
+      }
+
       return const Right(null);
     } catch (e) {
       log("er: [auth_fb_data_source.dart][signOut] $e");

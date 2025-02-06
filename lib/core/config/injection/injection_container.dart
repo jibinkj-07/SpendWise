@@ -58,8 +58,9 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<NotificationRepo>(() => NotificationRepoImpl(sl()));
 
   // **************************************** Bloc ****************************************
-  sl.registerSingleton<AuthBloc>(AuthBloc(sl(), sl()));
+
   sl.registerSingleton<BudgetViewBloc>(BudgetViewBloc(sl()));
+  sl.registerSingleton<AuthBloc>(AuthBloc(sl(), sl(), sl()));
   sl.registerSingleton<BudgetEditBloc>(BudgetEditBloc(sl()));
   sl.registerSingleton<CategoryViewBloc>(CategoryViewBloc(sl()));
   sl.registerSingleton<CategoryEditBloc>(CategoryEditBloc(sl()));
@@ -67,5 +68,5 @@ Future<void> initDependencies() async {
   sl.registerSingleton<TransactionEditBloc>(TransactionEditBloc(sl(), sl()));
   sl.registerSingleton<AnalysisBloc>(AnalysisBloc(sl()));
   sl.registerSingleton<TransactionBloc>(TransactionBloc(sl()));
-  sl.registerSingleton<AccountBloc>(AccountBloc(sl()));
+  sl.registerSingleton<AccountBloc>(AccountBloc(sl(), sl()));
 }

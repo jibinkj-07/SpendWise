@@ -13,6 +13,13 @@ final class SubscribeBudget extends BudgetViewEvent {
   List<Object?> get props => [budgetId];
 }
 
+final class CancelSubscription extends BudgetViewEvent {
+  const CancelSubscription();
+
+  @override
+  List<Object?> get props => [];
+}
+
 final class BudgetLoaded extends BudgetViewEvent {
   final BudgetModel budget;
 

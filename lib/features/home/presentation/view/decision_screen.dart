@@ -10,6 +10,7 @@ import '../../../../core/util/helper/asset_mapper.dart';
 import '../../../../core/util/widget/custom_alert.dart';
 import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../account/presentation/view/my_invitation_screen.dart';
+import '../../../account/presentation/widget/sign_out_dialog.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../widgets/notification_button.dart';
 
@@ -25,7 +26,11 @@ class DecisionScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () => context.read<AuthBloc>().add(SignOut()),
+          onPressed: () => showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (ctx) => const SignOutDialog(),
+          ),
           icon: Icon(Iconsax.logout_1),
         ),
         automaticallyImplyLeading: false,

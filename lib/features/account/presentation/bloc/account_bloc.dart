@@ -6,6 +6,7 @@ import 'package:either_dart/either.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../../core/util/error/failure.dart';
+import '../../../budget/presentation/bloc/budget_view_bloc.dart';
 import '../../domain/repo/account_repo.dart';
 
 part 'account_event.dart';
@@ -14,8 +15,10 @@ part 'account_state.dart';
 
 class AccountBloc extends Bloc<AccountEvent, AccountState> {
   final AccountRepo _accountRepo;
+  final BudgetViewBloc _budgetViewBloc;
 
-  AccountBloc(this._accountRepo) : super(AccountInitial()) {
+  AccountBloc(this._accountRepo, this._budgetViewBloc)
+      : super(AccountInitial()) {
     on<UpdateProfileImage>(_onUpdate);
     on<InviteMember>(_onInvite);
     on<RequestAccess>(_onRequest);
@@ -173,8 +176,13 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
             budgetName: event.budgetName,
             userId: event.userId,
             userName: event.userName)
-        .fold((error) => emit(AccountStateError(error: error)),
-            (success) => emit(Left()));
+        .fold(
+      (error) => emit(AccountStateError(error: error)),
+      (success) {
+        _budgetViewBloc.add(CancelSubscription());
+        emit(Left());
+      },
+    );
     await Future.delayed(
         const Duration(seconds: 2), () => emit(AccountInitial()));
   }

@@ -7,6 +7,7 @@ import 'package:equatable/equatable.dart';
 
 import '../../../../core/util/error/failure.dart';
 import '../../../../core/util/helper/shared_pref_helper.dart';
+import '../../../budget/presentation/bloc/budget_view_bloc.dart';
 import '../../domain/model/settings_model.dart';
 import '../../domain/model/user_model.dart';
 import '../../domain/repo/auth_repo.dart';
@@ -18,10 +19,12 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepo _authRepo;
   final SharedPrefHelper _prefHelper;
+  final BudgetViewBloc _budgetViewBloc;
 
   StreamSubscription? _authSubscription;
 
-  AuthBloc(this._authRepo, this._prefHelper) : super(Fetching()) {
+  AuthBloc(this._authRepo, this._prefHelper, this._budgetViewBloc)
+      : super(Fetching()) {
     on<SubscribeUserData>(_onSubscribe);
     on<UserDataLoaded>(_onDataLoad);
     on<LoginUser>(_onLogin);
@@ -119,6 +122,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (_) async {
         await _cancelSubscription();
         await _prefHelper.clearStorage();
+        _budgetViewBloc.add(CancelSubscription());
         emit(SignedOut());
       },
     );
