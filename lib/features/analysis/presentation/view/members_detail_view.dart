@@ -1,17 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
-
-import '../../../../core/config/app_config.dart';
-import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/helper/chart_helpers.dart';
-import '../../../../core/util/widget/empty.dart';
-import '../../../budget/presentation/bloc/budget_view_bloc.dart';
 import '../bloc/analysis_bloc.dart';
 import '../helper/analysis_helper.dart';
 import '../widgets/member_category_view.dart';
-import '../widgets/members_category_chart.dart';
 
 /// @author : Jibin K John
 /// @date   : 05/02/2025
@@ -35,7 +26,7 @@ class MembersDetailView extends StatefulWidget {
 class _MembersDetailViewState extends State<MembersDetailView> {
   late ValueNotifier<String> _selectedMember;
   late ValueNotifier<Map<String, List<CategoryChartData>>>
-      _membersCategoryMapData;
+  _membersCategoryMapData;
   bool _isDisposed = false;
 
   @override
@@ -85,7 +76,8 @@ class _MembersDetailViewState extends State<MembersDetailView> {
                       final isSelected = _selectedMember.value ==
                           widget.chartData[index].user.uid;
                       return ActionChip(
-                        onPressed: () => _selectedMember.value =
+                        onPressed: () =>
+                        _selectedMember.value =
                             widget.chartData[index].user.uid,
                         backgroundColor: isSelected
                             ? Colors.blue.shade50
@@ -123,7 +115,7 @@ class _MembersDetailViewState extends State<MembersDetailView> {
                     key: ValueKey(selectedMember),
                     child: MemberCategoryView(
                       categoryData:
-                          _membersCategoryMapData.value[member.user.uid] ?? [],
+                      _membersCategoryMapData.value[member.user.uid] ?? [],
                       memberData: member,
                       size: size,
                     ),
@@ -133,11 +125,6 @@ class _MembersDetailViewState extends State<MembersDetailView> {
             ),
           ),
 
-          // Chart
-          MembersCategoryChart(
-            membersCategoryMapData: _membersCategoryMapData,
-            size: size,
-          ),
         ],
       ),
     );

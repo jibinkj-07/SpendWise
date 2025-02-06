@@ -58,8 +58,8 @@ sealed class AnalyticsChartHelper {
     final startDate = DateTime(month.year, month.month, 1);
     final endDate = DateTime(month.year, month.month + 1, 0);
     for (DateTime date = startDate;
-        date.isBefore(endDate.add(Duration(days: 1)));
-        date = date.add(Duration(days: 1))) {
+    date.isBefore(endDate.add(Duration(days: 1)));
+    date = date.add(Duration(days: 1))) {
       chartData.add(WeekWiseChartData(
         date: date,
         amount: transactionMap[date] ?? 0.0,
@@ -105,7 +105,9 @@ sealed class AnalyticsChartHelper {
     required List<TransactionModel> transactions,
   }) {
     final categoryBloc =
-        (context.read<CategoryViewBloc>().state as CategorySubscribed);
+    (context
+        .read<CategoryViewBloc>()
+        .state as CategorySubscribed);
 
     // Convert budget members to a map for quick lookup
     final transactionMap = {
@@ -118,7 +120,7 @@ sealed class AnalyticsChartHelper {
     for (var transaction in transactions) {
       transactionMap.update(
         transaction.categoryId,
-        (value) => value + transaction.amount,
+            (value) => value + transaction.amount,
         ifAbsent: () => transaction.amount,
       );
     }
@@ -151,7 +153,7 @@ sealed class AnalyticsChartHelper {
     for (var transaction in transactions) {
       membersMap.update(
         transaction.createdUserId,
-        (value) => value + transaction.amount,
+            (value) => value + transaction.amount,
         ifAbsent: () => transaction.amount,
       );
     }
@@ -174,4 +176,5 @@ sealed class AnalyticsChartHelper {
 
     return chartData;
   }
+
 }

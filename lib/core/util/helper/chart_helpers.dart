@@ -9,12 +9,10 @@ class WeeklyChartData {
   final bool isToday;
   final Color color;
 
-  WeeklyChartData(
-    this.day,
-    this.amount,
-    this.color,
-    this.isToday,
-  );
+  WeeklyChartData(this.day,
+      this.amount,
+      this.color,
+      this.isToday,);
 }
 
 class WeekWiseChartData {
@@ -48,3 +46,5 @@ class MembersChartData {
     required this.amount,
   });
 }
+
+
