@@ -25,8 +25,12 @@ final class AddBudget extends BudgetEditEvent {
 
 class DeleteBudget extends BudgetEditEvent {
   final String budgetId;
+  final String budgetName;
 
-  const DeleteBudget({required this.budgetId});
+  const DeleteBudget({
+    required this.budgetId,
+    required this.budgetName,
+  });
 
   @override
   List<Object?> get props => [budgetId];

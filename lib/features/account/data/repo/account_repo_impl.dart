@@ -65,14 +65,14 @@ class AccountRepoImpl implements AccountRepo {
     required String memberId,
     required String budgetId,
     required String budgetName,
-    required bool fromRequest,
+    required bool isJoinRequest,
   }) async {
     if (await InternetConnection().hasInternetAccess) {
       return await _accountFbDataSource.deleteMember(
         memberId: memberId,
         budgetId: budgetId,
         budgetName: budgetName,
-        fromRequest: fromRequest,
+        isJoinRequest: isJoinRequest,
       );
     } else {
       return Left(NetworkError());

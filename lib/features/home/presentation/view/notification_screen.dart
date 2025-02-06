@@ -2,7 +2,6 @@ import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/config/app_config.dart';
 import '../../../../core/config/injection/injection_container.dart';
 import '../../../../core/util/error/failure.dart';
 import '../../../../core/util/widget/custom_loading.dart';
@@ -130,7 +129,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             icon: const Icon(Icons.arrow_back_ios_new_rounded),
                             onPressed: () => Navigator.pop(context),
                           ),
-                          title: const Text("Notification"),
+                          title: const Text("Notifications"),
                           centerTitle: true,
                         );
                 },

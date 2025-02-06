@@ -45,7 +45,7 @@ sealed class BottomDatePicker {
                     switch (analysisBloc.filter) {
                       case AnalyticsFilter.week:
                         {
-                          weekNumber = int.parse(values[index].split(" ").last);
+                          weekNumber = (int.parse(values[index].split(" ").last))-1;
                           break;
                         }
                       case AnalyticsFilter.month:
@@ -148,7 +148,7 @@ sealed class BottomDatePicker {
   ) {
     switch (filter) {
       case AnalyticsFilter.week:
-        return weekNumber - 1;
+        return weekNumber;
       case AnalyticsFilter.month:
         return date.month - 1;
       case AnalyticsFilter.year:

@@ -70,6 +70,7 @@ class _BudgetDetailScreenState extends State<BudgetDetailScreen> {
                   context: context,
                   builder: (ctx) => BudgetDeleteDialog(
                     budgetId: widget.budget.id,
+                    budgetName: widget.budget.name,
                   ),
                 );
               },

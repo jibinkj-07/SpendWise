@@ -36,8 +36,8 @@ class CategoryModel {
         createdOn: createdOn ?? this.createdOn,
       );
 
-  factory CategoryModel.deleted() => CategoryModel(
-        id: "deleted",
+  factory CategoryModel.deleted([String? id]) => CategoryModel(
+        id: id ?? "deleted",
         createdOn: DateTime.now(),
         color: Colors.black,
         name: 'Deleted Category',

@@ -44,7 +44,7 @@ abstract class AccountFbDataSource {
     required String memberId,
     required String budgetId,
     required String budgetName,
-    required bool fromRequest,
+    required bool isJoinRequest,
   });
 
   Future<Either<Failure, bool>> acceptMemberRequest({

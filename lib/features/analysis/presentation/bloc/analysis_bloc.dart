@@ -17,7 +17,7 @@ part 'analysis_state.dart';
 class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
   final AnalysisRepo _analysisRepo;
 
-  late List<TransactionModel> _transactions;
+  List<TransactionModel> _transactions = [];
   StreamSubscription? _analysisSubscription;
 
   AnalysisBloc(this._analysisRepo) : super(AnalysisState.initial()) {
@@ -64,9 +64,10 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
         onError: (error) {
           add(
             Error(
-                error: Failure(
-                    message:
-                        "An unexpected error occurred while fetching the budget\n$error")),
+              error: AccessRevokedError(
+                message: "An unexpected error occurred\n\n$error",
+              ),
+            ),
           );
         },
         cancelOnError: true,
@@ -78,24 +79,29 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
     UpdateDate event,
     Emitter<AnalysisState> emit,
   ) async {
-    // Handle year filter separately, else just update date and filter transactions
-    if (state.filter == AnalyticsFilter.year) {
-      await _subscribeToYearData(event.budgetId, event.date.year.toString());
-      emit(state.copyWith(
-        status: AnalysisStatus.loading,
-        date: event.date,
-        weekNumber: event.weekNumber,
-      ));
-    } else {
-      emit(state.copyWith(
-        date: event.date,
-        weekNumber: event.weekNumber,
-        transactions: _filterTransactions(
-          state.filter,
-          event.date,
-          event.weekNumber,
-        ),
-      ));
+    if (_analysisSubscription != null) {
+      // Handle year filter separately, else just update date and filter transactions
+      if (state.filter == AnalyticsFilter.year) {
+        await _subscribeToYearData(event.budgetId, event.date.year.toString());
+        emit(state.copyWith(
+          status: AnalysisStatus.loading,
+          date: event.date,
+          weekNumber: event.weekNumber,
+        ));
+      } else {
+        emit(
+          state.copyWith(
+            date: event.date,
+            weekNumber: event.weekNumber,
+            transactions: _filterTransactions(
+              state.filter,
+              event.date,
+              event.weekNumber,
+            ),
+            status: AnalysisStatus.loaded,
+          ),
+        );
+      }
     }
   }
 
@@ -119,14 +125,24 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
     UpdateAnalysisFilter event,
     Emitter<AnalysisState> emit,
   ) async {
-    emit(state.copyWith(
-      transactions: _filterTransactions(
-        event.analyticsFilter,
-        state.date,
-        state.weekNumber,
-      ),
-      filter: event.analyticsFilter,
-    ));
+    // Only performing operation if subscribed
+    if (_analysisSubscription != null) {
+      emit(state.copyWith(
+        transactions: _filterTransactions(
+          event.analyticsFilter,
+          state.date,
+          state.weekNumber,
+        ),
+        status: AnalysisStatus.loaded,
+        filter: event.analyticsFilter,
+      ));
+    } // Else just update filter only
+    else {
+      emit(state.copyWith(
+        filter: event.analyticsFilter,
+        error: state.error,
+      ));
+    }
   }
 
   Future<void> _onSubscribed(

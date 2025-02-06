@@ -50,9 +50,10 @@ class BudgetViewBloc extends Bloc<BudgetViewEvent, BudgetViewState> {
       onError: (error) {
         add(
           BudgetViewErrorOccurred(
-              error: Failure(
-                  message:
-                      "An unexpected error occurred while fetching the budget\n$error")),
+            error: AccessRevokedError(
+              message: "An unexpected error occurred\n\n$error",
+            ),
+          ),
         );
       },
       cancelOnError: true,

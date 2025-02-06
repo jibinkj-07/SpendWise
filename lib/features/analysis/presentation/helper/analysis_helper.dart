@@ -1,7 +1,12 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/util/helper/chart_helpers.dart';
+import '../../../budget/domain/model/category_model.dart';
+import '../../../budget/presentation/bloc/category_view_bloc.dart';
 import '../../../transactions/domain/model/transaction_model.dart';
 
 sealed class AnalysisHelper {
@@ -24,6 +29,23 @@ sealed class AnalysisHelper {
     return weekNumbers.length;
   }
 
+  static int getWeekNumber(DateTime date) {
+    // Get the first day of the month
+    DateTime firstDayOfMonth = DateTime(date.year, date.month, 1);
+
+    // Find the first Monday of the month (if the first day isn't Monday, calculate next Monday)
+    int firstMondayOffset = (DateTime.monday - firstDayOfMonth.weekday + 7) % 7;
+    DateTime firstMonday =
+        firstDayOfMonth.add(Duration(days: firstMondayOffset));
+
+    // Calculate the difference in days between the given date and the first Monday
+    int daysDifference = date.difference(firstMonday).inDays;
+
+    // Calculate the week number based on the difference in days
+    int weekOfMonth = (daysDifference / 7).floor() + 1;
+    return weekOfMonth;
+  }
+
   static DateTime getStartOfWeek(int year, int month, int weekNumber) {
     // Start with the first day of the month
     DateTime firstDayOfMonth = DateTime(year, month, 1);
@@ -35,7 +57,7 @@ sealed class AnalysisHelper {
     }
 
     // Calculate the first day of the desired week (weekNumber)
-    int daysToAdd = (weekNumber - 1) * 7;
+    int daysToAdd = (weekNumber) * 7;
     DateTime startOfWeek = firstMondayOfMonth.add(Duration(days: daysToAdd));
 
     return startOfWeek;
@@ -46,11 +68,6 @@ sealed class AnalysisHelper {
 
     // Add 6 days to get the end of the week (Sunday)
     return startOfWeek.add(const Duration(days: 6));
-  }
-
-  static int getWeekNumber(DateTime date) {
-    int dayOfYear = int.parse(DateFormat("D").format(date)); // Day of the year
-    return ((dayOfYear - date.weekday + 10) / 7).floor();
   }
 
   static List<MapEntry<dynamic, double>> getSummary(
@@ -114,6 +131,53 @@ sealed class AnalysisHelper {
     });
 
     return MapEntry(highestDate, highestAmount);
+  }
+
+  // Function to return category wise data for corresponding user id
+
+  static List<CategoryChartData> getCategoryDataForUser({
+    required BuildContext context,
+    required String userId,
+    required List<TransactionModel> transactions,
+  }) {
+    final userTransactions =
+        transactions.where((i) => i.createdUserId == userId).toList();
+    if (userTransactions.isNotEmpty) {
+      final categoryBloc =
+          (context.read<CategoryViewBloc>().state as CategorySubscribed);
+
+      // Convert budget members to a map for quick lookup
+      final transactionMap = {
+        for (var category in categoryBloc.categories) category.id: 0.0
+      };
+      final categoryLookup = {
+        for (var category in categoryBloc.categories) category.id: category
+      };
+
+      for (var transaction in userTransactions) {
+        transactionMap.update(
+          transaction.categoryId,
+          (value) => value + transaction.amount,
+          ifAbsent: () => transaction.amount,
+        );
+      }
+
+      // Convert to chart data
+      final chartData = transactionMap.entries.map((entry) {
+        final CategoryModel category =
+            categoryLookup[entry.key] ?? CategoryModel.deleted(entry.key);
+        return CategoryChartData(
+          category: category,
+          amount: transactionMap[category.id] ?? 0.0,
+        );
+      }).toList();
+
+      // Sort by date
+      chartData.sort((a, b) => b.amount.compareTo(a.amount));
+
+      return chartData;
+    }
+    return [];
   }
 
 // Optimized to work directly with Map<String, double> to avoid redundant iteration

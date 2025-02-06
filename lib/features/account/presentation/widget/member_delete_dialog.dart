@@ -12,14 +12,14 @@ class MemberDeleteDialog extends StatelessWidget {
   final String memberId;
   final String budgetId;
   final String budgetName;
-  final bool fromRequest;
+  final bool isJoinRequest;
 
   const MemberDeleteDialog({
     super.key,
     required this.memberId,
     required this.budgetId,
     required this.budgetName,
-    required this.fromRequest,
+    required this.isJoinRequest,
   });
 
   @override
@@ -30,14 +30,14 @@ class MemberDeleteDialog extends StatelessWidget {
         builder: (ctx, state) {
           final isDeleting = state is Deleting;
           return AlertDialog(
-            title: Text(isDeleting ? "Deleting" : "Delete Member"),
+            title: Text(isDeleting ? "Deleting" : "Remove Member"),
             content: isDeleting
                 ? SizedBox(
                     height: 60.0,
                     width: double.infinity,
                     child: CustomLoading(),
                   )
-                : Text("Are you sure you want to delete this member?"),
+                : Text("Are you sure you want to remove this member?"),
             actions: isDeleting
                 ? null
                 : [
@@ -50,13 +50,13 @@ class MemberDeleteDialog extends StatelessWidget {
                     TextButton(
                       onPressed: () => context.read<AccountBloc>().add(
                             DeleteMember(
-                              fromRequest: fromRequest,
+                              isJoinRequest: isJoinRequest,
                               budgetName: budgetName,
                               budgetId: budgetId,
                               memberId: memberId,
                             ),
                           ),
-                      child: Text("Delete"),
+                      child: Text("Remove"),
                     ),
                   ],
           );

@@ -24,15 +24,30 @@ class NotificationFbHelper {
         "body": body,
         "time": date,
       });
-      await toggleReadStatus(userId, true);
+      await updateUnreadCount(userId);
     } catch (e) {
       log("er: [notification_fb_helper.dart][sendNotification] $e");
     }
   }
 
-  Future<void> toggleReadStatus(String userId, bool status) async {
+  Future<void> updateUnreadCount(String userId, [int? count]) async {
+    int value = count ?? 1;
+    // Getting the current count
+    if (count == null) {
+      await _firebaseDatabase
+          .ref(FirebasePath.userSettings(userId))
+          .child(FirebasePath.unreadNotification)
+          .once()
+          .then((e) {
+        if (e.snapshot.exists) {
+          count = int.parse(e.snapshot.value.toString());
+        }
+      });
+    }
+
+    // Update the new count
     await _firebaseDatabase
         .ref(FirebasePath.userSettings(userId))
-        .update({FirebasePath.newNotification: status});
+        .update({FirebasePath.unreadNotification: value});
   }
 }

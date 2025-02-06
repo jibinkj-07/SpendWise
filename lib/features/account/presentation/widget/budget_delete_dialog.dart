@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/config/route/app_routes.dart';
 import '../../../../core/util/widget/custom_loading.dart';
-import '../../../../root.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/presentation/bloc/budget_edit_bloc.dart';
 
 /// @author : Jibin K John
@@ -11,10 +10,12 @@ import '../../../budget/presentation/bloc/budget_edit_bloc.dart';
 
 class BudgetDeleteDialog extends StatelessWidget {
   final String budgetId;
+  final String budgetName;
 
   const BudgetDeleteDialog({
     super.key,
     required this.budgetId,
+    required this.budgetName,
   });
 
   @override
@@ -44,7 +45,10 @@ class BudgetDeleteDialog extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed: () => context.read<BudgetEditBloc>().add(
-                            DeleteBudget(budgetId: budgetId),
+                            DeleteBudget(
+                              budgetId: budgetId,
+                              budgetName: budgetName,
+                            ),
                           ),
                       child: Text("Delete"),
                     ),
@@ -57,16 +61,8 @@ class BudgetDeleteDialog extends StatelessWidget {
             state.error.showSnackBar(context);
           }
           if (state is BudgetDeleted) {
-            Navigator.pop(context);
-            // Navigator.of(context).pushAndRemoveUntil(
-            //     MaterialPageRoute(
-            //       builder: (_) => Root(
-            //         userId: (context.read<AuthBloc>().state as Authenticated)
-            //             .user
-            //             .uid,
-            //       ),
-            //     ),
-            //     (_) => false);
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil(RouteName.root, (_) => false);
           }
         },
       ),

@@ -18,12 +18,11 @@ class NotificationButton extends StatelessWidget {
       style: IconButton.styleFrom(
         foregroundColor: Colors.black,
       ),
-      icon: userState.settings.newNotification
-          ? Icon(
-              Icons.notifications_active_outlined,
-              color: Colors.red,
-            )
-          : Icon(Icons.notifications_none_rounded),
+      icon: Badge.count(
+        count: userState.settings.unreadNotifications,
+        isLabelVisible: userState.settings.unreadNotifications != 0,
+        child: Icon(Icons.notifications_none_rounded),
+      ),
     );
   }
 }

@@ -125,17 +125,16 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
     required String memberId,
     required String budgetId,
     required String budgetName,
-    required bool fromRequest,
+    required bool isJoinRequest,
   }) async {
     try {
-      // Remove from user joined and invitation node
       await _firebaseDatabase
           .ref(FirebasePath.joinedBudgets(memberId))
           .child(budgetId)
           .remove();
-      if (fromRequest) {
+      if (isJoinRequest) {
         await _firebaseDatabase
-            .ref(FirebasePath.budgetDetails(budgetId))
+            .ref(FirebasePath.budgetRequests(budgetId))
             .child(memberId)
             .remove();
         await _firebaseDatabase
@@ -157,11 +156,12 @@ class AccountFbDataSourceImpl implements AccountFbDataSource {
       // Add notification to user
       await _notificationHelper.sendNotification(
         title: Notification.accessRevoked,
-        body: "Your ${fromRequest ? "Request" : "Access"} to the budget "
+        body: "Your ${isJoinRequest ? "Request" : "Access"} to the budget "
             "\"$budgetName\" has been revoked by the admin",
         userId: memberId,
       );
-
+      // update member selected budget to [""]
+      await updateSelectedBudget(id: memberId, budgetId: "");
       return const Right(true);
     } catch (e) {
       log("er:[account_fb_data_source_impl.dart][deleteMember] $e");

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/util/helper/app_helper.dart';
+import '../../../../core/util/widget/access_error.dart';
 import '../../../../core/util/widget/custom_loading.dart';
 import '../../../transactions/presentation/bloc/month_trans_view_bloc.dart';
 import '../helper/home_helper.dart';
@@ -22,6 +24,9 @@ class HomeView extends StatelessWidget {
         return CustomLoading();
       }
 
+      if (state is ErrorOccurredMonthTransState) {
+        return AccessError(size: size);
+      }
       if (state is SubscribedMonthTransState) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

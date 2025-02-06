@@ -103,11 +103,7 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
           }
         } else {
           return Left(
-            DatabaseError(
-                message:
-                    "Unable to retrieve budget details. The data might have been deleted,"
-                    " or you may not have access to this budget."
-                    " Please contact the administrator for further assistance."),
+            DatabaseError(message: "Unable to retrieve budget details. The budget may have been deleted or no data is available. Please contact the administrator for further assistance."),
           );
         }
       }).cast<Either<Failure, BudgetModel>>();
@@ -210,23 +206,22 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
   @override
   Future<Either<Failure, bool>> deleteBudget({
     required String budgetId,
+    required String budgetName,
   }) async {
     try {
       await _deleteAllImagesInFolder("Images/$budgetId");
       // Get all budget members
       await _firebaseDatabase
-          .ref(FirebasePath.budget(budgetId))
+          .ref(FirebasePath.members(budgetId))
           .once()
           .then((event) async {
         if (event.snapshot.exists) {
-          final budgetDetail = event.snapshot.child("details");
-          final budgetMembers = event.snapshot.child("members");
-          for (final member in budgetMembers.children) {
+          for (final member in event.snapshot.children) {
             final memberId = member.key.toString();
             // Add Notification to all members
             await _notificationFbHelper.sendNotification(
               title: Notification.budgetDeleted,
-              body: "\"${budgetDetail.child("name").value}\" has been deleted.",
+              body: "\"$budgetName\" has been deleted.",
               userId: memberId,
             );
 
@@ -239,11 +234,18 @@ class BudgetFbDataSourceImpl implements BudgetFbDataSource {
                 .ref(FirebasePath.joinedBudgets(memberId))
                 .child(budgetId)
                 .remove();
+
+            // update members selected budget to [""]
+            await _accountFbDataSource.updateSelectedBudget(
+              id: memberId,
+              budgetId: "",
+            );
           }
         }
       });
 
       await _firebaseDatabase.ref(FirebasePath.budget(budgetId)).remove();
+
       return const Right(true);
     } catch (e) {
       log("er: [budget_fb_data_source_impl.dart][deleteBudget] $e");

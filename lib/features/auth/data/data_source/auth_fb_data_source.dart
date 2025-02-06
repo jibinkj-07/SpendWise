@@ -229,7 +229,7 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
         .ref(FirebasePath.userDetails(user.uid))
         .set(user.toJson()); // Creating settings node
     await _firebaseDatabase.ref(FirebasePath.userSettings(user.uid)).set({
-      FirebasePath.newNotification: false,
+      FirebasePath.unreadNotification: 0,
       FirebasePath.currentBudget: "",
     });
 

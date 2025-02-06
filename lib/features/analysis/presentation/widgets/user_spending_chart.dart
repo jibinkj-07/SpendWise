@@ -7,6 +7,7 @@ import '../../../../core/util/helper/chart_helpers.dart';
 import '../../../account/presentation/widget/display_image.dart';
 import '../../../transactions/presentation/helper/transaction_helper.dart';
 import '../bloc/analysis_bloc.dart';
+import '../view/members_detail_view.dart';
 
 /// @author : Jibin K John
 /// @date   : 12/01/2025
@@ -83,12 +84,30 @@ class UserSpendingChart extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "User Spending Summary",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15.0,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "User Spending Summary",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15.0,
+                  ),
+                ),
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => MembersDetailView(
+                            chartData: chartData,
+                            total: total,
+                            analysisState: analysisState,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text("Detail"))
+              ],
             ),
             if (total > 0)
               SfCircularChart(

@@ -1,9 +1,7 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/config/injection/injection_container.dart';
-import '../../../../root.dart';
+import '../../../../core/config/route/app_routes.dart';
 import '../../../account/presentation/helper/account_helper.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/domain/model/budget_model.dart';
@@ -56,25 +54,19 @@ class _BudgetSwitcherTileState extends State<BudgetSwitcherTile> {
       builder: (ctx, budget, child) {
         return budget != null
             ? ListTile(
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(context);
                   final authBloc =
                       (context.read<AuthBloc>().state as Authenticated);
+                  await _accountHelper.updateSelectedBudget(
+                    id: authBloc.user.uid,
+                    budgetId: budget.id,
+                  );
+
                   if (widget.fromRequestedScreen) {
-                    // Navigator.of(context).pushAndRemoveUntil(
-                    //   MaterialPageRoute(
-                    //     builder: (_) => Root(
-                    //       userId: authBloc.user.uid,
-                    //       budgetId: budget.id,
-                    //     ),
-                    //   ),
-                    //   (_) => false,
-                    // );
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil(RouteName.root, (_) => false);
                   } else if (widget.budgetDetail.id != budget.id) {
-                    _accountHelper.updateSelectedBudget(
-                      id: authBloc.user.uid,
-                      budgetId: budget.id,
-                    );
                     loadBudget(context, widget.currentIndex, budget.id);
                   }
                 },

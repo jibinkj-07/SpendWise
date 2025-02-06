@@ -50,9 +50,10 @@ class CategoryViewBloc extends Bloc<CategoryViewEvent, CategoryViewState> {
       onError: (error) {
         add(
           CategoryViewErrorOccurred(
-              error: Failure(
-                  message:
-                      "An unexpected error occurred while fetching the budget\n$error")),
+            error: AccessRevokedError(
+              message: "An unexpected error occurred\n\n$error",
+            ),
+          ),
         );
       },
       cancelOnError: true,

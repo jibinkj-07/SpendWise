@@ -18,4 +18,5 @@ sealed class AssetMapper {
   static const String errorSVG = "assets/svg/error.svg";
   static const String requestSVG = "assets/svg/request.svg";
   static const String pendingSVG = "assets/svg/pending.svg";
+  static const String accessRevokedSVG = "assets/svg/access-revoked.svg";
 }

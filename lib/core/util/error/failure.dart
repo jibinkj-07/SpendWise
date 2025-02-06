@@ -22,3 +22,7 @@ class DatabaseError extends Failure {
 class NetworkError extends Failure {
   NetworkError() : super(message: "Check your network connection");
 }
+
+class AccessRevokedError extends Failure {
+  AccessRevokedError({required super.message});
+}

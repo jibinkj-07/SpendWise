@@ -1,11 +1,14 @@
 import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/util/constant/constants.dart';
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/helper/chart_helpers.dart';
 import '../../../account/domain/model/user.dart';
+import '../../../budget/domain/model/category_model.dart';
 import '../../../budget/presentation/bloc/category_view_bloc.dart';
 import '../../../transactions/domain/model/transaction_model.dart';
 
@@ -103,22 +106,32 @@ sealed class AnalyticsChartHelper {
   }) {
     final categoryBloc =
         (context.read<CategoryViewBloc>().state as CategorySubscribed);
-    // Group transactions by their date
-    Map<String, double> transactionMap = {};
+
+    // Convert budget members to a map for quick lookup
+    final transactionMap = {
+      for (var category in categoryBloc.categories) category.id: 0.0
+    };
+    final categoryLookup = {
+      for (var category in categoryBloc.categories) category.id: category
+    };
+
     for (var transaction in transactions) {
-      transactionMap[transaction.categoryId] =
-          (transactionMap[transaction.categoryId] ?? 0.0) + transaction.amount;
+      transactionMap.update(
+        transaction.categoryId,
+        (value) => value + transaction.amount,
+        ifAbsent: () => transaction.amount,
+      );
     }
 
-    // Prepare the chart data for the week
-    List<CategoryChartData> chartData = [];
-
-    for (final category in categoryBloc.categories) {
-      chartData.add(CategoryChartData(
+    // Convert to chart data
+    final chartData = transactionMap.entries.map((entry) {
+      final CategoryModel category =
+          categoryLookup[entry.key] ?? CategoryModel.deleted(entry.key);
+      return CategoryChartData(
         category: category,
         amount: transactionMap[category.id] ?? 0.0,
-      ));
-    }
+      );
+    }).toList();
 
     // Sort by date
     chartData.sort((a, b) => b.amount.compareTo(a.amount));
@@ -130,24 +143,35 @@ sealed class AnalyticsChartHelper {
     required List<TransactionModel> transactions,
     required List<User> budgetMembers,
   }) {
-    // Group transactions by their date
-    Map<String, double> membersMap = {};
+    // Convert budget members to a map for quick lookup
+    final membersMap = {for (var member in budgetMembers) member.uid: 0.0};
+    final userLookup = {for (var member in budgetMembers) member.uid: member};
+
+    // Accumulate transaction amounts
     for (var transaction in transactions) {
-      membersMap[transaction.createdUserId] =
-          (membersMap[transaction.createdUserId] ?? 0.0) + transaction.amount;
+      membersMap.update(
+        transaction.createdUserId,
+        (value) => value + transaction.amount,
+        ifAbsent: () => transaction.amount,
+      );
     }
 
-    // Prepare the chart data for the members
-    List<MembersChartData> chartData = [];
-    for (final member in budgetMembers) {
-      chartData.add(MembersChartData(
+    // Convert to chart data
+    final chartData = membersMap.entries.map((entry) {
+      final member = userLookup[entry.key] ?? User.deleted(entry.key);
+      return MembersChartData(
         user: member,
-        color: AppHelper.getColorForLetter(member.name.substring(0, 1)),
-        amount: membersMap[member.uid] ?? 0.0,
-      ));
-    }
+        color: member.name == kDeletedUser
+            ? Colors.black
+            : AppHelper.getColorForLetter(member.name.substring(0, 1)),
+        // Consider adding a color generator for variety
+        amount: entry.value,
+      );
+    }).toList();
+
     // Sort by amount
     chartData.sort((a, b) => b.amount.compareTo(a.amount));
+
     return chartData;
   }
 }

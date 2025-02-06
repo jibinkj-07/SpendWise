@@ -4,18 +4,18 @@ import '../../../../core/util/helper/firebase_path.dart';
 
 class SettingsModel {
   final String currentBudget;
-  final bool newNotification;
+  final int unreadNotifications;
 
   SettingsModel({
     required this.currentBudget,
-    required this.newNotification,
+    required this.unreadNotifications,
   });
 
   factory SettingsModel.fromFirebase(DataSnapshot data) {
     return SettingsModel(
         currentBudget: data.child(FirebasePath.currentBudget).value.toString(),
-        newNotification:
-            data.child(FirebasePath.newNotification).value.toString() == "true");
+        unreadNotifications: int.parse(
+            data.child(FirebasePath.unreadNotification).value.toString()));
   }
 
   @override

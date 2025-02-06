@@ -15,7 +15,7 @@ part 'transaction_state.dart';
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final TransactionRepo _transactionRepo;
 
-  late List<TransactionModel> _transactions;
+  List<TransactionModel> _transactions = [];
   StreamSubscription? _transactionSubscription;
 
   TransactionBloc(this._transactionRepo) : super(TransactionState.initial()) {
@@ -68,9 +68,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         onError: (error) {
           add(
             ErrorTransaction(
-                error: Failure(
-                    message:
-                        "An unexpected error occurred while fetching the budget\n$error")),
+              error: AccessRevokedError(
+                message: "An unexpected error occurred\n\n$error",
+              ),
+            ),
           );
         },
         cancelOnError: true,
@@ -123,15 +124,27 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       budgetId: event.budgetId,
       date: event.date,
     )
-        .listen((result) {
-      result.fold(
-        (failure) => add(ErrorTransaction(error: failure)),
-        (transactions) => add(SubscribedTransaction(
-          transactions: transactions,
-          date: event.date,
-        )),
-      );
-    });
+        .listen(
+      (result) {
+        result.fold(
+          (failure) => add(ErrorTransaction(error: failure)),
+          (transactions) => add(SubscribedTransaction(
+            transactions: transactions,
+            date: event.date,
+          )),
+        );
+      },
+      onError: (error) {
+        add(
+          ErrorTransaction(
+            error: AccessRevokedError(
+              message: "An unexpected error occurred\n\n$error",
+            ),
+          ),
+        );
+      },
+      cancelOnError: true,
+    );
   }
 
   Future<void> _onCancelSubscription(
@@ -149,7 +162,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     if (_transactionSubscription != null) {
       await _transactionSubscription!.cancel();
     }
-    emit(state.copyWith(error: event.error));
+    emit(state.copyWith(error: event.error, status: TransactionStatus.loaded));
   }
 
   List<TransactionModel> _filterTransactions(String categoryId) => categoryId

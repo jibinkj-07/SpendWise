@@ -35,9 +35,7 @@ class NotificationDataSourceImpl implements NotificationDataSource {
     required String userId,
   }) async {
     try {
-      await _firebaseDatabase
-          .ref(FirebasePath.notifications(userId))
-          .remove();
+      await _firebaseDatabase.ref(FirebasePath.notifications(userId)).remove();
       return const Right(true);
     } catch (e) {
       log("er: [notification_fb_data_source.dart][clearAllNotification] $e");
@@ -66,9 +64,9 @@ class NotificationDataSourceImpl implements NotificationDataSource {
   Stream<Either<Failure, List<NotificationModel>>> subscribeNotification({
     required String userId,
   }) async* {
-    // change user notification status back to false
+    // change user notification unread count back to 0
     // Means user read notifications
-    await _notificationFbHelper.toggleReadStatus(userId, false);
+    await _notificationFbHelper.updateUnreadCount(userId, 0);
     try {
       yield* _firebaseDatabase
           .ref(FirebasePath.notifications(userId))

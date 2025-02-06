@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spend_wise/core/util/widget/custom_loading.dart';
 
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/helper/chart_helpers.dart';
+import '../../../../core/util/widget/access_error.dart';
 import '../../../budget/presentation/bloc/category_view_bloc.dart';
 import '../../../transactions/presentation/helper/transaction_helper.dart';
 import '../bloc/analysis_bloc.dart';
@@ -46,21 +49,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     if (widget.analysisState.error != null) {
-      return Padding(
-        padding: EdgeInsets.all(AppHelper.horizontalPadding(widget.size)),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              widget.analysisState.error!.message,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            FilledButton(onPressed: widget.fetchData, child: Text("Try again"))
-          ],
-        ),
-      );
+      return AccessError(size: widget.size);
     }
 
     if (widget.analysisState.status == AnalysisStatus.loading) {
@@ -75,43 +64,47 @@ class _DashboardState extends State<Dashboard> {
         if (cateState is CategorySubscribing) {
           return CustomLoading();
         }
-        return ListView(
-          padding: EdgeInsets.symmetric(
-            horizontal: AppHelper.horizontalPadding(widget.size),
-            vertical: 10.0,
-          ),
-          children: [
-            Summary(
-              analysisState: widget.analysisState,
-              summary: AnalysisHelper.getSummary(
-                widget.analysisState.transactions,
+
+        if (cateState is CategorySubscribed) {
+          return ListView(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppHelper.horizontalPadding(widget.size),
+              vertical: 10.0,
+            ),
+            children: [
+              Summary(
+                analysisState: widget.analysisState,
+                summary: AnalysisHelper.getSummary(
+                  widget.analysisState.transactions,
+                ),
+                total: total,
               ),
-              total: total,
-            ),
-            TransactionChart(
-              chartData: _getTransactionChartData(),
-              analysisState: widget.analysisState,
-              size: widget.size,
-            ),
-            CategoryChart(
-              analysisState: widget.analysisState,
-              viewAllCategory: _viewAllCategory,
-              chartData: AnalyticsChartHelper.getCategoryChartData(
-                context: context,
-                transactions: widget.analysisState.transactions,
+              TransactionChart(
+                chartData: _getTransactionChartData(),
+                analysisState: widget.analysisState,
+                size: widget.size,
               ),
-              total: total,
-            ),
-            UserSpendingChart(
-              analysisState: widget.analysisState,
-              total: total,
-              chartData: AnalyticsChartHelper.getMembersSpendingChartData(
-                transactions: widget.analysisState.transactions,
-                budgetMembers: widget.analysisState.budgetMembers,
+              CategoryChart(
+                analysisState: widget.analysisState,
+                viewAllCategory: _viewAllCategory,
+                chartData: AnalyticsChartHelper.getCategoryChartData(
+                  context: context,
+                  transactions: widget.analysisState.transactions,
+                ),
+                total: total,
               ),
-            ),
-          ],
-        );
+              UserSpendingChart(
+                analysisState: widget.analysisState,
+                total: total,
+                chartData: AnalyticsChartHelper.getMembersSpendingChartData(
+                  transactions: widget.analysisState.transactions,
+                  budgetMembers: widget.analysisState.budgetMembers,
+                ),
+              ),
+            ],
+          );
+        }
+        return const SizedBox.shrink();
       },
     );
   }

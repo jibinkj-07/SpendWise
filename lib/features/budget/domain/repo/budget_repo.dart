@@ -34,5 +34,8 @@ abstract class BudgetRepo {
     required List<User> members,
   });
 
-  Future<Either<Failure, bool>> deleteBudget({required String budgetId});
+  Future<Either<Failure, bool>> deleteBudget({
+    required String budgetId,
+    required String budgetName,
+  });
 }

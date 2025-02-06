@@ -1,16 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-
-import '../../../../core/config/route/app_routes.dart';
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/helper/asset_mapper.dart';
-import '../../../../core/util/widget/custom_loading.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../budget/domain/model/budget_model.dart';
-import '../widgets/budget_switcher.dart';
-import '../widgets/error_app_bar.dart';
-import '../widgets/notification_button.dart';
+import '../widgets/secondary_app_bar.dart';
 
 /// @author : Jibin K John
 /// @date   : 22/01/2025
@@ -23,8 +15,9 @@ class RequestedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     return Scaffold(
-      appBar: ErrorAppBar(
+      appBar: SecondaryAppBar(
         subtitle: "Requested",
+        fromRequestedScreen: true,
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(

@@ -12,10 +12,15 @@ import 'notification_button.dart';
 /// @date   : 28/01/2025
 /// @time   : 19:07:31
 
-class ErrorAppBar extends StatelessWidget implements PreferredSizeWidget {
+class SecondaryAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String subtitle;
+  final bool fromRequestedScreen;
 
-  const ErrorAppBar({super.key, required this.subtitle});
+  const SecondaryAppBar({
+    super.key,
+    required this.subtitle,
+    this.fromRequestedScreen = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +81,7 @@ class ErrorAppBar extends StatelessWidget implements PreferredSizeWidget {
       builder: (ctx) => BudgetSwitcher(
         currentIndex: 0,
         budgetDetail: BudgetModel.dummy(),
-        fromRequestedScreen: false,
+        fromRequestedScreen: fromRequestedScreen,
       ),
     );
   }

@@ -4,9 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import '../../../../core/util/error/failure.dart';
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/helper/asset_mapper.dart';
-import '../../../budget/domain/model/budget_model.dart';
-import '../widgets/budget_switcher.dart';
-import '../widgets/error_app_bar.dart';
+import '../widgets/secondary_app_bar.dart';
 
 /// @author : Jibin K John
 /// @date   : 15/01/2025
@@ -21,8 +19,8 @@ class ErrorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     return Scaffold(
-      appBar: ErrorAppBar(
-        subtitle: "Budget Error",
+      appBar: SecondaryAppBar(
+        subtitle: "Budget Unavailable",
       ),
       body: Padding(
         padding: EdgeInsets.all(
@@ -33,12 +31,19 @@ class ErrorScreen extends StatelessWidget {
           children: [
             SvgPicture.asset(
               AssetMapper.errorSVG,
-              height: size.height * .3,
+              height: size.height * .2,
             ),
-            const SizedBox(height: 20.0),
+            const SizedBox(height: 15.0),
+            Text(
+              "Budget Data Missing",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15.0,
+              ),
+            ),
+            const SizedBox(height: 15.0),
             Text(
               error.message,
-              style: TextStyle(fontWeight: FontWeight.w500),
               textAlign: TextAlign.center,
             ),
           ],

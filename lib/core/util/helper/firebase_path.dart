@@ -8,7 +8,7 @@ sealed class FirebasePath {
   static const String _members = "members";
   static const String _requests = "requests";
   static const String _transactions = "transactions";
-  static const String _newNotification = "new_notification";
+  static const String _unreadNotification = "unread_notifications";
   static const String _settings = "settings";
 
   // Nodes getters
@@ -16,7 +16,7 @@ sealed class FirebasePath {
 
   static String get usersMetaNode => _usersMeta;
 
-  static String get newNotification => _newNotification;
+  static String get unreadNotification => _unreadNotification;
 
   static String get currentBudget => _currentBudget;
 

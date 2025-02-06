@@ -55,7 +55,12 @@ class BudgetEditBloc extends Bloc<BudgetEditEvent, BudgetEditState> {
     Emitter<BudgetEditState> emit,
   ) async {
     emit(DeletingBudget());
-    await _budgetRepo.deleteBudget(budgetId: event.budgetId).fold(
+    await _budgetRepo
+        .deleteBudget(
+          budgetId: event.budgetId,
+          budgetName: event.budgetName,
+        )
+        .fold(
           (failure) => emit(BudgetErrorOccurred(error: failure)),
           (_) => emit(BudgetDeleted()),
         );

@@ -1,4 +1,4 @@
-
+import '../../../../core/util/constant/constants.dart';
 
 class User {
   final String uid;
@@ -28,5 +28,14 @@ class User {
         imageUrl: imageUrl,
         userStatus: userStatus ?? this.userStatus,
         date: date ?? this.date,
+      );
+
+  factory User.deleted(String uid) => User(
+        uid: uid,
+        name: kDeletedUser,
+        email: "Not applicable",
+        imageUrl: kDefaultProfile,
+        userStatus: "",
+        date: DateTime.now(),
       );
 }

@@ -51,9 +51,15 @@ class BudgetRepoImpl implements BudgetRepo {
   }
 
   @override
-  Future<Either<Failure, bool>> deleteBudget({required String budgetId}) async {
+  Future<Either<Failure, bool>> deleteBudget({
+    required String budgetId,
+    required String budgetName,
+  }) async {
     if (await InternetConnection().hasInternetAccess) {
-      return await _expenseFbDataSource.deleteBudget(budgetId: budgetId);
+      return await _expenseFbDataSource.deleteBudget(
+        budgetId: budgetId,
+        budgetName: budgetName,
+      );
     } else {
       return Left(NetworkError());
     }

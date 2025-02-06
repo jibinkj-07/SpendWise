@@ -56,7 +56,7 @@ class RequestedMembers extends StatelessWidget {
               itemBuilder: (context, index) {
                 final member = members[index];
                 return MemberListTile(
-                  isRequest: true,
+                  isJoinRequest: true,
                   member: member,
                   budgetId: budgetId,
                   adminId: adminId,
