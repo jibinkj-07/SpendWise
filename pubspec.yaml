@@ -34,6 +34,7 @@ dependencies:
   syncfusion_flutter_charts: # for chart view
   sliver_tools: # for showing pinned heading in transaction history
   share_plus: # for sharing budget
+  shared_preferences: # for local storage
 
 
 

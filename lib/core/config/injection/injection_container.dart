@@ -9,17 +9,20 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<NotificationHelper>(() => NotificationHelper(sl()));
   sl.registerLazySingleton<NotificationFbHelper>(
       () => NotificationFbHelper(sl()));
+  sl.registerLazySingleton<SharedPrefHelper>(() => SharedPrefHelper(sl()));
 
   // **************************************** Externals ****************************************
   final auth = FirebaseAuth.instance;
   final googleAuth = GoogleSignIn();
   final db = FirebaseDatabase.instance;
   final storage = FirebaseStorage.instance;
+  final localStorage = await SharedPreferences.getInstance();
 
   sl.registerLazySingleton<GoogleSignIn>(() => googleAuth);
   sl.registerLazySingleton<FirebaseAuth>(() => auth);
   sl.registerLazySingleton<FirebaseDatabase>(() => db);
   sl.registerLazySingleton<FirebaseStorage>(() => storage);
+  sl.registerLazySingleton<SharedPreferences>(() => localStorage);
 
   // **************************************** Data Sources ****************************************
 
@@ -55,13 +58,13 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<NotificationRepo>(() => NotificationRepoImpl(sl()));
 
   // **************************************** Bloc ****************************************
-  sl.registerSingleton<AuthBloc>(AuthBloc(sl()));
+  sl.registerSingleton<AuthBloc>(AuthBloc(sl(), sl()));
   sl.registerSingleton<BudgetViewBloc>(BudgetViewBloc(sl()));
   sl.registerSingleton<BudgetEditBloc>(BudgetEditBloc(sl()));
   sl.registerSingleton<CategoryViewBloc>(CategoryViewBloc(sl()));
   sl.registerSingleton<CategoryEditBloc>(CategoryEditBloc(sl()));
   sl.registerSingleton<MonthTransViewBloc>(MonthTransViewBloc(sl()));
-  sl.registerSingleton<TransactionEditBloc>(TransactionEditBloc(sl()));
+  sl.registerSingleton<TransactionEditBloc>(TransactionEditBloc(sl(), sl()));
   sl.registerSingleton<AnalysisBloc>(AnalysisBloc(sl()));
   sl.registerSingleton<TransactionBloc>(TransactionBloc(sl()));
   sl.registerSingleton<AccountBloc>(AccountBloc(sl()));

@@ -26,6 +26,8 @@ class FilledTextField extends StatelessWidget {
   final Function(String)? onChanged;
   final void Function()? onTap;
   final int? maxLength;
+  final FocusNode? focusNode;
+  final Function(String)? onFieldSubmitted;
 
   const FilledTextField({
     super.key,
@@ -51,11 +53,14 @@ class FilledTextField extends StatelessWidget {
     this.enabled,
     this.maxLength,
     this.fillColor,
+    this.focusNode,
+    this.onFieldSubmitted,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      focusNode: focusNode,
       style: const TextStyle(
         fontSize: 15,
         fontWeight: FontWeight.w500,
@@ -84,6 +89,7 @@ class FilledTextField extends StatelessWidget {
               ),
             ]
           : null,
+      onFieldSubmitted: onFieldSubmitted,
       decoration: InputDecoration(
         filled: true,
         fillColor: fillColor ?? Colors.white,

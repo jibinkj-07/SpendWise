@@ -1,11 +1,10 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:spend_wise/core/config/injection/imports.dart';
 import 'package:spend_wise/core/util/widget/filled_text_field.dart';
+import '../../../../core/config/injection/injection_container.dart';
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../budget/domain/model/category_model.dart';
@@ -40,6 +39,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
   final ValueNotifier<XFile?> _document = ValueNotifier(null);
   late ValueNotifier<DateTime> _date;
   late ValueNotifier<CategoryModel?> _category;
+  final SharedPrefHelper _sharedPrefHelper = sl<SharedPrefHelper>();
 
   String _title = "";
   String _description = "";
@@ -134,21 +134,71 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                     _tile(
                       icon: Icons.title_rounded,
                       title: "Title",
-                      child: FilledTextField(
-                        textFieldKey: "title",
-                        hintText: "eg: Haircut",
-                        initialValue: widget.transactionModel?.title,
-                        textCapitalization: TextCapitalization.words,
-                        maxLength: 50,
-                        minLines: 1,
-                        validator: (data) {
-                          if (data.toString().trim().isEmpty) {
-                            return "Please fill title";
+                      child: Autocomplete(
+                        optionsBuilder: (TextEditingValue value) {
+                          if (value.text.trim().isEmpty) {
+                            return const Iterable<String>.empty();
                           }
-                          return null;
+                          return _sharedPrefHelper
+                              .getTransactionSuggestions()
+                              .where(
+                                (title) => title.contains(value.text.trim()),
+                              );
                         },
-                        onSaved: (data) => _title = data.toString().trim(),
-                        inputAction: TextInputAction.next,
+                        fieldViewBuilder: (
+                          context,
+                          textEditingController,
+                          focusNode,
+                          onFieldSubmitted,
+                        ) =>
+                            FilledTextField(
+                          textFieldKey: "title",
+                          hintText: "eg: Haircut",
+                          focusNode: focusNode,
+                          onFieldSubmitted: (value) => onFieldSubmitted(),
+                          controller: textEditingController,
+                          initialValue: widget.transactionModel?.title,
+                          textCapitalization: TextCapitalization.words,
+                          maxLength: 50,
+                          minLines: 1,
+                          validator: (data) {
+                            if (data.toString().trim().isEmpty) {
+                              return "Please fill title";
+                            }
+                            return null;
+                          },
+                          onSaved: (data) => _title = data.toString().trim(),
+                          inputAction: TextInputAction.next,
+                        ),
+                        optionsViewBuilder: (context, onSelected, options) {
+                          return Align(
+                            alignment: Alignment.topLeft,
+                            child: Material(
+                              elevation: 4.0,
+                              borderRadius: BorderRadius.circular(10),
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width * .75,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: options.length,
+                                  itemBuilder: (context, index) {
+                                    final String option =
+                                        options.elementAt(index);
+                                    return ListTile(
+                                      title: Text(
+                                        option,
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      onTap: () {
+                                        onSelected(option);
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       color: Colors.blue,
                     ),

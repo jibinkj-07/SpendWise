@@ -7,6 +7,7 @@ import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/util/error/failure.dart';
+import '../../../../core/util/helper/shared_pref_helper.dart';
 import '../../domain/model/transaction_model.dart';
 import '../../domain/repo/transaction_repo.dart';
 
@@ -17,8 +18,10 @@ part 'transaction_edit_state.dart';
 class TransactionEditBloc
     extends Bloc<TransactionEditEvent, TransactionEditState> {
   final TransactionRepo _transactionRepo;
+  final SharedPrefHelper _sharedPrefHelper;
 
-  TransactionEditBloc(this._transactionRepo) : super(IdleTransactionState()) {
+  TransactionEditBloc(this._transactionRepo, this._sharedPrefHelper)
+      : super(IdleTransactionState()) {
     on<AddTransaction>(_onAdd);
     on<UpdateTransaction>(_onUpdate);
     on<DeleteTransaction>(_onDelete);
@@ -37,14 +40,18 @@ class TransactionEditBloc
     emit(AddingTransaction());
     await _transactionRepo
         .addTransaction(
-          budgetId: event.budgetId,
-          transaction: event.transaction,
-          doc: event.doc,
-        )
+      budgetId: event.budgetId,
+      transaction: event.transaction,
+      doc: event.doc,
+    )
         .fold(
-          (error) => emit(TransactionErrorOccurred(error: error)),
-          (_) => emit(TransactionAdded()),
-        );
+      (error) => emit(TransactionErrorOccurred(error: error)),
+      (_) async {
+        await _sharedPrefHelper
+            .addTransactionSuggestion(event.transaction.title);
+        emit(TransactionAdded());
+      },
+    );
     await Future.delayed(
         Duration(seconds: 1), () => emit(IdleTransactionState()));
   }
@@ -61,14 +68,18 @@ class TransactionEditBloc
     );
     await _transactionRepo
         .addTransaction(
-          budgetId: event.budgetId,
-          transaction: event.transaction,
-          doc: event.doc,
-        )
+      budgetId: event.budgetId,
+      transaction: event.transaction,
+      doc: event.doc,
+    )
         .fold(
-          (error) => emit(TransactionErrorOccurred(error: error)),
-          (_) => emit(TransactionAdded()),
-        );
+      (error) => emit(TransactionErrorOccurred(error: error)),
+      (_) async {
+        await _sharedPrefHelper
+            .addTransactionSuggestion(event.transaction.title);
+        emit(TransactionAdded());
+      },
+    );
     await Future.delayed(
         Duration(seconds: 1), () => emit(IdleTransactionState()));
   }

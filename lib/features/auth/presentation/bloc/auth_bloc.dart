@@ -6,6 +6,7 @@ import 'package:either_dart/either.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../../core/util/error/failure.dart';
+import '../../../../core/util/helper/shared_pref_helper.dart';
 import '../../domain/model/settings_model.dart';
 import '../../domain/model/user_model.dart';
 import '../../domain/repo/auth_repo.dart';
@@ -16,10 +17,11 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepo _authRepo;
+  final SharedPrefHelper _prefHelper;
 
   StreamSubscription? _authSubscription;
 
-  AuthBloc(this._authRepo) : super(Fetching()) {
+  AuthBloc(this._authRepo, this._prefHelper) : super(Fetching()) {
     on<SubscribeUserData>(_onSubscribe);
     on<UserDataLoaded>(_onDataLoad);
     on<LoginUser>(_onLogin);
@@ -116,6 +118,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (failure) => emit(AuthError(error: failure)),
       (_) async {
         await _cancelSubscription();
+        await _prefHelper.clearStorage();
         emit(SignedOut());
       },
     );
