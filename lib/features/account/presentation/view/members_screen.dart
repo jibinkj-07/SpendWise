@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../../../core/config/app_config.dart';
 import '../../../../core/config/injection/injection_container.dart';
 import '../../../../core/config/route/app_routes.dart';
@@ -37,7 +38,7 @@ class _MembersScreenState extends State<MembersScreen> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded),
+            icon: const Icon(Iconsax.arrow_left_2),
             onPressed: () => Navigator.pop(context),
           ),
           title: const Text("Members"),
@@ -76,7 +77,7 @@ class _MembersScreenState extends State<MembersScreen> {
           ),
           onPressed: () =>
               Navigator.of(context).pushNamed(RouteName.inviteMembers),
-          icon: Icon(Icons.add_rounded),
+          icon: Icon(Iconsax.add_circle),
           label: Text("Invite"),
         ),
       ),

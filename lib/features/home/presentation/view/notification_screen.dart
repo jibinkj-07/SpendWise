@@ -1,6 +1,7 @@
 import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../core/config/injection/injection_container.dart';
 import '../../../../core/util/error/failure.dart';
@@ -52,7 +53,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           surfaceTintColor: Colors.transparent,
                           backgroundColor: Colors.blue.shade100,
                           leading: IconButton(
-                            icon: const Icon(Icons.close_rounded),
+                            icon: const Icon(Iconsax.close_circle),
                             onPressed: () {
                               _deleteMode.value = false;
                               _selected.value = [];
@@ -96,7 +97,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 style: IconButton.styleFrom(
                                   foregroundColor: Colors.black,
                                 ),
-                                icon: Icon(Icons.delete_rounded)),
+                                icon: Icon(Iconsax.trash)),
                             TextButton(
                                 onPressed: () async {
                                   showDialog(
@@ -130,7 +131,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       : AppBar(
                           surfaceTintColor: Colors.transparent,
                           leading: IconButton(
-                            icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                            icon: const Icon(Iconsax.arrow_left_2),
                             onPressed: () => Navigator.pop(context),
                           ),
                           title: const Text("Notifications"),

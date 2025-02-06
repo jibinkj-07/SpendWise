@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../config/app_config.dart';
 import '../helper/asset_mapper.dart';
@@ -37,7 +38,7 @@ class ImagePreview extends StatelessWidget {
         centerTitle: true,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          icon: const Icon(Iconsax.arrow_left_2),
           color: Colors.white,
           splashRadius: 20.0,
         ),

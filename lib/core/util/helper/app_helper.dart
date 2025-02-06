@@ -14,7 +14,7 @@ sealed class AppHelper {
     "fastfood": Icons.fastfood,
     "local_dining": Icons.local_dining,
     "shopping_cart": Icons.shopping_cart,
-    "local_grocery_store": Icons.local_grocery_store,
+    "local_grocery_store": Icons.shopping_bag,
     "directions_car": Icons.directions_car,
     "directions_bus": Icons.directions_bus,
     "train": Icons.train,

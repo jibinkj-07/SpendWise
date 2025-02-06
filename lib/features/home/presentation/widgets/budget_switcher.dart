@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:spend_wise/core/util/helper/firebase_path.dart';
 
 import '../../../../core/config/app_config.dart';
@@ -60,7 +61,7 @@ class BudgetSwitcher extends StatelessWidget {
                           ),
                           IconButton(
                             onPressed: () => Navigator.pop(context),
-                            icon: Icon(Icons.close_rounded),
+                            icon: Icon(Iconsax.close_circle),
                           )
                         ],
                       ),
@@ -83,7 +84,8 @@ class BudgetSwitcher extends StatelessWidget {
                                         currentIndex: currentIndex,
                                         id: data.key.toString(),
                                         budgetDetail: budgetDetail,
-                                        fromRequestedScreen: fromRequestedScreen,
+                                        fromRequestedScreen:
+                                            fromRequestedScreen,
                                       ),
                                     );
                                   },
@@ -102,7 +104,7 @@ class BudgetSwitcher extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15.0)),
                         tileColor: Colors.blue.shade50,
                         leading: Icon(
-                          Icons.add_circle_rounded,
+                          Iconsax.add_circle,
                           color: AppConfig.primaryColor,
                         ),
                         title: Text(
@@ -112,7 +114,7 @@ class BudgetSwitcher extends StatelessWidget {
                           ),
                         ),
                         trailing: Icon(
-                          Icons.arrow_forward_ios_rounded,
+                          Iconsax.arrow_right_3,
                           size: 15.0,
                           color: AppConfig.primaryColor,
                         ),

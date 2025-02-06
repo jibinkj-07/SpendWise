@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:spend_wise/core/config/injection/imports.dart';
@@ -87,7 +88,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
         surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          icon: const Icon(Iconsax.arrow_left_2),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text("Transaction"),
@@ -107,7 +108,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                 child: ListView(
                   children: [
                     _tile(
-                      icon: Icons.calendar_month_rounded,
+                      icon: Iconsax.calendar_1,
                       title: "Date",
                       child: FilledTextField(
                         maxLines: 1,
@@ -132,7 +133,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                       color: Colors.brown.shade800,
                     ),
                     _tile(
-                      icon: Icons.title_rounded,
+                      icon: Iconsax.text,
                       title: "Title",
                       child: Autocomplete(
                         optionsBuilder: (TextEditingValue value) {
@@ -203,7 +204,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                       color: Colors.blue,
                     ),
                     _tile(
-                      icon: Icons.money_rounded,
+                      icon: Iconsax.money_send,
                       title: "Amount",
                       child: FilledTextField(
                         textFieldKey: "amount",
@@ -232,7 +233,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                       color: Colors.teal,
                     ),
                     _tile(
-                      icon: Icons.category_rounded,
+                      icon: Iconsax.category_2,
                       title: "Category",
                       child: FilledTextField(
                         maxLines: 1,
@@ -269,7 +270,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                       color: Colors.red,
                     ),
                     _tile(
-                      icon: Icons.description_rounded,
+                      icon: Iconsax.document_text_1,
                       title: "Description [Optional]",
                       child: FilledTextField(
                         textFieldKey: "description",
@@ -286,7 +287,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                       color: Colors.deepPurple,
                     ),
                     _tile(
-                      icon: Icons.folder_rounded,
+                      icon: Iconsax.folder,
                       title: "Document [Optional]",
                       child: Container(
                         padding: const EdgeInsets.all(10.0),
@@ -333,8 +334,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                                                 source: ImageSource.gallery,
                                               );
                                             },
-                                            icon:
-                                                Icon(Icons.attach_file_rounded),
+                                            icon: Icon(Iconsax.attach_circle),
                                           ),
                                           IconButton(
                                             onPressed: () async {
@@ -343,8 +343,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                                                 source: ImageSource.camera,
                                               );
                                             },
-                                            icon:
-                                                Icon(Icons.camera_alt_rounded),
+                                            icon: Icon(Iconsax.camera),
                                           ),
                                         ],
                                       ),

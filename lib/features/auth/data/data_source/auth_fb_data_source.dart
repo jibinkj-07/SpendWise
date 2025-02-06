@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:spend_wise/core/util/error/failure.dart';
 import 'package:either_dart/either.dart';
 import 'package:spend_wise/core/util/helper/firebase_path.dart';
@@ -46,6 +48,10 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
     this._googleSignIn,
     this._accountFbDataSource,
   );
+
+  // Store the StreamSubscription objects
+  StreamSubscription<DatabaseEvent>? _userDetailsSubscription;
+  StreamSubscription<DatabaseEvent>? _userSettingsSubscription;
 
   @override
   Future<Either<Failure, void>> createUser({
@@ -152,7 +158,6 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
     }
   }
 
-  @override
   Stream<Either<Failure, MapEntry<UserModel, SettingsModel>>>
       subscribeUserData() async* {
     try {
@@ -174,26 +179,32 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
       final userDetailsStream = userDetailsRef.onValue;
       final userSettingsStream = userSettingsRef.onValue;
 
-      // Combine both streams using async* to yield results when either stream emits
-      await for (var userEvent in userDetailsStream) {
-        await for (var settingsEvent in userSettingsStream) {
-          if (userEvent.snapshot.exists && settingsEvent.snapshot.exists) {
-            try {
-              // Parse the user data and settings data
-              final userModel =
-                  UserModel.fromFirebase(userEvent.snapshot, userId);
-              final settingsModel =
-                  SettingsModel.fromFirebase(settingsEvent.snapshot);
+      // Combine both streams using Rx.combineLatest
+      await for (var combinedEvent in Rx.combineLatest2(
+        userDetailsStream,
+        userSettingsStream,
+        (DatabaseEvent userEvent, DatabaseEvent settingsEvent) =>
+            MapEntry(userEvent, settingsEvent),
+      )) {
+        final userEvent = combinedEvent.key;
+        final settingsEvent = combinedEvent.value;
 
-              // Emit the parsed models as a MapEntry
-              yield Right(MapEntry(userModel, settingsModel));
-            } catch (e) {
-              yield Left(DatabaseError(
-                  message: "Failed to parse user or settings data: $e"));
-            }
-          } else {
-            yield Left(DatabaseError(message: "No data found for this user."));
+        if (userEvent.snapshot.exists && settingsEvent.snapshot.exists) {
+          try {
+            // Parse the user data and settings data
+            final userModel =
+                UserModel.fromFirebase(userEvent.snapshot, userId);
+            final settingsModel =
+                SettingsModel.fromFirebase(settingsEvent.snapshot);
+
+            // Emit the parsed models as a MapEntry
+            yield Right(MapEntry(userModel, settingsModel));
+          } catch (e) {
+            yield Left(DatabaseError(
+                message: "Failed to parse user or settings data: $e"));
           }
+        } else {
+          yield Left(DatabaseError(message: "No data found for this user."));
         }
       }
     } catch (e) {
@@ -205,7 +216,13 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
   @override
   Future<Either<Failure, void>> signOut() async {
     try {
+      // Cancel the Firebase listeners
+      await _userDetailsSubscription?.cancel();
+      await _userSettingsSubscription?.cancel();
+
+      // Sign out from Firebase Auth
       await _firebaseAuth.signOut();
+
       return const Right(null);
     } catch (e) {
       log("er: [auth_fb_data_source.dart][signOut] $e");

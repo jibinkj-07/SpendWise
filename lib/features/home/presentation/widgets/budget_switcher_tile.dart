@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../../../core/config/injection/injection_container.dart';
 import '../../../../core/config/route/app_routes.dart';
 import '../../../account/presentation/helper/account_helper.dart';
@@ -80,7 +81,7 @@ class _BudgetSwitcherTileState extends State<BudgetSwitcherTile> {
                 title: Text(budget.name),
                 trailing: widget.budgetDetail.id == budget.id
                     ? Icon(
-                        Icons.check_circle_rounded,
+                        Iconsax.tick_square5,
                         color: Colors.green,
                       )
                     : null,

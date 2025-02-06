@@ -1,8 +1,7 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../../../core/config/route/app_routes.dart';
 import '../../../../core/util/constant/constants.dart';
 import '../../../../core/util/helper/asset_mapper.dart';
@@ -84,8 +83,8 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
                   suffixIcon: IconButton(
                     icon: Icon(
                       isVisible
-                          ? Icons.visibility_off_rounded
-                          : Icons.visibility_rounded,
+                          ? Iconsax.eye_slash
+                          : Iconsax.eye,
                       color: Colors.grey,
                     ),
                     onPressed: () {

@@ -1,6 +1,7 @@
 import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:spend_wise/core/util/helper/app_helper.dart';
 import 'package:spend_wise/core/util/widget/filled_text_field.dart';
 import '../../../../core/config/app_config.dart';
@@ -50,7 +51,7 @@ class _CreateBudgetScreenState extends State<CreateBudgetScreen> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: Icon(Icons.arrow_back_ios_new_rounded),
+          icon: Icon(Iconsax.arrow_left_2),
         ),
         title: Text("New Budget"),
         centerTitle: true,
@@ -147,7 +148,7 @@ class _CreateBudgetScreenState extends State<CreateBudgetScreen> {
                         ),
                       );
                     },
-                    icon: Icon(Icons.add_rounded),
+                    icon: Icon(Iconsax.add),
                   ),
                 ],
               ),
@@ -196,7 +197,7 @@ class _CreateBudgetScreenState extends State<CreateBudgetScreen> {
                                       style: IconButton.styleFrom(
                                         foregroundColor: AppConfig.errorColor,
                                       ),
-                                      icon: Icon(Icons.remove_circle_rounded),
+                                      icon: Icon(Iconsax.close_circle),
                                     ),
                                   ),
                                 ),
@@ -216,7 +217,7 @@ class _CreateBudgetScreenState extends State<CreateBudgetScreen> {
                       );
                     },
                     icon: Icon(
-                      Icons.send_rounded,
+                      Iconsax.people,
                       size: 20.0,
                     ),
                   ),

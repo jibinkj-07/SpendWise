@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../../../core/config/app_config.dart';
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/widget/filled_text_field.dart';
@@ -73,7 +74,7 @@ class _CategoryEntryScreenState extends State<CategoryEntryScreen> {
         backgroundColor: widget.category == null ? Colors.white : null,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: Icon(Icons.arrow_back_ios_new_rounded),
+          icon: Icon(Iconsax.arrow_left_2),
         ),
         title: Text(
           "${widget.category == null ? "New" : "Update"} Category",
@@ -312,7 +313,7 @@ class _CategoryEntryScreenState extends State<CategoryEntryScreen> {
                   ),
                   IconButton(
                     onPressed: () => Navigator.pop(ctx),
-                    icon: Icon(Icons.close_rounded),
+                    icon: Icon(Iconsax.close_circle),
                   )
                 ],
               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../../../core/config/route/app_routes.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 
@@ -21,7 +22,7 @@ class NotificationButton extends StatelessWidget {
       icon: Badge.count(
         count: userState.settings.unreadNotifications,
         isLabelVisible: userState.settings.unreadNotifications != 0,
-        child: Icon(Icons.notifications_none_rounded),
+        child: Icon(Iconsax.notification),
       ),
     );
   }

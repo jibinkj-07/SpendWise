@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../core/config/app_config.dart';
 import '../../../../core/config/injection/injection_container.dart';
@@ -43,7 +44,7 @@ class _MyInvitationScreenState extends State<MyInvitationScreen> {
           appBar: AppBar(
             backgroundColor: Colors.white,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded),
+              icon: const Icon(Iconsax.arrow_left_2),
               onPressed: () => Navigator.pop(context),
             ),
             title: const Text("Invitations"),
@@ -78,7 +79,7 @@ class _MyInvitationScreenState extends State<MyInvitationScreen> {
             ),
             onPressed: () =>
                 Navigator.of(context).pushNamed(RouteName.requestJoin),
-            icon: Icon(Icons.add_rounded),
+            icon: Icon(Iconsax.add_circle),
             label: Text("Request"),
           ),
         ),

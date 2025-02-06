@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../core/config/route/app_routes.dart';
 import '../../../account/presentation/widget/display_image.dart';
@@ -59,7 +60,7 @@ class SecondaryAppBar extends StatelessWidget implements PreferredSizeWidget {
             IconButton(
               onPressed: () => _showBudgetSwitcher(context),
               style: IconButton.styleFrom(foregroundColor: Colors.black),
-              icon: Icon(Icons.swap_vertical_circle_outlined),
+              icon: Icon(Iconsax.wallet_search),
             ),
             NotificationButton(userState: state),
           ],

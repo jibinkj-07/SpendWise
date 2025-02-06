@@ -35,6 +35,8 @@ dependencies:
   sliver_tools: # for showing pinned heading in transaction history
   share_plus: # for sharing budget
   shared_preferences: # for local storage
+  iconsax: # for custom icons
+  rxdart: # for stream control
 
 
 

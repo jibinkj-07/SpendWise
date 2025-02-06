@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../../../core/config/app_config.dart';
-import '../../../../core/config/route/app_routes.dart';
 import '../../../../core/util/helper/app_helper.dart';
-import '../../../../core/util/widget/custom_alert.dart';
-import '../../../../core/util/widget/custom_loading.dart';
-import '../../../../core/util/widget/loading_filled_button.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/presentation/bloc/budget_view_bloc.dart';
 import '../widget/leave_alert_dialog.dart';
@@ -34,7 +31,7 @@ class AccountScreen extends StatelessWidget {
             leading: state is SigningOut
                 ? null
                 : IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                    icon: const Icon(Iconsax.arrow_left_2),
                     onPressed: () => Navigator.pop(context),
                   ),
             title: const Text("My Account"),
@@ -78,12 +75,12 @@ class AccountScreen extends StatelessWidget {
                                       top: Radius.circular(20.0),
                                     ),
                                   ),
-                                  leading: Icon(Icons.account_balance_rounded),
+                                  leading: Icon(Iconsax.wallet_money),
                                   title: Text("Budget"),
                                   subtitle: Text(
                                       "Find more details about current budget"),
                                   trailing: Icon(
-                                    Icons.arrow_forward_ios_rounded,
+                                    Iconsax.arrow_right_3,
                                     size: 15.0,
                                     color: AppConfig.primaryColor,
                                   ),
@@ -107,25 +104,24 @@ class AccountScreen extends StatelessWidget {
                                         top: Radius.circular(20.0),
                                       ),
                                     ),
-                                    leading: Icon(
-                                        Icons.remove_circle_outline_rounded),
+                                    leading: Icon(Iconsax.box_remove),
                                     title: Text("Leave Budget"),
                                     subtitle: Text(
                                         "Delete and leave from current budget"),
                                     trailing: Icon(
-                                      Icons.arrow_forward_ios_rounded,
+                                      Iconsax.arrow_right_3,
                                       size: 15.0,
                                       color: AppConfig.primaryColor,
                                     ),
                                   ),
                                 // ListTile(
                                 //   onTap: () {},
-                                //   leading: Icon(Icons.edit_document),
+                                //   leading: Icon(Iconsax.edit_document),
                                 //   title: Text("Generate Report"),
                                 //   subtitle:
                                 //       Text("Generate report for a specific month"),
                                 //   trailing: Icon(
-                                //     Icons.arrow_forward_ios_rounded,
+                                //     Iconsax.arrow_right_3,
                                 //     size: 15.0,
                                 //     color: AppConfig.primaryColor,
                                 //   ),
@@ -143,12 +139,12 @@ class AccountScreen extends StatelessWidget {
                                         ),
                                       );
                                     },
-                                    leading: Icon(Icons.people_alt_rounded),
+                                    leading: Icon(Iconsax.people),
                                     title: Text("Members"),
                                     subtitle:
                                         Text("Manage your budget members"),
                                     trailing: Icon(
-                                      Icons.arrow_forward_ios_rounded,
+                                      Iconsax.arrow_right_3,
                                       size: 15.0,
                                       color: AppConfig.primaryColor,
                                     ),
@@ -164,12 +160,12 @@ class AccountScreen extends StatelessWidget {
                                     ),
                                   );
                                 },
-                                leading: Icon(Icons.link_rounded),
+                                leading: Icon(Iconsax.direct_inbox),
                                 title: Text("Invitations"),
                                 subtitle:
                                     Text("Manage your budget invitations"),
                                 trailing: Icon(
-                                  Icons.arrow_forward_ios_rounded,
+                                  Iconsax.arrow_right_3,
                                   size: 15.0,
                                   color: AppConfig.primaryColor,
                                 ),
@@ -186,7 +182,7 @@ class AccountScreen extends StatelessWidget {
                                   ),
                                 ),
                                 leading: Icon(
-                                  Icons.logout_rounded,
+                                  Iconsax.logout_1,
                                   color: AppConfig.errorColor,
                                 ),
                                 title: Text(
@@ -196,7 +192,7 @@ class AccountScreen extends StatelessWidget {
                                   ),
                                 ),
                                 trailing: Icon(
-                                  Icons.arrow_forward_ios_rounded,
+                                  Iconsax.arrow_right_3,
                                   size: 15.0,
                                   color: AppConfig.errorColor,
                                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:spend_wise/core/util/extension/string_ext.dart';
 import '../../../../core/config/app_config.dart';
@@ -79,7 +80,7 @@ class MemberListTile extends StatelessWidget {
                 Row(
                   children: [
                     if (member.uid == adminId) ...[
-                      const Icon(Icons.admin_panel_settings_rounded),
+                      const Icon(Iconsax.security_user),
                       const SizedBox(width: 5.0),
                     ],
                     Text(

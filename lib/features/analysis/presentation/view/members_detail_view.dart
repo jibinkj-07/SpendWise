@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../../../core/util/helper/chart_helpers.dart';
 import '../bloc/analysis_bloc.dart';
 import '../helper/analysis_helper.dart';
@@ -52,7 +53,7 @@ class _MembersDetailViewState extends State<MembersDetailView> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          icon: const Icon(Iconsax.arrow_left_2),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text("Detail Summary"),

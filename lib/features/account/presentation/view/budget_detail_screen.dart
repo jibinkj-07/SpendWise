@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:spend_wise/core/util/widget/custom_snackbar.dart';
@@ -56,7 +57,7 @@ class _BudgetDetailScreenState extends State<BudgetDetailScreen> {
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          icon: const Icon(Iconsax.arrow_left_2),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text("Detail"),
@@ -180,7 +181,7 @@ class _BudgetDetailScreenState extends State<BudgetDetailScreen> {
                                 ),
                                 title: Text(state.categories[index].name),
                                 trailing: Icon(
-                                  Icons.arrow_forward_ios_rounded,
+                                  Iconsax.arrow_right_3,
                                   size: 15.0,
                                 ),
                               ),

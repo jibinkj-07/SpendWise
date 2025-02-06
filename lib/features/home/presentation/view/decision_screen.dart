@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:spend_wise/core/config/route/app_routes.dart';
 import 'package:spend_wise/core/util/widget/zoom_animation.dart';
 
@@ -25,7 +26,7 @@ class DecisionScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => context.read<AuthBloc>().add(SignOut()),
-          icon: Icon(Icons.logout_rounded),
+          icon: Icon(Iconsax.logout_1),
         ),
         automaticallyImplyLeading: false,
         actions: [

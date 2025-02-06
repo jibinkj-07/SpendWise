@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../../../core/config/route/app_routes.dart';
 import '../../../../core/util/helper/app_helper.dart';
 import '../../../../core/util/helper/asset_mapper.dart';
@@ -37,7 +38,7 @@ class _RequestBudgetJoinState extends State<RequestBudgetJoin> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          icon: const Icon(Iconsax.arrow_left_2),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text("Request"),

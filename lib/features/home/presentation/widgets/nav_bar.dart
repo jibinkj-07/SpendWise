@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../../../core/config/app_config.dart';
 import '../../../../core/config/route/app_routes.dart';
 import '../../../analysis/presentation/widgets/bottom_date_picker.dart';
@@ -64,15 +65,15 @@ class NavBar extends StatelessWidget {
                 color: Colors.black54,
                 tabs: [
                   GButton(
-                    icon: Icons.home_rounded,
+                    icon: Iconsax.house_2,
                     text: 'Home',
                   ),
                   GButton(
-                    icon: Icons.query_stats_rounded,
+                    icon: Iconsax.chart_3,
                     text: 'Analytics',
                   ),
                   GButton(
-                    icon: Icons.article_rounded,
+                    icon: Iconsax.document_text,
                     text: 'Transactions',
                   ),
                 ],
@@ -87,14 +88,14 @@ class NavBar extends StatelessWidget {
                   RouteName.transactionEntry,
                 );
               },
-              icon: Icon(Icons.add_rounded),
+              icon: Icon(Iconsax.add),
             )
           else
             IconButton.filled(
               onPressed: () => currentIndex == 1
                   ? BottomDatePicker.showDialog(context)
                   : TransBottomDatePicker.showDialog(context),
-              icon: Icon(Icons.edit_calendar_rounded),
+              icon: Icon(Iconsax.calendar_edit),
             )
         ],
       ),

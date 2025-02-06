@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/config/app_config.dart';
@@ -85,7 +86,7 @@ class _TransactionDetailViewState extends State<TransactionDetailView> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                      icon: const Icon(Iconsax.arrow_left_2),
                       onPressed: () => Navigator.pop(context),
                     ),
                     Text(
@@ -102,7 +103,7 @@ class _TransactionDetailViewState extends State<TransactionDetailView> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.0),
                       ),
-                      icon: const Icon(Icons.edit_note_rounded),
+                      icon: const Icon(Iconsax.receipt_edit),
                       itemBuilder: (ctx) => [
                         PopupMenuItem(
                           child: Text("Edit"),
@@ -288,8 +289,10 @@ class _TransactionDetailViewState extends State<TransactionDetailView> {
                                           url,
                                           error,
                                         ) =>
-                                            const Icon(Icons.error,
-                                                color: Colors.red),
+                                            const Icon(
+                                          Iconsax.warning_2,
+                                          color: Colors.red,
+                                        ),
                                       ),
                                     ),
                                   ),
