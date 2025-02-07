@@ -51,6 +51,7 @@ class _MembersDetailViewState extends State<MembersDetailView> {
     final size = MediaQuery.sizeOf(context);
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left_2),

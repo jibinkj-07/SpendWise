@@ -59,7 +59,7 @@ class _BudgetSwitcherTileState extends State<BudgetSwitcherTile> {
                   Navigator.pop(context);
                   final authBloc =
                       (context.read<AuthBloc>().state as Authenticated);
-                  await _accountHelper.updateSelectedBudget(
+                  _accountHelper.updateSelectedBudget(
                     id: authBloc.user.uid,
                     budgetId: budget.id,
                   );
