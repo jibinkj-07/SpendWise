@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 
 class ErrorRoute extends StatelessWidget {
   const ErrorRoute({super.key});
@@ -11,13 +12,11 @@ class ErrorRoute extends StatelessWidget {
         centerTitle: true,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          icon: Icon(Iconsax.arrow_left_2),
           splashRadius: 20.0,
         ),
       ),
-      body: const Center(
-        child: Text('No page found'),
-      ),
+      body: const Center(child: Text('No page found')),
     );
   }
 }

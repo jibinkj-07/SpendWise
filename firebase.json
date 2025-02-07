@@ -4,7 +4,7 @@
       "android": {
         "default": {
           "projectId": "my-budget-2600c",
-          "appId": "1:434782527915:android:c78b7cff08da15f0dfb2ee",
+          "appId": "1:434782527915:android:0054c0b548cad7b8dfb2ee",
           "fileOutput": "android/app/google-services.json"
         }
       },
@@ -12,9 +12,8 @@
         "lib/firebase_options.dart": {
           "projectId": "my-budget-2600c",
           "configurations": {
-            "android": "1:434782527915:android:c78b7cff08da15f0dfb2ee",
-            "ios": "1:434782527915:ios:08c24bd659b77c14dfb2ee",
-            "web": "1:434782527915:web:1db5f09af08256ebdfb2ee"
+            "android": "1:434782527915:android:0054c0b548cad7b8dfb2ee",
+            "web": "1:434782527915:web:ee72b83a475a619adfb2ee"
           }
         }
       }

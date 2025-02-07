@@ -47,19 +47,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBRP0zuZX72FmoTHbxsU1rl37vm0nJl2mk',
-    appId: '1:434782527915:web:1db5f09af08256ebdfb2ee',
+    apiKey: 'AIzaSyDDD1lJ71Q4462LvI_ZLki90CPo4F_cqf4',
+    appId: '1:434782527915:web:ee72b83a475a619adfb2ee',
     messagingSenderId: '434782527915',
     projectId: 'my-budget-2600c',
     authDomain: 'my-budget-2600c.firebaseapp.com',
     databaseURL: 'https://my-budget-2600c-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'my-budget-2600c.appspot.com',
-    measurementId: 'G-QGBERLL1N2',
+    measurementId: 'G-M7CPYFFPWR',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAIm8kpwBJabSieE36btSKgsDIIRi4EV0o',
-    appId: '1:434782527915:android:c78b7cff08da15f0dfb2ee',
+    appId: '1:434782527915:android:0054c0b548cad7b8dfb2ee',
     messagingSenderId: '434782527915',
     projectId: 'my-budget-2600c',
     databaseURL: 'https://my-budget-2600c-default-rtdb.europe-west1.firebasedatabase.app',
@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
     projectId: 'my-budget-2600c',
     databaseURL: 'https://my-budget-2600c-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'my-budget-2600c.appspot.com',
+    iosClientId: '434782527915-8kc2r5l7qrhpe7v4vrfo0g5r5tvh3v10.apps.googleusercontent.com',
     iosBundleId: 'com.codedude.myBudget',
   );
-
 }
