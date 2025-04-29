@@ -8,43 +8,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:434782527915:android:c78b7cff08da15f0dfb2ee",
-        "android_client_info": {
-          "package_name": "com.codedude.my_budget"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "434782527915-9rsoql7m2631fjike6qi4slr3366dkom.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAIm8kpwBJabSieE36btSKgsDIIRi4EV0o"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "434782527915-9rsoql7m2631fjike6qi4slr3366dkom.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "434782527915-8kc2r5l7qrhpe7v4vrfo0g5r5tvh3v10.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.codedude.myBudget"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:434782527915:android:acfdd8caa541b5b1dfb2ee",
+        "mobilesdk_app_id": "1:434782527915:android:0054c0b548cad7b8dfb2ee",
         "android_client_info": {
           "package_name": "com.codedude.spend_wise"
         }
