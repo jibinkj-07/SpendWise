@@ -36,7 +36,7 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
     builder: (data, _, __, ___, ____) => Padding(
       padding: const EdgeInsets.all(8.0),
       child: Text(
-        data.amount.toString(),
+        data.amount.toStringAsFixed(2),
         style: TextStyle(
           color: Colors.white,
           fontSize: 12.0,
@@ -109,17 +109,15 @@ class _WeeklyBarChartState extends State<WeeklyBarChart> {
         series: <CartesianSeries>[
           ColumnSeries<WeeklyChartData, String>(
             dataSource: widget.chartData,
-            borderRadius: BorderRadius.circular(20.0),
             width: 0.4,
             pointColorMapper: (data, _) => data.isToday
-                ? data.color.withOpacity(.2)
-                : data.color.withOpacity(.08),
+                ? data.color.withValues(alpha: .2)
+                : data.color.withValues(alpha: .08),
             xValueMapper: (data, _) => data.day,
             yValueMapper: (data, _) => maxAmount,
           ),
           ColumnSeries<WeeklyChartData, String>(
             dataSource: widget.chartData,
-            borderRadius: BorderRadius.circular(20.0),
             width: 0.4,
             pointColorMapper: (data, _) => data.color,
             xValueMapper: (data, _) => data.day,

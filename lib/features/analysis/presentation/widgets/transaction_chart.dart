@@ -79,7 +79,7 @@ class TransactionChart extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             Text(
-              data.amount.toString(),
+              data.amount.toStringAsFixed(2),
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 11.0,
@@ -151,7 +151,7 @@ class TransactionChart extends StatelessWidget {
         series: <CartesianSeries>[
           ColumnSeries<WeekWiseChartData, String>(
             dataSource: chartData,
-            borderRadius: BorderRadius.circular(20.0),
+            // borderRadius: BorderRadius.circular(20.0),
             width: 0.4,
             color: Colors.grey.shade100,
             xValueMapper: (data, _) => formatChartDate(data.date),
@@ -159,7 +159,7 @@ class TransactionChart extends StatelessWidget {
           ),
           ColumnSeries<WeekWiseChartData, String>(
             dataSource: chartData,
-            borderRadius: BorderRadius.circular(20.0),
+            // borderRadius: BorderRadius.circular(20.0),
             width: 0.4,
             color: Colors.blue,
             xValueMapper: (data, _) => formatChartDate(data.date),
