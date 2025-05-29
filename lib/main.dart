@@ -42,6 +42,7 @@ class SpendWiseApp extends StatelessWidget {
       theme: Light.config,
       initialRoute: RouteName.root,
       onGenerateRoute: AppRoutes.generate,
+      debugShowCheckedModeBanner: false,
     );
   }
 }

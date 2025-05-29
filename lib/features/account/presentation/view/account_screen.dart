@@ -1,8 +1,12 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../../../../core/config/app_config.dart';
 import '../../../../core/util/helper/app_helper.dart';
+import '../../../../core/util/widget/custom_snackbar.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../budget/presentation/bloc/budget_view_bloc.dart';
 import '../widget/leave_alert_dialog.dart';
@@ -21,7 +25,10 @@ class AccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final webAppLink = "https://my-budget-2600c.web.app";
+    final mobileAppLink = "https://play.google.com/store/";
     final size = MediaQuery.sizeOf(context);
+
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (BuildContext context, AuthState state) => PopScope(
         canPop: state is! SigningOut,
@@ -170,6 +177,50 @@ class AccountScreen extends StatelessWidget {
                                   color: AppConfig.primaryColor,
                                 ),
                               ),
+                              if (kIsWeb)
+                                ListTile(
+                                  onTap: () async {
+                                    final url = Uri.parse(mobileAppLink);
+                                    if (await canLaunchUrl(url)) {
+                                      await launchUrl(url,
+                                          mode: LaunchMode.externalApplication);
+                                    } else {
+                                      CustomSnackBar.showErrorSnackBar(
+                                          context, "Unable to open store");
+                                    }
+                                  },
+                                  leading: Icon(Iconsax.mobile),
+                                  title: Text("Mobile App"),
+                                  subtitle:
+                                      Text("Access your SpendWise from Mobile"),
+                                  trailing: Icon(
+                                    Iconsax.arrow_right_3,
+                                    size: 15.0,
+                                    color: AppConfig.primaryColor,
+                                  ),
+                                )
+                              else
+                                ListTile(
+                                  onTap: () async {
+                                    final url = Uri.parse(webAppLink);
+                                    if (await canLaunchUrl(url)) {
+                                      await launchUrl(url,
+                                          mode: LaunchMode.externalApplication);
+                                    } else {
+                                      CustomSnackBar.showErrorSnackBar(
+                                          context, "Unable to open web");
+                                    }
+                                  },
+                                  leading: Icon(Iconsax.link_1),
+                                  title: Text("Web App"),
+                                  subtitle:
+                                      Text("Access your SpendWise from web"),
+                                  trailing: Icon(
+                                    Iconsax.arrow_right_3,
+                                    size: 15.0,
+                                    color: AppConfig.primaryColor,
+                                  ),
+                                ),
                               ListTile(
                                 onTap: () => showDialog(
                                   barrierDismissible: false,
