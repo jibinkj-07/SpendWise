@@ -1,6 +1,6 @@
 # SpendWise - Finance Management App
 
-[SpendWise App](https://my-budget-2600c.web.app)  
+[SpendWise App](https://spend-wise-budget.web.app/)  
 SpendWise is a finance management app built with Flutter, designed to help users track expenses, set financial goals, monitor budgets, and visualize spending patterns through interactive charts. It also includes a guest-adding feature for tracking shared expenses.
 
 ---

@@ -25,7 +25,7 @@ class AccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final webAppLink = "https://my-budget-2600c.web.app";
+    final webAppLink = "https://spend-wise-budget.web.app/";
     final mobileAppLink = "https://play.google.com/store/";
     final size = MediaQuery.sizeOf(context);
 

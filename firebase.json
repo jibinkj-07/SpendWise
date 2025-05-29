@@ -20,6 +20,7 @@
     }
   },
   "hosting": {
+    "site": "spend-wise-budget",
     "public": "build/web",
     "ignore": [
       "firebase.json",
