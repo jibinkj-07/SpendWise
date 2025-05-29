@@ -38,6 +38,8 @@ dependencies:
   iconsax: # for custom icons
   rxdart: # for stream control
   url_launcher: # for url launch
+  firebase_crashlytics: # for crash analysis
+  firebase_analytics:
 
 
 
