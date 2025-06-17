@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 sealed class AppConfig {
   static final String _appName = "SpendWise";
-  static final String _version = "2.1.0";
+  static final String _version = "1.1.0";
   static final String _fontFamily = "Poppins";
   static final String _slogan = "Spend Smarter, Live Better";
   static final String _developer = "jibinkunnumpurath@gmail.com";
