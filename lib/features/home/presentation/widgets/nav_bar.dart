@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:iconsax/iconsax.dart';
@@ -39,13 +38,13 @@ class NavBar extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border.all(
                   width: .5,
-                  color: Colors.grey.withOpacity(.3),
+                  color: Colors.grey.withValues(alpha: .3),
                 ),
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(200.0),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(.1),
+                    color: Colors.black.withValues(alpha: .1),
                     blurRadius: 10.0,
                   )
                 ],

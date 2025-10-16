@@ -10,6 +10,7 @@ import 'package:either_dart/either.dart';
 import 'package:spend_wise/core/util/helper/firebase_path.dart';
 import 'package:spend_wise/features/auth/domain/model/user_model.dart';
 
+import '../../../../core/config/api_config.dart';
 import '../../../../core/util/constant/constants.dart';
 import '../../../account/data/data_source/account_fb_data_source.dart';
 import '../../domain/model/settings_model.dart';
@@ -22,6 +23,7 @@ abstract class AuthFbDataSource {
     required String email,
     required String password,
   });
+
 
   Future<Either<Failure, void>> loginUserWithGoogle();
 
@@ -100,44 +102,54 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
     }
   }
 
+
+
   @override
   Future<Either<Failure, void>> loginUserWithGoogle() async {
+
+    UserCredential userCredential;
+
     try {
-      UserCredential userCredential;
-      if (kIsWeb) {
-        final googleProvider = GoogleAuthProvider();
-        userCredential = await _firebaseAuth.signInWithPopup(googleProvider);
-      } else {
-        final googleUser = await _googleSignIn.signIn();
-        if (googleUser == null) {
-          return Left(AuthenticationError(message: "Google sign-in canceled."));
-        }
 
-        final googleAuth = await googleUser.authentication;
+        await _googleSignIn.initialize(
+          clientId: kIsWeb ? ApiConfig.googleSignInClientId : null,
+          serverClientId: ApiConfig.googleSignInClientId, 
+        );
+
+
+
+      if (_googleSignIn.supportsAuthenticate()) {
+        // Unified sign-in (works on Android, iOS, macOS, web)
+        final account = await _googleSignIn.authenticate();
+
+        final auth =  account.authentication;
         final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
+          idToken: auth.idToken
         );
 
-        userCredential = await _firebaseAuth.signInWithCredential(credential);
-      }
+        userCredential= await _firebaseAuth.signInWithCredential(credential);
 
-      // check if user already created or not
-      //if not create new user
-      final user = await _accountFbDataSource.getUserInfoByID(
-        id: userCredential.user?.uid ?? kUnknownUser,
-      );
-
-      if (user.isLeft) {
-        await _createUser(
-          uid: userCredential.user?.uid ?? kUnknownUser,
-          name: userCredential.user?.displayName ?? "User",
-          email: userCredential.user?.email ?? "user@gmail.com",
+        // check if user already created or not
+        //if not create new user
+        final user = await _accountFbDataSource.getUserInfoByID(
+          id: userCredential.user?.uid ?? kUnknownUser,
         );
+
+        if (user.isLeft) {
+          await _createUser(
+            uid: userCredential.user?.uid ?? kUnknownUser,
+            name: userCredential.user?.displayName ?? "User",
+            email: userCredential.user?.email ?? "user@gmail.com",
+          );
+        }
+        return const Right(null);
+
+      } else {
+        return Left(AuthenticationError(message: "Manual button-based flow required on web."));
+
       }
-      return const Right(null);
-    } catch (e) {
-      log("er: [auth_fb_data_source.dart][loginUserWithGoogle] $e");
+    } catch (e, st) {
+      debugPrint('Google Sign-In error: $e\n$st');
       return Left(AuthenticationError(message: "Unable to login with Google."));
     }
   }
@@ -154,6 +166,7 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
     }
   }
 
+  @override
   Stream<Either<Failure, MapEntry<UserModel, SettingsModel>>>
       subscribeUserData() async* {
     try {

@@ -39,7 +39,7 @@ sealed class RouteName {
 
 sealed class AppRoutes {
   static Route<dynamic> generate(RouteSettings settings) {
-    final args = settings.arguments;
+    // final args = settings.arguments;
 
     /// for get parameters that are passed via navigator
     // OnboardScreen(isDataFetched: args == null ? false : args as bool),

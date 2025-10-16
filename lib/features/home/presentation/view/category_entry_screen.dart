@@ -136,7 +136,7 @@ class _CategoryEntryScreenState extends State<CategoryEntryScreen> {
                         },
                         style: FilledButton.styleFrom(
                           backgroundColor:
-                              _suggestions[index].color.withOpacity(.15),
+                              _suggestions[index].color.withValues(alpha: .15),
                           foregroundColor: _suggestions[index].color,
                         ),
                         icon: Icon(

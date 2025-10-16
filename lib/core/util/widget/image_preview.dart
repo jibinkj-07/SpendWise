@@ -30,7 +30,7 @@ class ImagePreview extends StatelessWidget {
       extendBodyBehindAppBar: true,
       backgroundColor: const Color(0xFF1F1F1F),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1F1F1F).withOpacity(.8),
+        backgroundColor: const Color(0xFF1F1F1F).withValues(alpha: .8),
         title: Text(
           name,
           style: const TextStyle(color: Colors.white),

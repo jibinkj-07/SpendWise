@@ -141,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Don\'t have an account?"),
+              Text("Don't have an account?"),
               TextButton(
                 onPressed: () =>
                     Navigator.of(context).pushNamed(RouteName.createAccount),

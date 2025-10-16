@@ -76,7 +76,7 @@ sealed class AppHelper {
 
   /// Function to convert Color to hex string
   static String colorToString(Color color) {
-    String hex = color.value.toRadixString(16).toUpperCase().substring(2);
+    String hex = color. value.toRadixString(16).toUpperCase().substring(2);
     return '#$hex';
   }
 

@@ -171,7 +171,7 @@ class _BudgetDetailScreenState extends State<BudgetDetailScreen> {
                                 },
                                 leading: CircleAvatar(
                                   backgroundColor: state.categories[index].color
-                                      .withOpacity(.15),
+                                      .withValues(alpha: .15),
                                   child: Icon(
                                     AppHelper.getIconFromString(
                                       state.categories[index].icon,
@@ -227,10 +227,10 @@ class _BudgetDetailScreenState extends State<BudgetDetailScreen> {
               Expanded(
                 child: FilledButton(
                     onPressed: () {
-                      Share.share(
-                        "Let’s join ${AppConfig.name} to manage your budget effortlessly and stay on top of your expenses!\n\n"
-                        "Join the ${widget.budget.name} budget by copying the Budget ID below and pasting it in the 'Join Budget' section of the ${AppConfig.name} app.\n\nStart collaborating today!\n\n\n"
-                        "ID - ${widget.budget.id}",
+                      SharePlus.instance.share(
+                      ShareParams(text:   "Let’s join ${AppConfig.name} to manage your budget effortlessly and stay on top of your expenses!\n\n"
+                          "Join the ${widget.budget.name} budget by copying the Budget ID below and pasting it in the 'Join Budget' section of the ${AppConfig.name} app.\n\nStart collaborating today!\n\n\n"
+                          "ID - ${widget.budget.id}",)
                       );
                     },
                     child: Text("Share Now")),

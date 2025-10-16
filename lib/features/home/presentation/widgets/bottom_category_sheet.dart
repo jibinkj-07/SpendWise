@@ -143,7 +143,7 @@ class _BottomCategorySheetState extends State<BottomCategorySheet> {
                                           radius: 15.0,
                                           backgroundColor: _categories[index]
                                               .color
-                                              .withOpacity(.15),
+                                              .withValues(alpha: .15),
                                           child: Icon(
                                             AppHelper.getIconFromString(
                                               _categories[index].icon,

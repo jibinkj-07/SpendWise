@@ -1,21 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:spend_wise/core/config/app_config.dart';
 import 'package:spend_wise/core/config/injection/imports.dart';
-import 'package:spend_wise/core/util/widget/filled_text_field.dart';
-import '../../../../core/config/injection/injection_container.dart';
-import '../../../../core/util/helper/app_helper.dart';
-import '../../../../core/util/widget/loading_filled_button.dart';
+import 'package:spend_wise/core/util/helper/app_helper.dart';
+
 import '../../../budget/domain/model/category_model.dart';
 import '../../../home/presentation/widgets/bottom_category_sheet.dart';
-import '../../../home/presentation/widgets/xFile_image_view.dart';
 import '../../domain/model/transaction_model.dart';
-
-/// @author : Jibin K John
-/// @date   : 18/12/2024
-/// @time   : 22:48:41
 
 class TransactionEntryScreen extends StatefulWidget {
   final TransactionModel? transactionModel;
@@ -32,464 +26,449 @@ class TransactionEntryScreen extends StatefulWidget {
 }
 
 class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
-  final _formKey = GlobalKey<FormState>();
-
-  final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
-  final ValueNotifier<bool> _loading = ValueNotifier(false);
-  final ValueNotifier<XFile?> _document = ValueNotifier(null);
+  final _amountController = TextEditingController();
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _loading = ValueNotifier<bool>(false);
   late ValueNotifier<DateTime> _date;
   late ValueNotifier<CategoryModel?> _category;
-  final SharedPrefHelper _sharedPrefHelper = sl<SharedPrefHelper>();
+  String _amountUnit = '\$';
+  // final SharedPrefHelper _sharedPrefHelper = sl<SharedPrefHelper>();
+  final Map<String, String> _errorMap = {};
 
-  String _title = "";
-  String _description = "";
-  double _amount = 0.0;
+  // Recent transactions for quick fill
+  List<TransactionModel> _recentTransactions = [];
 
   @override
   void initState() {
     super.initState();
+    _initializeData();
+    _loadRecentTransactions();
+  }
 
+  void _initializeData() {
     _category = ValueNotifier(null);
     _date = ValueNotifier(DateTime.now());
+
     if (widget.transactionModel != null) {
-      _date = ValueNotifier(widget.transactionModel!.date);
-      final categories =
-          (context
-              .read<CategoryViewBloc>()
-              .state as CategorySubscribed)
-              .categories;
-      final index = categories.indexWhere(
-            (item) => item.id == widget.transactionModel!.categoryId,
+      _date.value = widget.transactionModel!.date;
+      final categories = _getCategories();
+      final category = categories.firstWhere(
+        (item) => item.id == widget.transactionModel!.categoryId,
+        orElse: () => categories.first,
       );
-      if (index > -1) {
-        _categoryController.text = categories[index].name;
-        _category = ValueNotifier(categories[index]);
-      }
+      _category.value = category;
     }
-    _dateController.text = DateFormat("dd MMM, y").format(_date.value);
+
+    final budgetState = context.read<BudgetViewBloc>().state;
+    if (budgetState is BudgetSubscribed) {
+      _amountUnit = budgetState.budget.currencySymbol;
+    }
+
+    // clear errors on user type
+    _titleController.addListener(() {
+      if (_errorMap.containsKey('title')) {
+        setState(() {
+          _errorMap.remove('title');
+        });
+      }
+    });
+    _amountController.addListener(() {
+      if (_errorMap.containsKey('amount')) {
+        setState(() {
+          _errorMap.remove('amount');
+        });
+      }
+    });
+  }
+
+  List<CategoryModel> _getCategories() {
+    final state = context.read<CategoryViewBloc>().state;
+    return state is CategorySubscribed ? state.categories : [];
+  }
+
+  void _loadRecentTransactions() {
+    // Load recent transactions from your data source
+    // This is a placeholder - implement based on your data layer
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = context.read<MonthTransViewBloc>().state;
+
+      if (state is SubscribedMonthTransState) {
+        setState(() {
+          _recentTransactions = state.transactions.take(10).toList();
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
-    super.dispose();
     _loading.dispose();
     _date.dispose();
-    _dateController.dispose();
     _category.dispose();
-    _categoryController.dispose();
-    _document.dispose();
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _amountController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery
-        .of(context)
-        .size;
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
-        backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left_2),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text("Transaction"),
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(Iconsax.arrow_left_2)),
+        title: Text("New Expense"),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: AppHelper.horizontalPadding(size),
-          vertical: 10.0,
-        ),
+      body: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(
+          spacing: 20.0,
           children: [
-            //Form
-            Expanded(
-              child: Form(
-                key: _formKey,
-                child: ListView(
-                  children: [
-                    _tile(
-                      icon: Iconsax.calendar_1,
-                      title: "Date",
-                      child: FilledTextField(
-                        maxLines: 1,
-                        controller: _dateController,
-                        onTap: () async {
-                          final date = await showDatePicker(
-                            context: context,
-                            initialDate: _date.value,
-                            firstDate: DateTime(1800),
-                            lastDate: DateTime(3000),
-                          );
-                          if (date != null) {
-                            _date.value = date;
-                            _dateController.text =
-                                DateFormat("dd MMM, y").format(_date.value);
-                          }
-                        },
-                        readOnly: true,
-                        textFieldKey: "date",
-                        inputAction: TextInputAction.none,
-                      ),
-                      color: Colors.brown.shade800,
+            // DATE PICKER
+            FilledButton.icon(
+              icon: Icon(Iconsax.calendar_1),
+              onPressed: () async {
+                final date = await showDatePicker(
+                  context: context,
+                  initialDate: _date.value,
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2100),
+                );
+                if (date != null) {
+                  _date.value = date;
+                }
+              },
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.blue.shade100,
+                foregroundColor: AppConfig.primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadiusGeometry.circular(100),
+                ),
+              ),
+              label: ValueListenableBuilder(
+                  valueListenable: _date,
+                  builder: (_, date, __) {
+                    return Text(
+                      DateFormat("dd MMM y").format(date),
+                    );
+                  }),
+            ),
+
+            // AMOUNT
+            Column(
+              children: [
+                Text('Total Amount'),
+                IntrinsicWidth(
+                  child: TextFormField(
+                    style: TextStyle(
+                      color: AppConfig.primaryColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 50.0,
                     ),
-                    _tile(
-                      icon: Iconsax.text,
-                      title: "Title",
-                      child: Autocomplete(
-                        optionsBuilder: (TextEditingValue value) {
-                          if (value.text
-                              .trim()
-                              .isEmpty) {
-                            return const Iterable<String>.empty();
-                          }
-                          return _sharedPrefHelper
-                              .getTransactionSuggestions()
-                              .where(
-                                (title) => title.contains(value.text.trim()),
-                          );
-                        },
-                        fieldViewBuilder: (context,
-                            textEditingController,
-                            focusNode,
-                            onFieldSubmitted,) {
-                          if (widget.transactionModel != null && textEditingController.text.isEmpty) {
-                            textEditingController.text = widget.transactionModel!.title;
-                          }
-                          return FilledTextField(
-                            textFieldKey: "title",
-                            hintText: "eg: Haircut",
-                            focusNode: focusNode,
-                            onFieldSubmitted: (value) => onFieldSubmitted(),
-                            controller: textEditingController,
-                            textCapitalization: TextCapitalization.words,
-                            maxLength: 50,
-                            minLines: 1,
-                            validator: (data) {
-                              if (data
-                                  .toString()
-                                  .trim()
-                                  .isEmpty) {
-                                return "Please fill title";
-                              }
-                              return null;
-                            },
-                            onSaved: (data) => _title = data.toString().trim(),
-                            inputAction: TextInputAction.next,
-                          );
-                        },
-                        optionsViewBuilder: (context, onSelected, options) {
-                          return Align(
-                            alignment: Alignment.topLeft,
-                            child: Material(
-                              elevation: 4.0,
-                              borderRadius: BorderRadius.circular(10),
-                              child: SizedBox(
-                                width: MediaQuery
-                                    .of(context)
-                                    .size
-                                    .width * .75,
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: options.length,
-                                  itemBuilder: (context, index) {
-                                    final String option =
-                                    options.elementAt(index);
-                                    return ListTile(
-                                      title: Text(
-                                        option,
-                                        style: const TextStyle(fontSize: 14),
-                                      ),
-                                      onTap: () {
-                                        onSelected(option);
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      color: Colors.blue,
-                    ),
-                    _tile(
-                      icon: Iconsax.money_send,
-                      title: "Amount",
-                      child: FilledTextField(
-                        textFieldKey: "amount",
-                        numberOnly: true,
-                        hintText: "eg: 54.0",
-                        initialValue:
-                        widget.transactionModel?.amount.toString(),
-                        maxLines: 1,
-                        maxLength: 30,
-                        validator: (value) {
-                          if (value
-                              .toString()
-                              .trim()
-                              .isEmpty) {
-                            return "Amount is empty";
-                          } else if (double.parse(
-                            value.toString().trim(),
-                          ) <
-                              .1) {
-                            return "Minimum amount is .1";
-                          }
-                          return null;
-                        },
-                        onSaved: (value) =>
-                        _amount = double.parse(
-                          value.toString().trim(),
+                    controller: _amountController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                    ],
+                    maxLength: 10,
+                    decoration: InputDecoration(
+                        contentPadding: EdgeInsets.zero,
+                        border: InputBorder.none,
+                        counter: const SizedBox.shrink(),
+                        prefixIcon: Text(
+                          _amountUnit,
+                          style: TextStyle(
+                            color: AppConfig.primaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 40.0,
+                          ),
                         ),
-                        inputAction: TextInputAction.next,
+                        prefixIconConstraints: BoxConstraints(),
+                        hintText: '0',
+                        hintStyle: TextStyle(color: Colors.grey)),
+                    textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Amount is required";
+                      } else if (double.parse(value.toString().trim()) < 0.1) {
+                        return "Minimum amount is 0.1";
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                if (_errorMap.containsKey("amount"))
+                  _errorText(_errorMap["amount"] ?? "")
+              ],
+            ),
+
+            // TITLE
+            Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: IntrinsicWidth(
+                    child: TextFormField(
+                      controller: _titleController,
+                      textCapitalization: TextCapitalization.words,
+                      maxLength: 30,
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.zero,
+                        border: InputBorder.none,
+                        counter: const SizedBox.shrink(),
+                        hintText: 'What the expense for?',
+                        hintStyle: TextStyle(color: Colors.grey),
                       ),
-                      color: Colors.teal,
                     ),
-                    _tile(
-                      icon: Iconsax.category_2,
-                      title: "Category",
-                      child: FilledTextField(
-                        maxLines: 1,
-                        controller: _categoryController,
-                        hintText: "Select Category",
-                        onTap: () async {
-                          CategoryModel? result = await showModalBottomSheet(
+                  ),
+                ),
+                if (_errorMap.containsKey("title"))
+                  _errorText(_errorMap["title"] ?? ""),
+              ],
+            ),
+
+            // CATEGORY
+            Column(
+              children: [
+                ValueListenableBuilder(
+                    valueListenable: _category,
+                    builder: (_, category, __) {
+                      return FilledButton.icon(
+                        icon: category != null
+                            ? Icon(AppHelper.getIconFromString(category.icon))
+                            : Icon(Iconsax.category),
+                        onPressed: () async {
+                          if (_errorMap.containsKey('category')) {
+                            setState(() {
+                              _errorMap.remove('category');
+                            });
+                          }
+
+                          final result =
+                              await showModalBottomSheet<CategoryModel>(
                             context: context,
                             backgroundColor: Colors.transparent,
                             isScrollControlled: true,
-                            builder: (context) =>
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                    bottom:
-                                    MediaQuery
-                                        .of(context)
-                                        .viewInsets
-                                        .bottom,
-                                  ),
-                                  child: const BottomCategorySheet(),
-                                ),
+                            builder: (context) => Padding(
+                              padding: EdgeInsets.only(
+                                bottom:
+                                    MediaQuery.of(context).viewInsets.bottom,
+                              ),
+                              child: const BottomCategorySheet(),
+                            ),
                           );
                           if (result != null) {
                             _category.value = result;
-                            _categoryController.text = result.name;
                           }
                         },
-                        validator: (data) {
-                          if (data
-                              .toString()
-                              .trim()
-                              .isEmpty) {
-                            return "Please select a category";
-                          }
-                          return null;
-                        },
-                        readOnly: true,
-                        textFieldKey: "category",
-                        inputAction: TextInputAction.none,
-                      ),
-                      color: Colors.red,
-                    ),
-                    _tile(
-                      icon: Iconsax.document_text_1,
-                      title: "Description [Optional]",
-                      child: FilledTextField(
-                        textFieldKey: "description",
-                        minLines: 2,
-                        maxLines: 5,
-                        maxLength: 150,
-                        hintText: "eg: A lifestyle expense..",
-                        inputAction: TextInputAction.done,
-                        textCapitalization: TextCapitalization.sentences,
-                        onSaved: (value) =>
-                        _description = value.toString().trim(),
-                        initialValue: widget.transactionModel?.description,
-                      ),
-                      color: Colors.deepPurple,
-                    ),
-                    _tile(
-                      icon: Iconsax.folder,
-                      title: "Document [Optional]",
-                      child: Container(
-                        padding: const EdgeInsets.all(10.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          border: Border.all(
-                            width: .15,
-                            color: Colors.grey,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: category == null
+                              ? Colors.blue.shade100
+                              : category.color.withValues(alpha: .15),
+                          foregroundColor: category == null
+                              ? AppConfig.primaryColor
+                              : category.color,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadiusGeometry.circular(100),
                           ),
                         ),
-                        child: ValueListenableBuilder(
-                            valueListenable: _document,
-                            builder: (ctx, doc, _) {
-                              return Column(
-                                children: [
-                                  if (doc != null)
-                                    XFileImageView(image: doc)
-                                  else
-                                    Text(
-                                      "Choose document",
-                                      style: TextStyle(
-                                        fontSize: 13.0,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      if (doc == null)
-                                        const SizedBox.shrink()
-                                      else
-                                        TextButton(
-                                          onPressed: () =>
-                                          _document.value = null,
-                                          child: Text("Remove"),
-                                        ),
-                                      Row(
-                                        children: [
-                                          IconButton(
-                                            onPressed: () async {
-                                              _document.value =
-                                              await ImagePicker().pickImage(
-                                                source: ImageSource.gallery,
-                                              );
-                                            },
-                                            icon: Icon(Iconsax.attach_circle),
-                                          ),
-                                          IconButton(
-                                            onPressed: () async {
-                                              _document.value =
-                                              await ImagePicker().pickImage(
-                                                source: ImageSource.camera,
-                                              );
-                                            },
-                                            icon: Icon(Iconsax.camera),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              );
+                        label: ValueListenableBuilder(
+                            valueListenable: _date,
+                            builder: (_, date, __) {
+                              return Text(category == null
+                                  ? "Select category"
+                                  : category.name);
                             }),
-                      ),
-                      color: Colors.orange.shade600,
-                    ),
-                  ],
+                      );
+                    }),
+                if (_errorMap.containsKey("category"))
+                  _errorText(_errorMap["category"] ?? ""),
+              ],
+            ),
+
+            // SUGGESTION
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Divider(
+                  thickness: .5,
+                  color: Colors.grey,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Text(
+                    'Suggestion expenses',
+                    style: TextStyle(fontSize: 13),
+                  ),
+                ),
+                SizedBox(
+                  height: size.height * .05,
+                  child: ListView.builder(
+                      itemCount: _recentTransactions.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (ctx, index) {
+                        final transaction = _recentTransactions[index];
+                        final category = getCategory(transaction.categoryId);
+
+                        return Center(
+                            child: FilledButton.icon(
+                          icon:
+                              Icon(AppHelper.getIconFromString(category!.icon)),
+                          onPressed: () =>
+                              _autoFillFromTransaction(transaction),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            foregroundColor: category.color,
+                            shape: RoundedRectangleBorder(
+                              side: BorderSide(
+                                color: category.color,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadiusGeometry.circular(100),
+                            ),
+                          ),
+                          label: Text(transaction.title),
+                        ));
+                      }),
+                )
+              ],
+            ),
+
+            // DESCRIPTION
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20.0),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                border: Border.all(color: Colors.grey.shade200),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: TextFormField(
+                key: const ValueKey("description"),
+                textCapitalization: TextCapitalization.sentences,
+                initialValue: widget.transactionModel?.description,
+                minLines: 3,
+                maxLines: 5,
+                maxLength: 150,
+                textInputAction: TextInputAction.done,
+                decoration: InputDecoration(
+                  counter: const SizedBox.shrink(),
+                  hintText: "eg: Grocery shopping at supermarket",
+                  hintStyle: TextStyle(color: Colors.grey[500]),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.all(12),
                 ),
               ),
             ),
-            const SizedBox(height: 5.0),
-            // Button
-            BlocListener<TransactionEditBloc, TransactionEditState>(
-              listener: (BuildContext context, TransactionEditState state) {
-                _loading.value = state is AddingTransaction;
-                if (state is TransactionErrorOccurred) {
-                  state.error.showSnackBar(context);
-                }
-                if (state is TransactionAdded) {
-                  Navigator.pop(context);
-                }
-              },
-              child: ValueListenableBuilder(
-                valueListenable: _loading,
-                builder: (ctx, loading, _) {
-                  return LoadingFilledButton(
-                    onPressed: _onAddOrUpdate,
-                    loading: loading,
-                    child: Text(
-                        "${widget.isDuplicate ? "Duplicate" : widget
-                            .transactionModel == null ? "Add" : "Update"}"
-                            " Transaction"),
-                  );
-                },
-              ),
-            )
+
+            // SUBMIT BUTTON
+            _buildSaveButton(),
           ],
         ),
       ),
     );
   }
 
-  Widget _tile({
-    required IconData icon,
-    required String title,
-    required Widget child,
-    required Color color,
-  }) =>
-      ListTile(
-        contentPadding: EdgeInsets.only(bottom: 8.0),
-        leading: CircleAvatar(
-          radius: 20.0,
-          backgroundColor: color.withOpacity(.15),
-          child: Icon(
-            icon,
-            size: 20.0,
-            color: color,
-          ),
-        ),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 13.0,
-            color: Colors.black54,
-          ),
-        ),
-        subtitle: child,
-      );
+  void _validateFields() {
+    _errorMap.clear();
+    if (_titleController.text.isEmpty ||
+        _titleController.text.toString().trim().isEmpty) {
+      _errorMap['title'] = 'Title is required';
+    }
 
-  void _onAddOrUpdate() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      FocusScope.of(context).unfocus();
-      String admin = "unknownUser";
-      final authBloc = context.read<AuthBloc>();
-      if (authBloc.state is Authenticated) {
-        admin = (authBloc.state as Authenticated).user.uid;
-      }
-      final today = DateTime.now();
-      final transactionModel = TransactionModel(
-        id: widget.isDuplicate || widget.transactionModel == null
-            ? today.millisecondsSinceEpoch.toString()
-            : widget.transactionModel!.id,
-        date: _date.value,
-        amount: _amount,
-        title: _title,
-        createdDatetime: today,
-        docUrl: widget.transactionModel?.docUrl ?? "",
-        description: _description,
-        categoryId: _category.value?.id ?? "",
-        createdUserId: admin,
-      );
-      final transBloc = context.read<TransactionEditBloc>();
-      final budgetBloc =
-      (context
-          .read<BudgetViewBloc>()
-          .state as BudgetSubscribed);
+    final amount = _amountController.text.toString().trim();
+    if (_amountController.text.isEmpty || amount.isEmpty) {
+      _errorMap['amount'] = 'Amount is required';
+    } else if (double.tryParse(amount) == null) {
+      _errorMap['amount'] = 'Invalid number';
+    } else if (double.parse(amount) < 0.1) {
+      _errorMap['amount'] = 'Minimum amount is 0.1';
+    }
 
-      // for duplication and creating new one adding id as current datetime stamp
-      if (widget.transactionModel == null || widget.isDuplicate) {
-        transBloc.add(
-          AddTransaction(
-            budgetId: budgetBloc.budget.id,
-            transaction: transactionModel,
-            doc: _document.value,
-          ),
-        );
+    if (_category.value == null) {
+      _errorMap['category'] = 'Please select a category';
+    }
+
+    setState(() {});
+  }
+
+  Widget _buildSaveButton() {
+    return BlocListener<TransactionEditBloc, TransactionEditState>(
+      listener: (context, state) {
+        _loading.value = state is AddingTransaction;
+        if (state is TransactionErrorOccurred) {
+          state.error.showSnackBar(context);
+        }
+        if (state is TransactionAdded) {
+          Navigator.pop(context);
+        }
+      },
+      child: ValueListenableBuilder(
+        valueListenable: _loading,
+        builder: (ctx, loading, _) {
+          return FilledButton(
+            onPressed: loading
+                ? null
+                : () {
+                    _validateFields();
+                  },
+            style: FilledButton.styleFrom(
+              backgroundColor: AppConfig.primaryColor,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(200),
+              ),
+            ),
+            child: Text(
+              loading
+                  ? "Saving"
+                  : widget.isDuplicate
+                      ? "Duplicate Expense"
+                      : widget.transactionModel == null
+                          ? "Save Expense"
+                          : "Update Expense",
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _errorText(String error) {
+    return Text(
+      error,
+      style: TextStyle(color: Colors.red, fontSize: 12),
+    );
+  }
+
+  void _autoFillFromTransaction(TransactionModel transaction) {
+    setState(() {
+      _titleController.text = transaction.title;
+      _descriptionController.text = transaction.description;
+      _amountController.text = transaction.amount.toString();
+      _category.value = getCategory(transaction.categoryId);
+    });
+  }
+
+  CategoryModel? getCategory(String id) {
+    final category = context.read<CategoryViewBloc>().state;
+
+    if (category is CategorySubscribed) {
+      final index = category.categories.indexWhere((i) => i.id == id);
+      if (index != -1) {
+        return category.categories[index];
       } else {
-        transBloc.add(
-          UpdateTransaction(
-            budgetId: budgetBloc.budget.id,
-            transaction: transactionModel,
-            doc: _document.value,
-            oldTransactionDate: widget.transactionModel!.createdDatetime,
-          ),
-        );
+        return category.categories.first;
       }
     }
   }

@@ -66,7 +66,7 @@ class BudgetCard extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 17.0,
-                      color: Colors.black.withOpacity(.7),
+                      color: Colors.black.withValues(alpha: .7),
                     ),
                   ),
                   Text(

@@ -66,7 +66,7 @@ class _TransactionDetailViewState extends State<TransactionDetailView> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  widget.category.color.withOpacity(.2),
+                  widget.category.color.withValues(alpha: .2),
                   Theme.of(context).scaffoldBackgroundColor,
                 ],
                 begin: AlignmentDirectional.topCenter,

@@ -145,7 +145,7 @@ class Summary extends StatelessWidget {
       BuildContext context,
       [Color? color]) {
     final bgColor =
-        color == null ? Colors.blue.shade200 : color.withOpacity(.3);
+        color == null ? Colors.blue.shade200 : color.withValues(alpha: 3);
     final value = AppHelper.formatAmount(
       context,
       amount,
@@ -161,7 +161,7 @@ class Summary extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border.all(width: .5, color: bgColor),
             borderRadius: BorderRadius.circular(15.0),
-            color: bgColor.withOpacity(.2),
+            color: bgColor.withValues(alpha: .2),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

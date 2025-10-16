@@ -104,7 +104,7 @@ class CategoryChart extends StatelessWidget {
                       leading: CircleAvatar(
                         radius: 18.0,
                         backgroundColor:
-                            chartData[index].category.color.withOpacity(.2),
+                            chartData[index].category.color.withValues(alpha: .2),
                         child: Icon(
                           AppHelper.getIconFromString(
                             chartData[index].category.icon,
@@ -141,7 +141,7 @@ class CategoryChart extends StatelessWidget {
                             : 0,
                         color: chartData[index].category.color,
                         backgroundColor:
-                            chartData[index].category.color.withOpacity(.1),
+                            chartData[index].category.color.withValues(alpha: .1),
                       ),
                     ),
                   ),

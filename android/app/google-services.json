@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "434782527915-18mlot2l84k2knu47stn7fg2o3q42v7v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.codedude.spend_wise",
+            "certificate_hash": "ac7b9c423d5c89dae4d8bfca4360e4c0dadc35c3"
+          }
+        },
+        {
           "client_id": "434782527915-4sg864u94kk19nhagg773v9dpg6df7ui.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -30,6 +38,42 @@
             "certificate_hash": "7594e296951d5ad02f5299d98a2237ebd1e173f7"
           }
         },
+        {
+          "client_id": "434782527915-9rsoql7m2631fjike6qi4slr3366dkom.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIm8kpwBJabSieE36btSKgsDIIRi4EV0o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "434782527915-9rsoql7m2631fjike6qi4slr3366dkom.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "434782527915-8kc2r5l7qrhpe7v4vrfo0g5r5tvh3v10.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.codedude.myBudget"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:434782527915:android:94d6ecf7631b26d4dfb2ee",
+        "android_client_info": {
+          "package_name": "com.zyntra.spendwise_account"
+        }
+      },
+      "oauth_client": [
         {
           "client_id": "434782527915-9rsoql7m2631fjike6qi4slr3366dkom.apps.googleusercontent.com",
           "client_type": 3

@@ -124,7 +124,7 @@ class _CreateBudgetScreenState extends State<CreateBudgetScreen> {
                                   style: FilledButton.styleFrom(
                                     backgroundColor: categories[index]
                                         .color
-                                        .withOpacity(.15),
+                                        .withValues(alpha: .15),
                                     foregroundColor: categories[index].color,
                                   ),
                                   icon: Icon(
@@ -176,7 +176,7 @@ class _CreateBudgetScreenState extends State<CreateBudgetScreen> {
                                 child: Padding(
                                   padding: const EdgeInsets.only(bottom: 5.0),
                                   child: ListTile(
-                                    tileColor: Colors.grey.withOpacity(.15),
+                                    tileColor: Colors.grey.withValues(alpha: .15),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(15.0),
                                     ),

@@ -70,7 +70,7 @@ class MemberCategoryView extends StatelessWidget {
                         leading: CircleAvatar(
                           radius: 18.0,
                           backgroundColor:
-                              category.category.color.withOpacity(.2),
+                              category.category.color.withValues(alpha: .2),
                           child: Icon(
                             AppHelper.getIconFromString(
                               category.category.icon,
@@ -105,7 +105,7 @@ class MemberCategoryView extends StatelessWidget {
                           value: category.amount / memberData.amount,
                           color: category.category.color,
                           backgroundColor:
-                              category.category.color.withOpacity(.1),
+                              category.category.color.withValues(alpha: .1),
                         ),
                       )
                   ],

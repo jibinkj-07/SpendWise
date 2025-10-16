@@ -96,7 +96,7 @@ class _BudgetSwitcherTileState extends State<BudgetSwitcherTile> {
             width: 20.0,
             height: 10.0,
             decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(.5),
+              color: Colors.grey.withValues(alpha: .5),
               borderRadius: BorderRadius.circular(10.0),
             ),
           ),
@@ -110,7 +110,7 @@ class _BudgetSwitcherTileState extends State<BudgetSwitcherTile> {
               width: 100.0,
               height: 6.0,
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(.5),
+                color: Colors.grey.withValues(alpha: .5),
                 borderRadius: BorderRadius.circular(10.0),
               ),
             ),

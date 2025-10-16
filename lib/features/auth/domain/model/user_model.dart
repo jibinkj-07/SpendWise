@@ -18,9 +18,9 @@ class UserModel {
   factory UserModel.fromFirebase(DataSnapshot userData, String userId) {
     // If user logging with google there might be a chance to
     // not creating selected node under user detail
-    final budget = userData.child("selected").exists
-        ? userData.child("selected").value.toString()
-        : "";
+    // final budget = userData.child("selected").exists
+    //     ? userData.child("selected").value.toString()
+    //     : "";
     return UserModel(
       uid: userId,
       name: userData.child("name").value.toString(),

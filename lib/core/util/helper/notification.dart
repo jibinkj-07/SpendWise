@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../config/app_config.dart';
-
 sealed class Notification {
   static const String budgetInvitation = "Budget Invitation";
   static const String budgetDeleted = "Budget Deleted";

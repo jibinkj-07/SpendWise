@@ -163,7 +163,7 @@ class UserSpendingChart extends StatelessWidget {
                         ? chartData[index].amount / total
                         : 0,
                     color: chartData[index].color,
-                    backgroundColor: chartData[index].color.withOpacity(.1),
+                    backgroundColor: chartData[index].color.withValues(alpha: .1),
                   ),
                 ),
               ),
