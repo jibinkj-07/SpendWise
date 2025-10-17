@@ -1,7 +1,7 @@
 name: spend_wise
 description: "A finance management app."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-version: 1.1.0+3
+version: 1.2.0+4
 
 environment:
   sdk: ^3.5.0

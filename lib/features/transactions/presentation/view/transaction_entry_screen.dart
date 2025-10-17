@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +9,7 @@ import 'package:spend_wise/core/config/app_config.dart';
 import 'package:spend_wise/core/config/injection/imports.dart';
 import 'package:spend_wise/core/util/helper/app_helper.dart';
 
+import '../../../../core/config/injection/injection_container.dart';
 import '../../../budget/domain/model/category_model.dart';
 import '../../../home/presentation/widgets/bottom_category_sheet.dart';
 import '../../domain/model/transaction_model.dart';
@@ -33,11 +36,13 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
   late ValueNotifier<DateTime> _date;
   late ValueNotifier<CategoryModel?> _category;
   String _amountUnit = '\$';
-  // final SharedPrefHelper _sharedPrefHelper = sl<SharedPrefHelper>();
-  final Map<String, String> _errorMap = {};
+  final SharedPrefHelper _sharedPrefHelper = sl<SharedPrefHelper>();
+  final ValueNotifier<Map<String, String>> _errorMap = ValueNotifier({});
 
   // Recent transactions for quick fill
-  List<TransactionModel> _recentTransactions = [];
+  final ValueNotifier<List<TransactionModel>> _recentTransactions =
+      ValueNotifier([]);
+  final ValueNotifier<List<String>> _titleSuggestions = ValueNotifier([]);
 
   @override
   void initState() {
@@ -49,7 +54,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
   void _initializeData() {
     _category = ValueNotifier(null);
     _date = ValueNotifier(DateTime.now());
-
+    final savedTitles = _sharedPrefHelper.getTransactionSuggestions();
     if (widget.transactionModel != null) {
       _date.value = widget.transactionModel!.date;
       final categories = _getCategories();
@@ -58,6 +63,9 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
         orElse: () => categories.first,
       );
       _category.value = category;
+      _titleController.text = widget.transactionModel!.title;
+      _amountController.text = widget.transactionModel!.amount.toString();
+      _descriptionController.text = widget.transactionModel!.description;
     }
 
     final budgetState = context.read<BudgetViewBloc>().state;
@@ -67,17 +75,28 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
 
     // clear errors on user type
     _titleController.addListener(() {
-      if (_errorMap.containsKey('title')) {
-        setState(() {
-          _errorMap.remove('title');
-        });
+      final title = _titleController.text.toString().trim();
+
+      _titleSuggestions.value = title.isEmpty
+          ? []
+          : savedTitles
+              .where(
+                (item) => item.contains(title),
+              )
+              .toList();
+
+      if (_errorMap.value.containsKey('title')) {
+        final updatedMap = Map<String, String>.from(_errorMap.value);
+        updatedMap.remove('title');
+        _errorMap.value = updatedMap;
       }
     });
+
     _amountController.addListener(() {
-      if (_errorMap.containsKey('amount')) {
-        setState(() {
-          _errorMap.remove('amount');
-        });
+      if (_errorMap.value.containsKey('amount')) {
+        final updatedMap = Map<String, String>.from(_errorMap.value);
+        updatedMap.remove('amount');
+        _errorMap.value = updatedMap;
       }
     });
   }
@@ -94,9 +113,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
       final state = context.read<MonthTransViewBloc>().state;
 
       if (state is SubscribedMonthTransState) {
-        setState(() {
-          _recentTransactions = state.transactions.take(10).toList();
-        });
+        _recentTransactions.value = state.transactions.take(10).toList();
       }
     });
   }
@@ -109,6 +126,9 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
     _titleController.dispose();
     _descriptionController.dispose();
     _amountController.dispose();
+    _errorMap.dispose();
+    _recentTransactions.dispose();
+    _titleSuggestions.dispose();
     super.dispose();
   }
 
@@ -116,6 +136,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
+    log('titles ${_titleSuggestions}');
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -124,14 +145,12 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
         title: Text("New Expense"),
         centerTitle: true,
       ),
-      body: Container(
-        width: double.infinity,
+      body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 20),
-        child: Column(
-          spacing: 20.0,
-          children: [
-            // DATE PICKER
-            FilledButton.icon(
+        children: [
+          // DATE PICKER
+          Center(
+            child: FilledButton.icon(
               icon: Icon(Iconsax.calendar_1),
               onPressed: () async {
                 final date = await showDatePicker(
@@ -145,9 +164,12 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                 }
               },
               style: FilledButton.styleFrom(
-                backgroundColor: Colors.blue.shade100,
+                backgroundColor: Colors.transparent,
                 foregroundColor: AppConfig.primaryColor,
                 shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: AppConfig.primaryColor,
+                  ),
                   borderRadius: BorderRadiusGeometry.circular(100),
                 ),
               ),
@@ -159,247 +181,308 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                     );
                   }),
             ),
+          ),
 
-            // AMOUNT
-            Column(
-              children: [
-                Text('Total Amount'),
-                IntrinsicWidth(
-                  child: TextFormField(
-                    style: TextStyle(
-                      color: AppConfig.primaryColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 50.0,
-                    ),
-                    controller: _amountController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-                    ],
-                    maxLength: 10,
-                    decoration: InputDecoration(
-                        contentPadding: EdgeInsets.zero,
-                        border: InputBorder.none,
-                        counter: const SizedBox.shrink(),
-                        prefixIcon: Text(
-                          _amountUnit,
-                          style: TextStyle(
-                            color: AppConfig.primaryColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 40.0,
-                          ),
+          const SizedBox(height: 30.0),
+          // AMOUNT
+          Column(
+            children: [
+              Text('Total Amount'),
+              IntrinsicWidth(
+                child: TextFormField(
+                  style: TextStyle(
+                    color: AppConfig.primaryColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 50.0,
+                  ),
+                  controller: _amountController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                  ],
+                  maxLength: 10,
+                  decoration: InputDecoration(
+                      contentPadding: EdgeInsets.zero,
+                      border: InputBorder.none,
+                      counter: const SizedBox.shrink(),
+                      prefixIcon: Text(
+                        _amountUnit,
+                        style: TextStyle(
+                          color: AppConfig.primaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 40.0,
                         ),
-                        prefixIconConstraints: BoxConstraints(),
-                        hintText: '0',
-                        hintStyle: TextStyle(color: Colors.grey)),
-                    textInputAction: TextInputAction.next,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Amount is required";
-                      } else if (double.parse(value.toString().trim()) < 0.1) {
-                        return "Minimum amount is 0.1";
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                if (_errorMap.containsKey("amount"))
-                  _errorText(_errorMap["amount"] ?? "")
-              ],
-            ),
-
-            // TITLE
-            Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: IntrinsicWidth(
-                    child: TextFormField(
-                      controller: _titleController,
-                      textCapitalization: TextCapitalization.words,
-                      maxLength: 30,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.zero,
-                        border: InputBorder.none,
-                        counter: const SizedBox.shrink(),
-                        hintText: 'What the expense for?',
-                        hintStyle: TextStyle(color: Colors.grey),
                       ),
+                      prefixIconConstraints: BoxConstraints(),
+                      hintText: '0',
+                      hintStyle: TextStyle(color: Colors.grey)),
+                  textInputAction: TextInputAction.next,
+                ),
+              ),
+              ValueListenableBuilder(
+                  valueListenable: _errorMap,
+                  builder: (_, errorMap, __) {
+                    if (errorMap.containsKey("amount")) {
+                      return _errorText(errorMap["amount"] ?? "");
+                    }
+
+                    return const SizedBox.shrink();
+                  })
+            ],
+          ),
+
+          const SizedBox(height: 30.0),
+          // TITLE
+          Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: IntrinsicWidth(
+                  child: TextFormField(
+                    key: const ValueKey("title"),
+                    controller: _titleController,
+                    textCapitalization: TextCapitalization.words,
+                    maxLength: 30,
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.zero,
+                      border: InputBorder.none,
+                      counter: const SizedBox.shrink(),
+                      hintText: 'What the expense for?',
+                      hintStyle: TextStyle(color: Colors.grey),
                     ),
                   ),
                 ),
-                if (_errorMap.containsKey("title"))
-                  _errorText(_errorMap["title"] ?? ""),
-              ],
-            ),
+              ),
+              ValueListenableBuilder(
+                  valueListenable: _errorMap,
+                  builder: (_, errorMap, __) {
+                    if (errorMap.containsKey("title")) {
+                      return _errorText(errorMap["title"] ?? "");
+                    }
 
-            // CATEGORY
-            Column(
-              children: [
-                ValueListenableBuilder(
-                    valueListenable: _category,
-                    builder: (_, category, __) {
-                      return FilledButton.icon(
-                        icon: category != null
-                            ? Icon(AppHelper.getIconFromString(category.icon))
-                            : Icon(Iconsax.category),
-                        onPressed: () async {
-                          if (_errorMap.containsKey('category')) {
-                            setState(() {
-                              _errorMap.remove('category');
-                            });
-                          }
+                    return const SizedBox.shrink();
+                  })
+            ],
+          ),
 
-                          final result =
-                              await showModalBottomSheet<CategoryModel>(
-                            context: context,
-                            backgroundColor: Colors.transparent,
-                            isScrollControlled: true,
-                            builder: (context) => Padding(
-                              padding: EdgeInsets.only(
-                                bottom:
-                                    MediaQuery.of(context).viewInsets.bottom,
-                              ),
-                              child: const BottomCategorySheet(),
-                            ),
-                          );
-                          if (result != null) {
-                            _category.value = result;
-                          }
-                        },
-                        style: FilledButton.styleFrom(
-                          backgroundColor: category == null
-                              ? Colors.blue.shade100
-                              : category.color.withValues(alpha: .15),
-                          foregroundColor: category == null
-                              ? AppConfig.primaryColor
-                              : category.color,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadiusGeometry.circular(100),
-                          ),
-                        ),
-                        label: ValueListenableBuilder(
-                            valueListenable: _date,
-                            builder: (_, date, __) {
-                              return Text(category == null
-                                  ? "Select category"
-                                  : category.name);
-                            }),
-                      );
-                    }),
-                if (_errorMap.containsKey("category"))
-                  _errorText(_errorMap["category"] ?? ""),
-              ],
-            ),
-
-            // SUGGESTION
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Divider(
-                  thickness: .5,
-                  color: Colors.grey,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Text(
-                    'Suggestion expenses',
-                    style: TextStyle(fontSize: 13),
-                  ),
-                ),
-                SizedBox(
+          // TITLE SUGGESTION
+          ValueListenableBuilder(
+              valueListenable: _titleSuggestions,
+              builder: (_, titleSuggestion, __) {
+                if (titleSuggestion.isEmpty) return const SizedBox.shrink();
+                return SizedBox(
                   height: size.height * .05,
                   child: ListView.builder(
-                      itemCount: _recentTransactions.length,
+                      padding: const EdgeInsets.only(left: 20.0, top: 10),
+                      itemCount: titleSuggestion.length,
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (ctx, index) {
-                        final transaction = _recentTransactions[index];
-                        final category = getCategory(transaction.categoryId);
-
                         return Center(
-                            child: FilledButton.icon(
-                          icon:
-                              Icon(AppHelper.getIconFromString(category!.icon)),
-                          onPressed: () =>
-                              _autoFillFromTransaction(transaction),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            foregroundColor: category.color,
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                color: category.color,
-                                width: 1,
-                              ),
-                              borderRadius: BorderRadiusGeometry.circular(100),
+                            child: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: ActionChip(
+                            label: Text(
+                              titleSuggestion[index],
+                              style: TextStyle(color: Colors.grey),
                             ),
+                            backgroundColor: Colors.grey.shade200,
+                            side: BorderSide(color: Colors.transparent),
+                            padding: EdgeInsets.zero,
+                            onPressed: () {
+                              _titleController.text = titleSuggestion[index];
+                              _titleSuggestions.value.clear();
+                            },
                           ),
-                          label: Text(transaction.title),
                         ));
                       }),
-                )
-              ],
-            ),
+                );
+              }),
+          const SizedBox(height: 10.0),
+          // CATEGORY
+          Column(
+            children: [
+              ValueListenableBuilder(
+                  valueListenable: _category,
+                  builder: (_, category, __) {
+                    return FilledButton.icon(
+                      icon: category != null
+                          ? Icon(AppHelper.getIconFromString(category.icon))
+                          : Icon(Iconsax.category),
+                      onPressed: () async {
+                        if (_errorMap.value.containsKey('category')) {
+                          _errorMap.value.remove('category');
+                        }
 
-            // DESCRIPTION
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20.0),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                border: Border.all(color: Colors.grey.shade200),
-                borderRadius: BorderRadius.circular(12),
+                        final result =
+                            await showModalBottomSheet<CategoryModel>(
+                          context: context,
+                          backgroundColor: Colors.transparent,
+                          isScrollControlled: true,
+                          builder: (context) => Padding(
+                            padding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).viewInsets.bottom,
+                            ),
+                            child: const BottomCategorySheet(),
+                          ),
+                        );
+                        if (result != null) {
+                          _category.value = result;
+                        }
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor: category == null
+                            ? Colors.blue.shade100
+                            : category.color.withValues(alpha: .15),
+                        foregroundColor: category == null
+                            ? AppConfig.primaryColor
+                            : category.color,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadiusGeometry.circular(100),
+                        ),
+                      ),
+                      label: ValueListenableBuilder(
+                          valueListenable: _date,
+                          builder: (_, date, __) {
+                            return Text(category == null
+                                ? "Select category"
+                                : category.name);
+                          }),
+                    );
+                  }),
+              ValueListenableBuilder(
+                  valueListenable: _errorMap,
+                  builder: (_, errorMap, __) {
+                    if (errorMap.containsKey("category")) {
+                      return _errorText(errorMap["category"] ?? "");
+                    }
+
+                    return const SizedBox.shrink();
+                  })
+            ],
+          ),
+          // SUGGESTION
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10.0),
+              Divider(
+                thickness: .5,
+                color: Colors.grey,
               ),
-              child: TextFormField(
-                key: const ValueKey("description"),
-                textCapitalization: TextCapitalization.sentences,
-                initialValue: widget.transactionModel?.description,
-                minLines: 3,
-                maxLines: 5,
-                maxLength: 150,
-                textInputAction: TextInputAction.done,
-                decoration: InputDecoration(
-                  counter: const SizedBox.shrink(),
-                  hintText: "eg: Grocery shopping at supermarket",
-                  hintStyle: TextStyle(color: Colors.grey[500]),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.all(12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Text(
+                  'Quick Tags',
+                  style: TextStyle(fontSize: 13),
                 ),
               ),
-            ),
+              SizedBox(
+                height: size.height * .05,
+                child: ValueListenableBuilder(
+                    valueListenable: _recentTransactions,
+                    builder: (_, recentTrans, __) {
+                      return ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          itemCount: recentTrans.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (ctx, index) {
+                            final transaction = recentTrans[index];
+                            final category =
+                                getCategory(transaction.categoryId);
 
-            // SUBMIT BUTTON
-            _buildSaveButton(),
-          ],
-        ),
+                            return Center(
+                                child: Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: ActionChip(
+                                  label: Row(
+                                    spacing: 5,
+                                    children: [
+                                      Icon(
+                                        AppHelper.getIconFromString(
+                                            category!.icon),
+                                        size: 20,
+                                        color: category.color,
+                                      ),
+                                      Text(
+                                        transaction.title,
+                                        style: TextStyle(color: category.color),
+                                      ),
+                                    ],
+                                  ),
+                                  backgroundColor:
+                                      category.color.withValues(alpha: .15),
+                                  side: BorderSide(color: Colors.transparent),
+                                  padding: EdgeInsets.zero,
+                                  onPressed: () =>
+                                      _autoFillFromTransaction(transaction)),
+                            ));
+                          });
+                    }),
+              )
+            ],
+          ),
+
+          const SizedBox(height: 30.0),
+          // DESCRIPTION
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20.0),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade400),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: TextFormField(
+              key: const ValueKey("description"),
+              textCapitalization: TextCapitalization.sentences,
+              controller: _descriptionController,
+              minLines: 3,
+              maxLines: 5,
+              maxLength: 150,
+              textInputAction: TextInputAction.done,
+              decoration: InputDecoration(
+                counter: const SizedBox.shrink(),
+                hintText: "eg: Grocery shopping at supermarket",
+                hintStyle: TextStyle(color: Colors.grey[500]),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.all(12),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 50.0),
+          // SUBMIT BUTTON
+          _buildSaveButton(),
+        ],
       ),
     );
   }
 
   void _validateFields() {
-    _errorMap.clear();
+    _errorMap.value.clear();
+    Map<String, String> errors = {};
     if (_titleController.text.isEmpty ||
         _titleController.text.toString().trim().isEmpty) {
-      _errorMap['title'] = 'Title is required';
+      errors['title'] = 'Title is required';
     }
 
     final amount = _amountController.text.toString().trim();
     if (_amountController.text.isEmpty || amount.isEmpty) {
-      _errorMap['amount'] = 'Amount is required';
+      errors['amount'] = 'Amount is required';
     } else if (double.tryParse(amount) == null) {
-      _errorMap['amount'] = 'Invalid number';
+      errors['amount'] = 'Invalid number';
     } else if (double.parse(amount) < 0.1) {
-      _errorMap['amount'] = 'Minimum amount is 0.1';
+      errors['amount'] = 'Minimum amount is 0.1';
     }
 
     if (_category.value == null) {
-      _errorMap['category'] = 'Please select a category';
+      errors['category'] = 'Please select a category';
     }
 
-    setState(() {});
+    _errorMap.value = errors;
   }
 
   Widget _buildSaveButton() {
@@ -416,27 +499,25 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
       child: ValueListenableBuilder(
         valueListenable: _loading,
         builder: (ctx, loading, _) {
-          return FilledButton(
-            onPressed: loading
-                ? null
-                : () {
-                    _validateFields();
-                  },
-            style: FilledButton.styleFrom(
-              backgroundColor: AppConfig.primaryColor,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(200),
+          return Center(
+            child: FilledButton(
+              onPressed: loading ? null : _onAddOrUpdate,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppConfig.primaryColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(200),
+                ),
               ),
-            ),
-            child: Text(
-              loading
-                  ? "Saving"
-                  : widget.isDuplicate
-                      ? "Duplicate Expense"
-                      : widget.transactionModel == null
-                          ? "Save Expense"
-                          : "Update Expense",
+              child: Text(
+                loading
+                    ? "Saving"
+                    : widget.isDuplicate
+                        ? "Duplicate Expense"
+                        : widget.transactionModel == null
+                            ? "Save Expense"
+                            : "Update Expense",
+              ),
             ),
           );
         },
@@ -452,12 +533,65 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
   }
 
   void _autoFillFromTransaction(TransactionModel transaction) {
-    setState(() {
-      _titleController.text = transaction.title;
-      _descriptionController.text = transaction.description;
-      _amountController.text = transaction.amount.toString();
-      _category.value = getCategory(transaction.categoryId);
-    });
+    _titleController.text = transaction.title;
+    _descriptionController.text = transaction.description;
+    _amountController.text = transaction.amount.toString();
+    _category.value = getCategory(transaction.categoryId);
+    _titleSuggestions.value.clear();
+  }
+
+  void _onAddOrUpdate() {
+    _validateFields();
+    if (_errorMap.value.isNotEmpty) return;
+
+    FocusScope.of(context).unfocus();
+
+    final transactionModel = _createTransactionModel();
+    final transBloc = context.read<TransactionEditBloc>();
+    final budgetBloc = context.read<BudgetViewBloc>().state as BudgetSubscribed;
+
+    if (widget.transactionModel == null || widget.isDuplicate) {
+      transBloc.add(
+        AddTransaction(
+          budgetId: budgetBloc.budget.id,
+          transaction: transactionModel,
+          doc: null,
+        ),
+      );
+    } else {
+      transBloc.add(
+        UpdateTransaction(
+          budgetId: budgetBloc.budget.id,
+          transaction: transactionModel,
+          oldTransactionDate: widget.transactionModel!.createdDatetime,
+          doc: null,
+        ),
+      );
+    }
+  }
+
+  TransactionModel _createTransactionModel() {
+    final today = DateTime.now();
+    final authBloc = context.read<AuthBloc>();
+    String admin = "unknownUser";
+
+    if (authBloc.state is Authenticated) {
+      admin = (authBloc.state as Authenticated).user.uid;
+    }
+
+    return TransactionModel(
+      id: widget.isDuplicate || widget.transactionModel == null
+          ? today.millisecondsSinceEpoch.toString()
+          : widget.transactionModel!.id,
+      date: _date.value,
+      amount: double.parse(_amountController.text.toString().trim()),
+      title: _titleController.text.toString().trim(),
+      createdDatetime: today,
+      docUrl: widget.transactionModel?.docUrl ?? "",
+      description: _descriptionController.text.toString().trim(),
+      categoryId: _category.value?.id ?? "",
+      createdUserId: admin,
+    );
   }
 
   CategoryModel? getCategory(String id) {
@@ -471,5 +605,6 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
         return category.categories.first;
       }
     }
+    return null;
   }
 }
