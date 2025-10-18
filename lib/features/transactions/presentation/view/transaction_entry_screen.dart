@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -135,8 +133,6 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
-    log('titles ${_titleSuggestions}');
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -196,7 +192,7 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                     fontSize: 50.0,
                   ),
                   controller: _amountController,
-                  keyboardType: TextInputType.number,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                   ],
@@ -288,7 +284,8 @@ class _TransactionEntryScreenState extends State<TransactionEntryScreen> {
                           child: ActionChip(
                             label: Text(
                               titleSuggestion[index],
-                              style: TextStyle(color: Colors.grey),
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 12),
                             ),
                             backgroundColor: Colors.grey.shade200,
                             side: BorderSide(color: Colors.transparent),
