@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:developer';
+
+import 'package:either_dart/either.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:spend_wise/core/util/error/failure.dart';
-import 'package:either_dart/either.dart';
 import 'package:spend_wise/core/util/helper/firebase_path.dart';
 import 'package:spend_wise/features/auth/domain/model/user_model.dart';
 
@@ -23,7 +24,6 @@ abstract class AuthFbDataSource {
     required String email,
     required String password,
   });
-
 
   Future<Either<Failure, void>> loginUserWithGoogle();
 
@@ -102,52 +102,42 @@ class AuthFbDataSourceImpl implements AuthFbDataSource {
     }
   }
 
-
-
   @override
   Future<Either<Failure, void>> loginUserWithGoogle() async {
-
     UserCredential userCredential;
 
     try {
+      await _googleSignIn.initialize(
+        clientId: kIsWeb ? ApiConfig.googleSignInClientId : null,
+        serverClientId: kIsWeb ? null : ApiConfig.googleSignInClientId,
+      );
 
-        await _googleSignIn.initialize(
-          clientId: kIsWeb ? ApiConfig.googleSignInClientId : null,
-          serverClientId: ApiConfig.googleSignInClientId, 
-        );
-
-
-
-      if (_googleSignIn.supportsAuthenticate()) {
+      if (kIsWeb) {
+        final googleProvider = GoogleAuthProvider();
+        userCredential = await _firebaseAuth.signInWithPopup(googleProvider);
+      } else {
         // Unified sign-in (works on Android, iOS, macOS, web)
         final account = await _googleSignIn.authenticate();
 
-        final auth =  account.authentication;
-        final credential = GoogleAuthProvider.credential(
-          idToken: auth.idToken
-        );
+        final auth = account.authentication;
+        final credential = GoogleAuthProvider.credential(idToken: auth.idToken);
 
-        userCredential= await _firebaseAuth.signInWithCredential(credential);
-
-        // check if user already created or not
-        //if not create new user
-        final user = await _accountFbDataSource.getUserInfoByID(
-          id: userCredential.user?.uid ?? kUnknownUser,
-        );
-
-        if (user.isLeft) {
-          await _createUser(
-            uid: userCredential.user?.uid ?? kUnknownUser,
-            name: userCredential.user?.displayName ?? "User",
-            email: userCredential.user?.email ?? "user@gmail.com",
-          );
-        }
-        return const Right(null);
-
-      } else {
-        return Left(AuthenticationError(message: "Manual button-based flow required on web."));
-
+        userCredential = await _firebaseAuth.signInWithCredential(credential);
       }
+      // check if user already created or not
+      //if not create new user
+      final user = await _accountFbDataSource.getUserInfoByID(
+        id: userCredential.user?.uid ?? kUnknownUser,
+      );
+
+      if (user.isLeft) {
+        await _createUser(
+          uid: userCredential.user?.uid ?? kUnknownUser,
+          name: userCredential.user?.displayName ?? "User",
+          email: userCredential.user?.email ?? "user@gmail.com",
+        );
+      }
+      return const Right(null);
     } catch (e, st) {
       debugPrint('Google Sign-In error: $e\n$st');
       return Left(AuthenticationError(message: "Unable to login with Google."));
